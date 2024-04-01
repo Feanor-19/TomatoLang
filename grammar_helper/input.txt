@@ -1,0 +1,56 @@
+|Amp_1|Angrily|
+|Amp_2|Unfortunately|
+|Amp_3|Madly|
+|Amp_4|Thickly|
+|Amp_5|Rapidly|
+|Amp_6|Hastily|
+|Amp_7|Emotionally|
+|Amp_8|Desperately|
+|Amp_9|Fiercely|
+|Amp_10|Fanatically|
+|AsIngr|As Ingredients|
+|Asgn1|Place|
+|Asgn2|Right Into|
+|CallFuncAction|Perform|
+|CallFuncRecipe|Cooked Beforehand|
+|CmpOp_equal|Just The Same Amount Of|
+|CmpOp_lessOrEqual|The Same Amount Or Less Of|
+|CmpOp_less|Less|
+|CmpOp_moreOrEqual|The Same Amount Or More Of|
+|CmpOp_more|More|
+|CmpOp_notEqual|Not The Same Amount Of|
+|CmpWith|Comparing With|
+|Cond|There Happens To Be|
+|Else|Otherwise You Should Do A Completely Different Thing:|
+|FuncActionHeader|Skill To Do|
+|FuncDefsEnd|Here Is The Recipe Itself:|
+|FuncDefsStart|Here Are Some Skills You Need To Have:|
+|FuncRecipeHeader|Skill To Cook|
+|If1|In Case|
+|If2|Urgently Do The Following Steps:|
+|IfEnd|Now, Breathe Out And Continue Whatever Your Were Doing!|
+|InBracketsStart|The Following Prepared Beforehand:|
+|InputOp|As Much As The Universe Says|
+|OpAdd|Mixed With|
+|OpDiv|Spread On|
+|OpMul|Fried With|
+|OpSub|Without|
+|PrintNum|Serve|
+|PrintStr|Scream In Despair:|
+|ProgEnd|That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!|
+|ProgStart|The Recipe Of The Most Delicious Dish One Can Ever Imagine!|
+|Return1|There Is No Time To Explain, Use|
+|Return2|As The Result Of This Skill!|
+|UnitsOf|Units Of|
+|UnrOp_cos|Diced|
+|UnrOp_exp|Grated|
+|UnrOp_ln|Squeezed|
+|UnrOp_minus|Rinsed|
+|UnrOp_sin|Sliced|
+|UnrOp_sqrt|Peeled|
+|Using|Using|
+|VarBirthOp|Quickly Obtain|
+|VarDeathOp|Throw Away|
+|While1|As Long As|
+|While2|Repeat The Following:|
+|WhileEnd|Repeat Until Ready And Then Go Further!|
