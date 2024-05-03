@@ -2,7 +2,7 @@
 
 #define PRINT_ASM(format, ...) do{fprintf(stream, format, ##__VA_ARGS__); putc('\n', stream);}while(0)
 
-inline size_t find_op_by_name( CompTreeOpNameEnum name )
+inline size_t find_op_by_name( ASTOpNameEnum name )
 {
     for (size_t ind = 0; ind < SIZEARR(COMP_TREE_OPS_BACKEND); ind++)
     {

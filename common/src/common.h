@@ -1,9 +1,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "..\..\..\..\mylibheaders\tree.h"
+#include "/usr/include/feanor/tree/tree.h"
 #include "logger.h"
-#include "comp_tree_ops.h"
+#include "ast_ops.h"
 
 
 typedef int32_t id_t;
@@ -23,7 +23,7 @@ struct TreeNodeData
     TreeNodeType type;
     union
     {
-        CompTreeOpNameEnum op;
+        ASTOpNameEnum op;
         num_t num;
         id_t id;
     };
@@ -40,7 +40,7 @@ enum FuncType
 
 const size_t REALLOC_DEFAULT_MULTIPLIER = 2;
 const double DBL_PRECISION              = 1E-10;
-
+const mode_t DEFAULT_FILE_MODE          = 0777;
 
 
 #define FREE(ptr) do{ if (ptr) free(ptr); ptr = NULL; }while(0)
@@ -67,7 +67,7 @@ int write_tree_to_file( const char *file_name, const Tree *tree_ptr );
 int read_tree_from_file( const char *file_name, Tree *tree_ptr );
 
 //! @brief Returns new node of type operator and writes value 'op' into it.
-TreeNode *new_node_op( Tree *tree_ptr, CompTreeOpNameEnum op );
+TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op );
 
 //! @brief Returns new node of type number and writes value 'num' into it.
 TreeNode *new_node_num( Tree *tree_ptr, num_t num );
@@ -78,7 +78,7 @@ TreeNode *new_node_id( Tree *tree_ptr, id_t id );
 TreeNodeData get_node_data( TreeNode *node_ptr );
 
 //! @brief Checks given node's type and value.
-int is_node_op( TreeNode *node_ptr, CompTreeOpNameEnum op );
+int is_node_op( TreeNode *node_ptr, ASTOpNameEnum op );
 
 //! @brief Checks given node's type and value.
 int is_node_num( TreeNode *node_ptr, num_t num );

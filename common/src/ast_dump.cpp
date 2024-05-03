@@ -1,8 +1,11 @@
-#include "compiler_tree_dump.h"
+#include "ast_dump.h"
 
 #include <assert.h>
 #include <dirent.h>
-
+#include <string.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 static const char *FOLDER_PATH  = NULL;
 static char *CMN_FILE_NAME      = NULL;
@@ -82,7 +85,7 @@ void init_img_dumps( const char *folder_path )
 
     if (!FOLDER_PATH)
     {
-        mkdir( folder_path );
+        mkdir( folder_path, DEFAULT_FILE_MODE );
 
         DIR *dir = opendir( folder_path );
         if ( !dir )
@@ -141,12 +144,12 @@ inline void run_dot_to_create_database_img()
 	system(CMN_CMD);
 }
 
-inline const char * find_tree_op_str_by_name( CompTreeOpNameEnum name )
+inline const char * find_tree_op_str_by_name( ASTOpNameEnum name )
 {
-    for (size_t ind = 0; ind < SIZEARR(COMP_TREE_OPS_NAMES); ind++)
+    for (size_t ind = 0; ind < SIZEARR(AST_OPS_NAMES); ind++)
     {
-        if ( COMP_TREE_OPS_NAMES[ind].name == name )
-            return COMP_TREE_OPS_NAMES[ind].str;
+        if ( AST_OPS_NAMES[ind].name == name )
+            return AST_OPS_NAMES[ind].str;
     }
 
     return NULL;
@@ -200,7 +203,7 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_OP_NODE_FILL "\",\n"
                                 "label = %s];\n\n",
-                                ind, find_tree_op_str_by_name((CompTreeOpNameEnum) node_data.op));
+                                ind, find_tree_op_str_by_name((ASTOpNameEnum) node_data.op));
         }
         else if ( node_data.type == TREE_NODE_TYPE_ID )
         {
@@ -276,7 +279,7 @@ inline void show_dump_img()
 	system(CMN_FILE_NAME);
 }
 
-void dump_compiler_tree( Tree *comp_tree )
+void dump_ast( Tree *comp_tree )
 {
     assert(comp_tree);
 

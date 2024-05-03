@@ -2,9 +2,9 @@
 
 #include <ctype.h>
 #include <math.h>
-#include "compiler_tree_dump.h"
+#include "ast_dump.h"
 
-//REVIEW -
+
 #define UNUSED(var) do{var = var;}while(0)
 #define CURR (*curr_ptr)
 #define FACT_REC_FALL_ARGS comp_prog, prog, curr_ptr, context
@@ -225,9 +225,9 @@ static TreeNode *get_print_str( FORMAL_REC_FALL_ARGS )
 }
 
 //! @brief Checks is 'tkn' of type 'Keyword' and belongs to
-//! group 'CmpOp'. If yes, returns corresponding CompTreeOpNameEnum,
+//! group 'CmpOp'. If yes, returns corresponding ASTOpNameEnum,
 //! otherwise returns TREE_OP_DUMMY.
-inline CompTreeOpNameEnum translate_kw_cmp_op( Token tkn )
+inline ASTOpNameEnum translate_kw_cmp_op( Token tkn )
 {
 
 // Only keywords from the group 'CmpOp' must be held in
@@ -452,9 +452,9 @@ static TreeNode *get_ingr ( FORMAL_REC_FALL_ARGS )
 }
 
 //! @brief Checks is 'tkn' of type 'Keyword' and belongs to
-//! group 'UnrOp'. If yes, returns corresponding CompTreeOpNameEnum,
+//! group 'UnrOp'. If yes, returns corresponding ASTOpNameEnum,
 //! otherwise returns TREE_OP_DUMMY.
-inline CompTreeOpNameEnum translate_tkn_unr_op( Token tkn )
+inline ASTOpNameEnum translate_tkn_unr_op( Token tkn )
 {
 // Only keywords from the group 'CmpOp' must be held in
 // in this switch, so the warning "-Wswitch-enum" must be ignored.
@@ -1265,7 +1265,8 @@ Status compile_prog( const char *prog, CompiledProgram *comp_prog )
 
     *comp_prog = {};
     comp_prog->tree = {};
-    tree_ctor( &comp_prog->tree, sizeof( TreeNodeData ), NULL, print_tree_node_data );
+    tree_ctor( &comp_prog->tree, sizeof( TreeNodeData ), DEFAULT_TYPICAL_NUM_OF_NODES, 
+               NULL, print_tree_node_data);
     Status err = Nametables_ctor( &comp_prog->nametables );
     if ( err )
     {
@@ -1281,7 +1282,7 @@ Status compile_prog( const char *prog, CompiledProgram *comp_prog )
 
     tree_hang_loose_node_as_root( &comp_prog->tree, root );
 
-    dump_compiler_tree( &comp_prog->tree );
+    dump_ast( &comp_prog->tree );
 
     return STATUS_OK;
 }

@@ -1,4 +1,9 @@
-# Programming language "CrazyCooking"
+<!-- TODO - переписать на русском -->
+# Programming language "TomatoLang" (WIP)
+
+This is a reborn of "CrazyCookingLanguage", which you can find in its own repo. The main (planned) difference is backend for x86-64 (Linux), but also lots of improvements in language's grammar and features.
+
+NOTE: Unlike CrazyCookingLanguage, this project is designed for Linux.
 
 ## Build
 
@@ -13,8 +18,7 @@ The project is the compiler of the programming language, separated into three pa
 
 1. `Frontend` takes `text file with program` and creates `compilator tree`.
 2. `Middleend` does some work with the `compilator tree`, e.g. folding constants.
-3. `Backend` takes `compilator tree` and creates `assembler code`, which can be later executed using `SPU (Software Processing Unit)` from repo `maybe_calculator`.
-
+3. `Backend` is currently absent, it is planned that it will create object files, compatible with GNU linker.
 ### Command line flags (common for all parts of the compiler)
 
 1. `-h` - prints help.
@@ -30,7 +34,7 @@ Please, see corresponding `*_statuses.h`.
 
 ### Compiler Frontend
 
-Run `frontend.exe` or `make run_front` (sometimes doesn't work propely, I really don't know why) from root folder.
+Run `frontend` or `make run_front` (sometimes doesn't work propely, I really don't know why <!-- TODO -->) from root folder.
 
 Default configuration (all files are located in the root folder):
 
@@ -44,7 +48,7 @@ Default configuration (all files are located in the root folder):
 
 ### Compiler Middleend
 
-Run `middleend.exe` or `make run_middle` (sometimes doesn't work propely, I really don't know why) from root folder.
+Run `middleend` or `make run_middle` (sometimes doesn't work propely, I really don't know why <!-- TODO -->) from root folder.
 
 Default configuration (all files are located in the root folder):
 
@@ -52,9 +56,9 @@ Default configuration (all files are located in the root folder):
 2. Output file: `compiler_tree_new.txt`.
 3. Log file: `stdout`.
 
-### Compiler Backend
+### Compiler Backend (ABSENT CURRENTLY)
 
-Run `backend.exe` or `make run_back` (sometimes doesn't work propely, I really don't know why) from root folder.
+Run `backend.exe` or `make run_back` (sometimes doesn't work propely, I really don't know why <!-- TODO -->) from root folder.
 
 Default configuration (all files are located in the root folder):
 
@@ -66,13 +70,13 @@ Default configuration (all files are located in the root folder):
 
 ### Main idea
 
-Programs written in this programming language try to look like crazy recipes of some crazy dish. "Crazy" means that there is no list of ingredients in the beginning, or some other common sense things, which one can usually find in real-life recipes. So, the programmer plays the role of the author of a recipe, and the processor (SPU) - of the chef, who is going to cook it. That's why most of the verbs in the text of the program must be read in the imperative mood.
+Programs written in this programming language try to look like crazy recipes of some crazy dish. "Crazy" means that there is no list of ingredients in the beginning, or some other common sense things, which one can usually find in real-life recipes. So, the programmer plays the role of the author of a recipe, and the processor - of the chef, who is going to cook it. That's why most of the verbs in the text of the program must be read in the imperative mood.
 
 ### Some notes and details
 
 1. All space symbols are ignored, new line symbols also don't matter, but they separate keywords and other constructions from each other.
 2. Everything surrounded by single `#` is considered a comment and is ignored, e.g. `Quickly Obtain #comment# 10 Units Of Milk!`.
-3. Inside functions global variables can't be seen, only formal parametres and local vars.
+3. Inside functions global variables can't be seen, only formal parametres and local vars. (maybe it's not relevant currently...) <!-- TODO проверить актуально ли это -->
 
 ### Grammar
 

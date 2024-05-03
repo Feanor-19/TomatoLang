@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 inline off_t get_file_size(const char *file_name)
 {
@@ -115,7 +116,7 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
     TreeNodeType type = (TreeNodeType) ( getc( stream ) - '0' );
 
     TreeNode *node          = NULL;
-    CompTreeOpNameEnum op   = TREE_OP_DUMMY;
+    ASTOpNameEnum op   = TREE_OP_DUMMY;
     num_t num               = 0;
     id_t id                 = 0;
     switch (type)
@@ -191,7 +192,7 @@ int read_tree_from_file( const char *file_name, Tree *tree_ptr )
     return 1;
 }
 
-TreeNode *new_node_op( Tree *tree_ptr, CompTreeOpNameEnum op )
+TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op )
 {
     assert(tree_ptr);
 
@@ -228,7 +229,7 @@ TreeNodeData get_node_data( TreeNode *node_ptr )
     return *((TreeNodeData*)node_ptr->data_ptr);
 }
 
-int is_node_op( TreeNode *node_ptr, CompTreeOpNameEnum op )
+int is_node_op( TreeNode *node_ptr, ASTOpNameEnum op )
 {
     assert(node_ptr);
 

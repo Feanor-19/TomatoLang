@@ -8,7 +8,7 @@
 
 struct CompTreeOpBackend
 {
-    CompTreeOpNameEnum name;
+    ASTOpNameEnum name;
     Status (*tr_asm_text)(FILE*,const Tree*,TreeNode*,Counters*,Context*);
 };
 

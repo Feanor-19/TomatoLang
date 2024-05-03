@@ -75,6 +75,9 @@ struct CompiledProgram
 
 const size_t NAMES_DEFAULT_COUNT    = 10;
 
+// TODO - !!!
+const size_t DEFAULT_TYPICAL_NUM_OF_NODES = 256;
+
 
 #define SYN_ASSERT( cond, prog, error_ptr, expected ) if (!(cond))  \
 {                                                                   \

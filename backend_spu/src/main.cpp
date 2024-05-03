@@ -35,7 +35,7 @@ int main(int argc, const char *argv[])
     {
         LOG( "Because config includes image dumps folder, creating image dump of the input compiler tree..." );
         init_img_dumps( cfg.img_dumps_folder );
-        dump_compiler_tree( &compiler_tree );
+        dump_ast( &compiler_tree );
         LOG( "Compiler tree image dump is created." );
     }
 

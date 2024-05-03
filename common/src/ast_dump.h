@@ -1,5 +1,5 @@
-#ifndef COMPILER_TREE_H
-#define COMPILER_TREE_H
+#ifndef AST_DUMP_H
+#define AST_DUMP_H
 
 #include "common.h"
 
@@ -14,6 +14,6 @@ void init_img_dumps( const char *folder_path );
 
 void close_img_dumps( void );
 
-void dump_compiler_tree( Tree *comp_tree );
+void dump_ast( Tree *comp_tree );
 
-#endif /* COMPILER_TREE_H */
+#endif /* AST_DUMP_H */
