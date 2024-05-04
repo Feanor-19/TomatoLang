@@ -160,7 +160,7 @@ Status tr_asm_text_assign( FORMAL_TR_ASM_TEXT_ARGS )
 
     TR_LEFT_CHILD_CURR();
 
-    id_t var_id = GET_ID( RIGHT_CURR );
+    ident_t var_id = GET_ID( RIGHT_CURR );
     if ( var_id + 3 > context->curr_func_frame_size )
         context->curr_func_frame_size = var_id + 3;
 
@@ -581,7 +581,7 @@ Status tr_asm_text_call_func( FORMAL_TR_ASM_TEXT_ARGS )
 
     PRINT( "; passing fact args (if there are any)" );
     TreeNode *node_list_elem = RIGHT_CURR;
-    id_t curr_fact_arg_id = 0;
+    ident_t curr_fact_arg_id = 0;
     while (node_list_elem)
     {
         TR_LEFT_CHILD_OF_NODE( node_list_elem );

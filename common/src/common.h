@@ -6,8 +6,8 @@
 #include "ast_ops.h"
 
 
-typedef int32_t id_t;
-#define ABSENT_ID ((id_t) -1)
+typedef int32_t ident_t;
+#define ABSENT_ID -1
 typedef float num_t;
 
 
@@ -25,7 +25,7 @@ struct TreeNodeData
     {
         ASTOpNameEnum op;
         num_t num;
-        id_t id;
+        ident_t id;
     };
 
 };
@@ -73,7 +73,7 @@ TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op );
 TreeNode *new_node_num( Tree *tree_ptr, num_t num );
 
 //! @brief Returns new node of type identificator and writes value 'id' into it.
-TreeNode *new_node_id( Tree *tree_ptr, id_t id );
+TreeNode *new_node_id( Tree *tree_ptr, ident_t id );
 
 TreeNodeData get_node_data( TreeNode *node_ptr );
 
@@ -84,7 +84,7 @@ int is_node_op( TreeNode *node_ptr, ASTOpNameEnum op );
 int is_node_num( TreeNode *node_ptr, num_t num );
 
 //! @brief Checks given node's type and value.
-int is_node_id( TreeNode *node_ptr, id_t id );
+int is_node_id( TreeNode *node_ptr, ident_t id );
 
 void realloc_arr_if_needed( void **arr, size_t *arr_cap_ptr, size_t arr_ind, size_t elem_size );
 

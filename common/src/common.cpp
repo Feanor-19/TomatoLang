@@ -29,9 +29,9 @@ char *read_file_to_str( const char *file_name )
     if (file_p == NULL)
         return NULL;
 
-    char *str = (char *) calloc( file_size + 1, sizeof(char) );
+    char *str = (char *) calloc( (size_t) file_size + 1, sizeof(char) );
 
-    fread(str, sizeof(char), file_size, file_p);
+    fread(str, sizeof(char), (size_t) file_size, file_p);
     if ( ferror(file_p) != 0 )
     {
         free(str);
@@ -115,10 +115,10 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
 
     TreeNodeType type = (TreeNodeType) ( getc( stream ) - '0' );
 
-    TreeNode *node          = NULL;
+    TreeNode *node     = NULL;
     ASTOpNameEnum op   = TREE_OP_DUMMY;
-    num_t num               = 0;
-    id_t id                 = 0;
+    num_t num          = 0;
+    ident_t id            = 0;
     switch (type)
     {
     case TREE_NODE_TYPE_OP:
@@ -212,7 +212,7 @@ TreeNode *new_node_num( Tree *tree_ptr, num_t num )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
-TreeNode *new_node_id( Tree *tree_ptr, id_t id )
+TreeNode *new_node_id( Tree *tree_ptr, ident_t id )
 {
     assert(tree_ptr);
 
@@ -244,7 +244,7 @@ int is_node_num( TreeNode *node_ptr, num_t num )
         && are_dbls_equal(get_node_data(node_ptr).num, num);
 }
 
-int is_node_id( TreeNode *node_ptr, id_t id )
+int is_node_id( TreeNode *node_ptr, ident_t id )
 {
     assert(node_ptr);
 
@@ -256,7 +256,7 @@ void realloc_arr_if_needed( void **arr_ptr, size_t *arr_cap_ptr, size_t arr_ind,
     if ( arr_ind >= *arr_cap_ptr )
     {
         size_t new_cap = REALLOC_DEFAULT_MULTIPLIER * (*arr_cap_ptr);
-        void *new_mem = (void*) realloc( *arr_ptr, new_cap*elem_size );
+        void *new_mem = realloc( *arr_ptr, new_cap*elem_size );
         if (!new_mem)
         {
             free(*arr_ptr);

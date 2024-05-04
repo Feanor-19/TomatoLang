@@ -66,7 +66,7 @@ void log_( const char *type,
 
     fprintf( STREAM_LOG, "[%s][", type );
     print_local_time_into_stream( STREAM_LOG );
-    fprintf( STREAM_LOG, "][%s(%d), %s()] ", FILE_, LINE_, FUNC_ );
+    fprintf( STREAM_LOG, "][%s:%d, %s()] ", FILE_, LINE_, FUNC_ );
 
     va_list args;
     va_start( args, format );

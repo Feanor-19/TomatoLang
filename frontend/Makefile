@@ -28,8 +28,8 @@ COMMON_LIB_DIR = /usr/lib/feanor
 COMMON_INC_DIR = /usr/include/feanor
 
 LIB_NAMES 			= tree
-LIB_SUBST 			= -L$(COMMON_LIB_FOLDER)/$(lib_name) -l$(lib_name)
-LIB_HEADERS_SUBST 	= -I $(COMMON_INC_FOLDER)/$(lib_name)
+LIB_SUBST 			= -L$(COMMON_LIB_DIR)/$(lib_name) -l$(lib_name)
+LIB_HEADERS_SUBST 	= -I $(COMMON_INC_DIR)/$(lib_name)
 
 LIBS 			= $(foreach lib_name,$(LIB_NAMES),$(LIB_SUBST))
 LIB_HEADERS		= $(foreach lib_name,$(LIB_NAMES),$(LIB_HEADERS_SUBST))
@@ -59,8 +59,7 @@ clean:
 
 .PHONY: clean_dumps
 clean_dumps:
-	rm -r -f $(DUMP_FOLDER)
-	mkdir $(DUMP_FOLDER)
+	rm -r -f $(DUMP_FOLDER)/*
 
 .PHONY: clean_logs
 clean_logs:

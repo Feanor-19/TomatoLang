@@ -51,9 +51,9 @@ static TreeNode *get_prog              ( FORMAL_REC_FALL_ARGS );
 
 //! @brief Returns index of given 'ident' in the 'nametable', if found;
 //! otherwise returns ABSENT_ID;
-inline id_t find_ident_in_nametable( Nametable nametable, Identificator ident )
+inline ident_t find_ident_in_nametable( Nametable nametable, Identificator ident )
 {
-    for (id_t ind = 0; ind < (id_t) nametable.list_curr_len; ind++)
+    for (ident_t ind = 0; ind < (ident_t) nametable.list_curr_len; ind++)
     {
         if ( cmp_idents( ident, nametable.list[ind].ident ) )
             return ind;
@@ -71,11 +71,11 @@ inline int is_ident_empty( Identificator ident )
 //! @brief Adds given 'ident' into given 'nametable', placing it in
 //! the free place with the least index. If needed, does reallocation.
 //! @return index where 'ident' was placed.
-inline id_t add_ident_into_nametable( Nametable *nametable, Identificator ident )
+inline ident_t add_ident_into_nametable( Nametable *nametable, Identificator ident )
 {
     assert(nametable);
 
-    for (id_t ind = 0; ind < (id_t) nametable->list_curr_len; ind++)
+    for (ident_t ind = 0; ind < (ident_t) nametable->list_curr_len; ind++)
     {
         if ( is_ident_empty(nametable->list[ind].ident)  )
         {
@@ -86,7 +86,7 @@ inline id_t add_ident_into_nametable( Nametable *nametable, Identificator ident 
 
     REALLOC_ARR_WRP( nametable->list, NametableElem );
     nametable->list[nametable->list_curr_len++].ident = ident;
-    return (id_t) nametable->list_curr_len - 1;
+    return (ident_t) nametable->list_curr_len - 1;
 }
 
 //! @brief Founds given 'ident' in the 'nametable' and deletes it.
@@ -610,7 +610,7 @@ static TreeNode *get_var( FORMAL_REC_FALL_ARGS )
     if ( tkn_ident.type != TKN_TYPE_ID )
         return NULL;
 
-    id_t id = find_ident_in_nametable( NT_FUNC_VARS, tkn_ident.id );
+    ident_t id = find_ident_in_nametable( NT_FUNC_VARS, tkn_ident.id );
     SYN_ASSERT( id != ABSENT_ID, prog, CURR, "Variable" );
     MOVE_CURR_TO_END_OF_TOKEN(tkn_ident);
 
@@ -705,7 +705,7 @@ static TreeNode *get_var_birth( FORMAL_REC_FALL_ARGS )
                 prog, CURR, "A fresh identificator" );
     MOVE_CURR_TO_END_OF_TOKEN(tkn_id);
 
-    id_t var_id = ABSENT_ID;
+    ident_t var_id = ABSENT_ID;
     var_id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_id.id );
 
     TreeNode *node_assign = new_node_op( TREE, TREE_OP_ASSIGN );
@@ -735,7 +735,7 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( tkn_func_id.type == TKN_TYPE_ID, prog, CURR, "Function name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_func_id );
 
-    id_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
+    ident_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
     SYN_ASSERT( func_id != ABSENT_ID, prog, CURR, "A defined function's name" );
     SYN_ASSERT( NT_FUNCS.list[func_id].func_info.func_type == FUNC_TYPE_ACTION, prog,
                 CURR, "Name of an ACTION function" );
@@ -797,7 +797,7 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( tkn_func_id.type == TKN_TYPE_ID, prog, CURR, "Function name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_func_id );
 
-    id_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
+    ident_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
     SYN_ASSERT( func_id != ABSENT_ID, prog, CURR, "A defined function's name" );
     SYN_ASSERT( NT_FUNCS.list[func_id].func_info.func_type == FUNC_TYPE_RECIPE, prog,
                 CURR, "Name of a RECIPE function" );
@@ -993,7 +993,7 @@ static TreeNode *get_formal_args( FORMAL_REC_FALL_ARGS )
                 prog, CURR, "At least one fresh variable name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_id );
 
-    id_t id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_id.id );
+    ident_t id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_id.id );
     TreeNode *node_first_arg = new_node_id( TREE, id );
     tree_hang_loose_node_at_left( TREE, node_first_arg, node_list );
 
@@ -1008,7 +1008,7 @@ static TreeNode *get_formal_args( FORMAL_REC_FALL_ARGS )
                     prog, CURR, "A fresh variable name" );
         MOVE_CURR_TO_END_OF_TOKEN( tkn_new_id );
 
-        id_t new_id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_new_id.id );
+        ident_t new_id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_new_id.id );
         TreeNode *node_new_id = new_node_id( TREE, new_id );
 
         TreeNode *node_connect = new_node_op( TREE, TREE_OP_LIST_CONNECTOR );
@@ -1041,7 +1041,7 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
                 prog, CURR, "Fresh function identificator" );
     MOVE_CURR_TO_END_OF_TOKEN( func_ident );
 
-    id_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
+    ident_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
     NT_FUNCS.list[func_id].func_info.func_type = FUNC_TYPE_RECIPE;
     TreeNode *node_func_id = new_node_id( TREE, func_id );
 
@@ -1109,7 +1109,7 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
                 prog, CURR, "Fresh function identificator" );
     MOVE_CURR_TO_END_OF_TOKEN( func_ident );
 
-    id_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
+    ident_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
     NT_FUNCS.list[func_id].func_info.func_type = FUNC_TYPE_ACTION;
     TreeNode *node_func_id = new_node_id( TREE, func_id );
 
@@ -1337,7 +1337,7 @@ void print_rec_fall_err_msg( const char *prog, const char *error_ptr, const char
     }
     putc( '\n', err_stream );
 
-    put_n_chars( err_stream, ' ', error_ptr - line_start );
+    put_n_chars( err_stream, ' ', (size_t) (error_ptr - line_start) );
     putc( '^', err_stream );
     putc( '\n', err_stream );
 }

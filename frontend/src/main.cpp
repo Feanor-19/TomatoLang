@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "frontend.h"
-#include "compiler_tree_dump.h"
+#include "ast_dump.h"
 
 int main( int argc, const char *argv[])
 {

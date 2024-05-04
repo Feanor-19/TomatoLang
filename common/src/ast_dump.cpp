@@ -45,9 +45,9 @@ inline void assemble_cmn_file_name()
     strcpy( name_ptr, FOLDER_PATH );
     name_ptr += FOLDER_PATH_LEN;
 
-    if ( FOLDER_PATH[FOLDER_PATH_LEN - 1] != '\\' )
+    if ( FOLDER_PATH[FOLDER_PATH_LEN - 1] != '/' )
     {
-        *name_ptr = '\\';
+        *name_ptr = '/';
         name_ptr += 1;
     }
 
@@ -87,19 +87,10 @@ void init_img_dumps( const char *folder_path )
     {
         mkdir( folder_path, DEFAULT_FILE_MODE );
 
-        DIR *dir = opendir( folder_path );
-        if ( !dir )
-        {
-            WARNING( "Can't create or open folder for image dumps. Image dumps won't be created!" );
-            return;
-        }
-
-        closedir( dir );
-
         FOLDER_PATH = folder_path;
         FOLDER_PATH_LEN = strlen(FOLDER_PATH);
         EXTENSION_LEN = strlen(DUMP_DOT_EXTENSION);
-        FILE_NAME_LEN = FOLDER_PATH_LEN + ( FOLDER_PATH[FOLDER_PATH_LEN - 1] != '\\' )
+        FILE_NAME_LEN = FOLDER_PATH_LEN + ( FOLDER_PATH[FOLDER_PATH_LEN - 1] != '/' )
                         + DUMP_FILE_DIGITS_COUNT_AS_NUM + 1 + EXTENSION_LEN;
 
         assemble_cmn_file_name();
@@ -131,7 +122,7 @@ inline FILE *create_and_open_dot_file()
     return NULL;
 }
 
-inline void run_dot_to_create_database_img()
+inline void run_dot_to_create_img()
 {
     size_t dot_file_digits_start = CMD_PART_1_LEN + FOLDER_PATH_LEN;
     sprintf( CMN_CMD + dot_file_digits_start, "%0" DUMP_FILE_DIGITS_COUNT_AS_STR "d", counter );
@@ -191,7 +182,7 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
         TreeNodeData node_data = get_node_data(curr_node);
         if ( node_data.type == TREE_NODE_TYPE_NUM )
         {
-            fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
+            fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_NUM_NODE_FILL "\",\n"
                                 "label = %g];\n\n",
@@ -199,15 +190,15 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
         }
         else if ( node_data.type == TREE_NODE_TYPE_OP )
         {
-            fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
+            fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_OP_NODE_FILL "\",\n"
                                 "label = %s];\n\n",
-                                ind, find_tree_op_str_by_name((ASTOpNameEnum) node_data.op));
+                                ind, find_tree_op_str_by_name(node_data.op));
         }
         else if ( node_data.type == TREE_NODE_TYPE_ID )
         {
-            fprintf(dot_file,   "NODE_%llu[shape=\"record\", fontname=\"verdana\",\n"
+            fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_ID_NODE_FILL "\",\n"
                                 "label = %d];\n\n",
@@ -238,7 +229,7 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
 
         if ( nodes_arr[ind]->left )
         {
-            fprintf(dot_file, "NODE_%llu->NODE_%llu"
+            fprintf(dot_file, "NODE_%lu->NODE_%lu"
 							  "[color=\"" COLOR_EDGE "\", "
 							  "penwidth=2];\n",
                               ind, left);
@@ -246,14 +237,14 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
 
         if ( nodes_arr[ind]->right )
         {
-            fprintf(dot_file, "NODE_%llu->NODE_%llu[color=\"" COLOR_EDGE "\", "
+            fprintf(dot_file, "NODE_%lu->NODE_%lu[color=\"" COLOR_EDGE "\", "
 							  "penwidth=2];\n", ind, right);
         }
 
         if ( nodes_arr[ind]->left && nodes_arr[ind]->right )
         {
-            fprintf(dot_file,   "NODE_%llu->NODE_%llu[style=invis];\n"
-                                "{rank=same NODE_%llu NODE_%llu}",
+            fprintf(dot_file,   "NODE_%lu->NODE_%lu[style=invis];\n"
+                                "{rank=same NODE_%lu NODE_%lu}",
                                 left, right, left, right);
         }
     }
@@ -287,14 +278,17 @@ void dump_ast( Tree *comp_tree )
         return;
 
     FILE *file = create_and_open_dot_file();
+    if (!file) 
+        return; // Warning message is already printed
 
     write_dot_file(file, comp_tree);
 
     fclose( file );
 
-    run_dot_to_create_database_img();
+    run_dot_to_create_img();
 
-    show_dump_img();
+    //NOTE - doesn't work so simply on Linux
+    //show_dump_img();
 }
 
 void close_img_dumps( void )

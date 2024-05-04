@@ -97,7 +97,7 @@ inline Identificator get_str( const char *str )
     if (*str == '\n' || *str == '\0')
         return {NULL, 0};
 
-    res.len = str - res.start;
+    res.len = (size_t) (str - res.start);
     if (res.len == 0)
         return {NULL, 0};
 
