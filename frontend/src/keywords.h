@@ -46,7 +46,7 @@ DEF_KEYWORD( CmpOp_more, "More" )
 
 DEF_KEYWORD( CmpOp_notEqual, "Not The Same Amount Of" )
 
-DEF_KEYWORD( IfEnd, "Now, Breathe Out And Continue Whatever Your Were Doing!" )
+DEF_KEYWORD( IfEnd, "Now, Breathe Out And Continue Whatever You Were Doing!" )
 
 DEF_KEYWORD( Else, "Otherwise You Should Do A Completely Different Thing:" )
 

@@ -27,14 +27,14 @@ Skill To Do SolvationOfLinear Using Aubergines, Beans As Ingredients:
         Otherwise You Should Do A Completely Different Thing:
             Scream In Despair: "Quite interesting, that's also not a linear equation."!
             Scream In Despair: "It's not an equation at all: there are simply no roots, even imaginary ones!"!
-        Now, Breathe Out And Continue Whatever Your Were Doing!
+        Now, Breathe Out And Continue Whatever You Were Doing!
     Otherwise You Should Do A Completely Different Thing:
         Quickly Obtain 0 Units Of Root!
         Place Cooked Beforehand LinearRoot (Using Aubergines, Beans As Ingredients)
         Right Into Root!
         Scream In Despair: "Here is the only linear root:"!
         Serve Root!
-    Now, Breathe Out And Continue Whatever Your Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
 
 Skill To Cook QuadraticFirstRoot Using Apples, Beetroots, Dicsr As Ingredients:
     Quickly Obtain 0 Units Of Result!
@@ -52,19 +52,19 @@ Skill To Cook QuadraticNumberOfRoots Using Dicsr As Ingredients:
     Comparing With Nothing Urgently Do The Following Steps:
         Place 2 Units Of Neutral Right Into Result!
         There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever Your Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
 
     In Case There Happens To Be Just The Same Amount Of Dicsr
     Comparing With Nothing Urgently Do The Following Steps:
         Place 1 Units Of Neutral Right Into Result!
         There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever Your Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
 
     In Case There Happens To Be Less Dicsr
     Comparing With Nothing Urgently Do The Following Steps:
         Place 0 Units Of Neutral Right Into Result!
         There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever Your Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
 
 # ax^2 + bx + c = 0 #
 Skill To Do SolvationOfQuadratic Using Apples, Beetroots, Carrots As Ingredients:
@@ -105,9 +105,9 @@ Skill To Do SolvationOfQuadratic Using Apples, Beetroots, Carrots As Ingredients
                 Without FirstRoot Right Into SecondRoot!
                 Scream In Despair: "And the second root is:"!
                 Serve SecondRoot!
-            Now, Breathe Out And Continue Whatever Your Were Doing!
-        Now, Breathe Out And Continue Whatever Your Were Doing!
-    Now, Breathe Out And Continue Whatever Your Were Doing!
+            Now, Breathe Out And Continue Whatever You Were Doing!
+        Now, Breathe Out And Continue Whatever You Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
 
 Here Is The Recipe Itself:
 

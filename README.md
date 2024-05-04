@@ -152,7 +152,7 @@ CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "As
 |FuncRecipeHeader|Skill To Cook|
 |If1|In Case|
 |If2|Urgently Do The Following Steps:|
-|IfEnd|Now, Breathe Out And Continue Whatever Your Were Doing!|
+|IfEnd|Now, Breathe Out And Continue Whatever You Were Doing!|
 |InBracketsStart|The Following Prepared Beforehand:|
 |InputOp|As Much As The Universe Says|
 |OpAdd|Mixed With|
