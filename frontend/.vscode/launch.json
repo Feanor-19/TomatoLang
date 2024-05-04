@@ -11,11 +11,11 @@
             "program": "${workspaceFolder}/bin/frontend.exe",
             "args": [
                     "-i",
-                    ".\\..\\programs\\quadratic\\prog.txt",
+                    "./../programs/test_program/prog.txt",
                     "-o",
-                    ".\\..\\programs\\quadratic\\compiler_tree.txt",
+                    "./../programs/test_program/compiler_tree.txt",
                     "--img-dumps",
-                    ".\\dumps\\image_dumps\\"
+                    "./dumps/image_dumps/"
                     ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Make",

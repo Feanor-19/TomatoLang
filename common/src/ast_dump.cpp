@@ -180,29 +180,41 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
         }
 
         TreeNodeData node_data = get_node_data(curr_node);
-        if ( node_data.type == TREE_NODE_TYPE_NUM )
+
+        switch (node_data.type)
         {
+        case TREE_NODE_TYPE_NUM:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_NUM_NODE_FILL "\",\n"
                                 "label = %g];\n\n",
                                 ind, node_data.num);
-        }
-        else if ( node_data.type == TREE_NODE_TYPE_OP )
-        {
+            break;
+        case TREE_NODE_TYPE_OP:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_OP_NODE_FILL "\",\n"
                                 "label = %s];\n\n",
                                 ind, find_tree_op_str_by_name(node_data.op));
-        }
-        else if ( node_data.type == TREE_NODE_TYPE_ID )
-        {
+            break;
+
+        case TREE_NODE_TYPE_ID:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_ID_NODE_FILL "\",\n"
                                 "label = %d];\n\n",
                                 ind, node_data.id);
+            break;
+        case TREE_NODE_TYPE_STR:
+            fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
+                                "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
+                                ", fillcolor=\"" COLOR_ID_NODE_FILL "\",\n"
+                                "label = %s];\n\n",
+                                ind, node_data.str);
+            break;
+        default:
+            ASSERT_UNREACHEABLE();
+            break;
         }
 
         nodes_arr[ind] = curr_node;

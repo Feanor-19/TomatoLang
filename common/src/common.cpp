@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 inline off_t get_file_size(const char *file_name)
 {
@@ -51,19 +52,21 @@ inline void write_tree_node( FILE *stream, TreeNode *node )
     putc('(', stream);
 
     putc(' ', stream);
-    switch (get_node_data(node).type)
+    TreeNodeType node_type = get_node_data(node).type;
+    putc('0' + (char) node_type, stream);
+    switch (node_type)
     {
     case TREE_NODE_TYPE_OP:
-        putc('1', stream);
         fprintf(stream, " %d ", get_node_data(node).op);
         break;
     case TREE_NODE_TYPE_NUM:
-        putc('2', stream);
         fprintf(stream, " %g ", get_node_data(node).num);
         break;
     case TREE_NODE_TYPE_ID:
-        putc('3', stream);
         fprintf(stream, " %d ", get_node_data(node).id);
+        break;
+    case TREE_NODE_TYPE_STR: 
+        fprintf(stream, " %lu %s ", strlen(get_node_data(node).str), get_node_data(node).str );
         break;
     default:
         ASSERT_UNREACHEABLE();
@@ -104,6 +107,35 @@ int write_tree_to_file( const char *file_name, const Tree *tree_ptr )
 
 #define CHECK( char ) do{if ( getc(stream) != char ) return NULL;}while(0);
 
+//! @brief Reads exactly 'n' chars from given 'stream' into 'str' in the 
+//! the most simple way. Puts '\0' after them.
+//! @attention 'str' MUST HAVE AT LEAST 'n' + 1 FREE SPACE! 
+void inline read_n_chars(FILE* stream, size_t n, char *str)
+{
+    assert(stream);
+    assert(str);
+    assert(n > 0);
+
+    while (n--)
+    {
+        *str = (char) getc( stream );
+        str++;
+    }
+
+    *str = '\0';
+}
+
+//! @brief Hopefully does what it says.
+void inline skip_spaces(FILE* stream)
+{
+    assert(stream);
+    int c = 0;
+    while ( isspace(c = getc(stream)) )
+        ;
+
+    ungetc( c, stream );
+}
+
 inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
 {
     assert(stream);
@@ -118,7 +150,9 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
     TreeNode *node     = NULL;
     ASTOpNameEnum op   = TREE_OP_DUMMY;
     num_t num          = 0;
-    ident_t id            = 0;
+    ident_t id         = 0;
+    size_t str_len     = 0;
+    char *str          = NULL;
     switch (type)
     {
     case TREE_NODE_TYPE_OP:
@@ -132,6 +166,13 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
     case TREE_NODE_TYPE_ID:
         fscanf( stream, "%d", &id );
         node = new_node_id( tree_ptr, id );
+        break;
+    case TREE_NODE_TYPE_STR: // TODO - не протестировано!!!
+        fscanf( stream, "%lu", &str_len );
+        str = (char*) calloc( str_len+1, sizeof(char) );
+        skip_spaces(stream);
+        read_n_chars( stream, str_len, str );
+        node = new_node_str( tree_ptr, str );
         break;
     default:
         ASSERT_UNREACHEABLE();
@@ -222,6 +263,25 @@ TreeNode *new_node_id( Tree *tree_ptr, ident_t id )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
+TreeNode *new_node_str( Tree *tree_ptr, char *str )
+{
+    assert(tree_ptr);
+
+    TreeNodeData data = {};
+    data.type = TREE_NODE_TYPE_STR;
+    data.str = str;
+    return op_new_TreeNode( tree_ptr, &data );
+}
+
+void TreeNodeData_dtor( void *data )
+{
+    assert(data);
+    
+    TreeNodeData node_data = *((TreeNodeData*) data);
+    if ( node_data.type == TREE_NODE_TYPE_STR )
+        free(node_data.str);
+}
+
 TreeNodeData get_node_data( TreeNode *node_ptr )
 {
     assert(node_ptr);
@@ -283,6 +343,9 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
         break;
     case TREE_NODE_TYPE_ID:
         fprintf(stream, "data_type: ID, data_value: %d", data.id);
+        break;
+    case TREE_NODE_TYPE_STR:
+        fprintf(stream, "data_type: STR, data_value: \"%s\"", data.str);
         break;
     default:
         ASSERT_UNREACHEABLE();

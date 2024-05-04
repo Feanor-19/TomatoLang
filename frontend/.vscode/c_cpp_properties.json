@@ -2,16 +2,11 @@
     "configurations": [
         {
             "name": "Cpp",
-            "includePath": [
-                "C:/Feanor/Programming/GitHub_Repositories/Language/common/src"
-            ],
             "configurationProvider": "ms-vscode.makefile-tools",
-            "browse": {
-                "path": [
-                    "${workspaceRoot}",
-                    "../../mylibheaders"
-                ]
-            }
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../common/src"
+            ]
         }
     ],
     "version": 4

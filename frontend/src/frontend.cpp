@@ -1043,11 +1043,14 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
 
     ident_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
     NT_FUNCS.list[func_id].func_info.func_type = FUNC_TYPE_RECIPE;
-    TreeNode *node_func_id = new_node_id( TREE, func_id );
+    
+    char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
+    memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
+    TreeNode *node_func_str_id = new_node_str( TREE, str_func_ident );
 
     TreeNode *node_func_def = new_node_op( TREE, TREE_OP_FUNC_DEF );
     TreeNode *node_func_def_helper = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
-    tree_hang_loose_node_at_left( TREE, node_func_id, node_func_def );
+    tree_hang_loose_node_at_left( TREE, node_func_str_id, node_func_def );
     tree_hang_loose_node_at_right( TREE, node_func_def_helper, node_func_def );
 
     Token tkn_using = get_token( CURR );
@@ -1266,7 +1269,7 @@ Status compile_prog( const char *prog, CompiledProgram *comp_prog )
     *comp_prog = {};
     comp_prog->tree = {};
     tree_ctor( &comp_prog->tree, sizeof( TreeNodeData ), DEFAULT_TYPICAL_NUM_OF_NODES, 
-               NULL, print_tree_node_data);
+               TreeNodeData_dtor, print_tree_node_data);
     Status err = Nametables_ctor( &comp_prog->nametables );
     if ( err )
     {

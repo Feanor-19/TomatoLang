@@ -16,6 +16,7 @@ enum TreeNodeType
     TREE_NODE_TYPE_OP   = 1,
     TREE_NODE_TYPE_NUM  = 2,
     TREE_NODE_TYPE_ID   = 3,
+    TREE_NODE_TYPE_STR  = 4,
 };
 
 struct TreeNodeData
@@ -26,6 +27,7 @@ struct TreeNodeData
         ASTOpNameEnum op;
         num_t num;
         ident_t id;
+        char *str;
     };
 
 };
@@ -74,6 +76,12 @@ TreeNode *new_node_num( Tree *tree_ptr, num_t num );
 
 //! @brief Returns new node of type identificator and writes value 'id' into it.
 TreeNode *new_node_id( Tree *tree_ptr, ident_t id );
+
+//! @brief Returns new node of type string and writes value 'str' into it.
+TreeNode *new_node_str( Tree *tree_ptr, char *str );
+
+//! @brief Should be passed to tree_ctor().
+void TreeNodeData_dtor( void *data );
 
 TreeNodeData get_node_data( TreeNode *node_ptr );
 
