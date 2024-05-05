@@ -13,10 +13,13 @@ typedef float num_t;
 
 enum TreeNodeType
 {
-    TREE_NODE_TYPE_OP   = 1,
-    TREE_NODE_TYPE_NUM  = 2,
-    TREE_NODE_TYPE_ID   = 3,
-    TREE_NODE_TYPE_STR  = 4,
+    TREE_NODE_TYPE_OP        = 1, //!< AST Operator
+    TREE_NODE_TYPE_NUM       = 2, //!< Constant number of type 'num_t'
+    TREE_NODE_TYPE_VAR_LOCAL = 3, //!< Local variable in some func, defined by numerical
+                                  // id (of type 'ident_t')
+    TREE_NODE_TYPE_FUNC_ARG  = 4, //!< One of func args, defined by its sequence number
+                                  // (of type 'ident_t')
+    TREE_NODE_TYPE_STR       = 5, //!< Contains string, which can be used for different purposes.
 };
 
 struct TreeNodeData
@@ -74,8 +77,11 @@ TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op );
 //! @brief Returns new node of type number and writes value 'num' into it.
 TreeNode *new_node_num( Tree *tree_ptr, num_t num );
 
-//! @brief Returns new node of type identificator and writes value 'id' into it.
-TreeNode *new_node_id( Tree *tree_ptr, ident_t id );
+//! @brief Returns new node of type 'var local' and writes value 'id' into it.
+TreeNode *new_node_var_local( Tree *tree_ptr, ident_t id );
+
+//! @brief Returns new node of type 'func arg' and writes value 'id' into it.
+TreeNode *new_node_func_arg( Tree *tree_ptr, ident_t id );
 
 //! @brief Returns new node of type string and writes value 'str' into it.
 TreeNode *new_node_str( Tree *tree_ptr, char *str );
@@ -92,7 +98,10 @@ int is_node_op( TreeNode *node_ptr, ASTOpNameEnum op );
 int is_node_num( TreeNode *node_ptr, num_t num );
 
 //! @brief Checks given node's type and value.
-int is_node_id( TreeNode *node_ptr, ident_t id );
+int is_node_var_local( TreeNode *node_ptr, ident_t id );
+
+//! @brief Checks given node's type and value.
+int is_node_func_arg( TreeNode *node_ptr, ident_t id );
 
 void realloc_arr_if_needed( void **arr, size_t *arr_cap_ptr, size_t arr_ind, size_t elem_size );
 

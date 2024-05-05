@@ -62,7 +62,10 @@ inline void write_tree_node( FILE *stream, TreeNode *node )
     case TREE_NODE_TYPE_NUM:
         fprintf(stream, " %g ", get_node_data(node).num);
         break;
-    case TREE_NODE_TYPE_ID:
+    case TREE_NODE_TYPE_VAR_LOCAL:
+        fprintf(stream, " %d ", get_node_data(node).id);
+        break;
+    case TREE_NODE_TYPE_FUNC_ARG:
         fprintf(stream, " %d ", get_node_data(node).id);
         break;
     case TREE_NODE_TYPE_STR: 
@@ -163,9 +166,13 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
         fscanf( stream, "%f", &num );
         node = new_node_num( tree_ptr, num );
         break;
-    case TREE_NODE_TYPE_ID:
+    case TREE_NODE_TYPE_VAR_LOCAL:
         fscanf( stream, "%d", &id );
-        node = new_node_id( tree_ptr, id );
+        node = new_node_var_local( tree_ptr, id );
+        break;
+    case TREE_NODE_TYPE_FUNC_ARG:
+        fscanf( stream, "%d", &id );
+        node = new_node_func_arg( tree_ptr, id );
         break;
     case TREE_NODE_TYPE_STR: // TODO - не протестировано!!!
         fscanf( stream, "%lu", &str_len );
@@ -253,12 +260,22 @@ TreeNode *new_node_num( Tree *tree_ptr, num_t num )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
-TreeNode *new_node_id( Tree *tree_ptr, ident_t id )
+TreeNode *new_node_var_local( Tree *tree_ptr, ident_t id )
 {
     assert(tree_ptr);
 
     TreeNodeData data = {};
-    data.type = TREE_NODE_TYPE_ID;
+    data.type = TREE_NODE_TYPE_VAR_LOCAL;
+    data.id = id;
+    return op_new_TreeNode( tree_ptr, &data );
+}
+
+TreeNode *new_node_func_arg( Tree *tree_ptr, ident_t id )
+{
+    assert(tree_ptr);
+
+    TreeNodeData data = {};
+    data.type = TREE_NODE_TYPE_FUNC_ARG;
     data.id = id;
     return op_new_TreeNode( tree_ptr, &data );
 }
@@ -304,11 +321,18 @@ int is_node_num( TreeNode *node_ptr, num_t num )
         && are_dbls_equal(get_node_data(node_ptr).num, num);
 }
 
-int is_node_id( TreeNode *node_ptr, ident_t id )
+int is_node_var_local( TreeNode *node_ptr, ident_t id )
 {
     assert(node_ptr);
 
-    return get_node_data(node_ptr).type == TREE_NODE_TYPE_ID && get_node_data(node_ptr).id == id;
+    return get_node_data(node_ptr).type == TREE_NODE_TYPE_VAR_LOCAL && get_node_data(node_ptr).id == id;
+}
+
+int is_node_func_arg( TreeNode *node_ptr, ident_t id )
+{
+    assert(node_ptr);
+
+    return get_node_data(node_ptr).type == TREE_NODE_TYPE_FUNC_ARG && get_node_data(node_ptr).id == id;
 }
 
 void realloc_arr_if_needed( void **arr_ptr, size_t *arr_cap_ptr, size_t arr_ind, size_t elem_size )
@@ -341,8 +365,11 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
     case TREE_NODE_TYPE_OP:
         fprintf(stream, "data_type: OP, data_value: %d", data.op);
         break;
-    case TREE_NODE_TYPE_ID:
-        fprintf(stream, "data_type: ID, data_value: %d", data.id);
+    case TREE_NODE_TYPE_VAR_LOCAL:
+        fprintf(stream, "data_type: VAR_LOCAL, data_value: %d", data.id);
+        break;
+    case TREE_NODE_TYPE_FUNC_ARG:
+        fprintf(stream, "data_type: FUNC_ARG, data_value: %d", data.id);
         break;
     case TREE_NODE_TYPE_STR:
         fprintf(stream, "data_type: STR, data_value: \"%s\"", data.str);
