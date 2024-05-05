@@ -25,8 +25,9 @@ const char * const status_messages[] =
 
 enum NametableType
 {
-    NT_TYPE_FUNC,
-    NT_TYPE_FUNC_VAR,
+    NT_TYPE_FUNC_NAMES,
+    NT_TYPE_FUNC_LOCAL_VARS,
+    NT_TYPE_FUNC_FORMAL_ARGS,
 };
 
 struct FuncInfo
@@ -54,9 +55,13 @@ struct Nametable
 
 struct Nametables
 {
-    Nametable funcs;
-    Nametable func_vars; //NOTE - переиспользуется внутри каждой функции, обязательно чистить после использования!
-                         //NOTE - main на самом деле тоже ф-я, хоть это и не выглядит так грамматически
+    Nametable func_names;           
+    Nametable func_local_vars;  
+    Nametable func_formal_args;       
+                               
+    //NOTE - 'func_local_vars' и 'func_formal_args' переиспользуется внутри каждой функции, 
+    // обязательно чистить после использования!
+    //NOTE - main на самом деле тоже ф-я, хоть это и не выглядит так грамматически
 };
 
 struct Context
@@ -74,8 +79,6 @@ struct CompiledProgram
 
 
 const size_t NAMES_DEFAULT_COUNT    = 10;
-
-// TODO - !!!
 const size_t DEFAULT_TYPICAL_NUM_OF_NODES = 256;
 
 

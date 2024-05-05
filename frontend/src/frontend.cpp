@@ -11,9 +11,9 @@
 #define FORMAL_REC_FALL_ARGS \
     CompiledProgram *comp_prog, const char *prog, const char **curr_ptr, Context *context
 #define TREE &comp_prog->tree
-#define NT_GLOBAL comp_prog->nametables.global_vars
-#define NT_FUNCS comp_prog->nametables.funcs
-#define NT_FUNC_VARS comp_prog->nametables.func_vars
+#define NT_FUNC_NAMES comp_prog->nametables.func_names
+#define NT_FUNC_LOCAL_VARS comp_prog->nametables.func_local_vars
+#define NT_FUNC_FORMAL_ARGS comp_prog->nametables.func_formal_args
 #define MOVE_CURR_TO_END_OF_TOKEN( token ) (CURR = token.start + token.len)
 
 
@@ -118,11 +118,22 @@ inline void clean_nametable( Nametable *nametable )
     }
 }
 
-//! @brief Returns 1 if ident is not found in any of the comp_prog's nametables, 0 otherwise.
-inline int check_is_ident_fresh( CompiledProgram *comp_prog, Identificator ident)
+//! @brief Returns true if given func name is fresh (not used yet).
+inline bool check_is_func_name_fresh( CompiledProgram *comp_prog, Identificator ident )
 {
-    return find_ident_in_nametable( NT_FUNCS, ident )     == ABSENT_ID
-        && find_ident_in_nametable( NT_FUNC_VARS, ident ) == ABSENT_ID;
+    return find_ident_in_nametable( NT_FUNC_NAMES, ident ) == ABSENT_ID;
+}
+
+//! @brief Returns true if given local var's name is fresh (not used yet).
+inline bool check_is_var_local_fresh( CompiledProgram *comp_prog, Identificator ident )
+{
+    return find_ident_in_nametable( NT_FUNC_LOCAL_VARS, ident ) == ABSENT_ID;
+}
+
+//! @brief Returns true if given func's formal arg is fresh (not used yet).
+inline bool check_is_func_arg_fresh( CompiledProgram *comp_prog, Identificator ident )
+{
+    return find_ident_in_nametable( NT_FUNC_FORMAL_ARGS, ident ) == ABSENT_ID;
 }
 
 //! @brief Counts number of nodes connected as a list using TREE_OP_LIST_CONNECTOR.
@@ -604,17 +615,29 @@ static TreeNode *get_var( FORMAL_REC_FALL_ARGS )
     assert(prog);
     assert(curr_ptr);
 
-    UNUSED(context);
-
     Token tkn_ident = get_token( CURR );
     if ( tkn_ident.type != TKN_TYPE_ID )
         return NULL;
 
-    ident_t id = find_ident_in_nametable( NT_FUNC_VARS, tkn_ident.id );
-    SYN_ASSERT( id != ABSENT_ID, prog, CURR, "Variable" );
-    MOVE_CURR_TO_END_OF_TOKEN(tkn_ident);
+    ident_t id = find_ident_in_nametable( NT_FUNC_LOCAL_VARS, tkn_ident.id );
+    if (id != ABSENT_ID)
+    {
+        MOVE_CURR_TO_END_OF_TOKEN(tkn_ident);   
+        return new_node_var_local( TREE, id );
+    }
 
-    return new_node_var_local( TREE, id );
+    if ( context->in_func_action || context->in_func_recipe )
+    {
+        id = find_ident_in_nametable( NT_FUNC_FORMAL_ARGS, tkn_ident.id );
+        if (id != ABSENT_ID)
+        {
+            MOVE_CURR_TO_END_OF_TOKEN(tkn_ident);   
+            return new_node_func_arg( TREE, id );
+        }   
+    }
+
+    SYN_ASSERT( id != ABSENT_ID, prog, CURR, "Variable" );
+    return NULL;
 }
 
 static TreeNode *get_assign( FORMAL_REC_FALL_ARGS )
@@ -668,7 +691,7 @@ static TreeNode *get_var_death( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( var_ident.type == TKN_TYPE_ID, prog, CURR, "Identificator" );
 
     int res = 0;
-    res = del_ident_from_nametable( &NT_FUNC_VARS, var_ident.id );
+    res = del_ident_from_nametable( &NT_FUNC_LOCAL_VARS, var_ident.id );
 
     SYN_ASSERT( res == 1, prog, CURR, "Variable" );
     MOVE_CURR_TO_END_OF_TOKEN(var_ident);
@@ -701,12 +724,14 @@ static TreeNode *get_var_birth( FORMAL_REC_FALL_ARGS )
     MOVE_CURR_TO_END_OF_TOKEN(units_of);
 
     Token tkn_id = get_token( CURR );
-    SYN_ASSERT( tkn_id.type == TKN_TYPE_ID && check_is_ident_fresh( comp_prog, tkn_id.id ),
+    SYN_ASSERT( tkn_id.type == TKN_TYPE_ID 
+             && check_is_var_local_fresh( comp_prog, tkn_id.id )
+             && check_is_func_arg_fresh ( comp_prog, tkn_id.id ),
                 prog, CURR, "A fresh identificator" );
     MOVE_CURR_TO_END_OF_TOKEN(tkn_id);
 
     ident_t var_id = ABSENT_ID;
-    var_id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_id.id );
+    var_id = add_ident_into_nametable( &NT_FUNC_LOCAL_VARS, tkn_id.id );
 
     TreeNode *node_assign = new_node_op( TREE, TREE_OP_ASSIGN );
     tree_hang_loose_node_at_left( TREE, node_num, node_assign );
@@ -735,9 +760,9 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( tkn_func_id.type == TKN_TYPE_ID, prog, CURR, "Function name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_func_id );
 
-    ident_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
+    ident_t func_id = find_ident_in_nametable( NT_FUNC_NAMES, tkn_func_id.id );
     SYN_ASSERT( func_id != ABSENT_ID, prog, CURR, "A defined function's name" );
-    SYN_ASSERT( NT_FUNCS.list[func_id].func_info.func_type == FUNC_TYPE_ACTION, prog,
+    SYN_ASSERT( NT_FUNC_NAMES.list[func_id].func_info.func_type == FUNC_TYPE_ACTION, prog,
                 CURR, "Name of an ACTION function" );
 
     TreeNode *node_func_id = new_node_var_local( TREE, func_id );
@@ -758,7 +783,7 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
         SYN_ASSERT( node_fact_args, prog, CURR, "At least one arg" );
 
         size_t num_args = count_list_len( node_fact_args );
-        size_t needed_num_args = NT_FUNCS.list[func_id].func_info.func_args_count;
+        size_t needed_num_args = NT_FUNC_NAMES.list[func_id].func_info.func_args_count;
         SYN_ASSERT( num_args == needed_num_args, prog, CURR,
                     "Number of args doesn't match function's definition" );
 
@@ -797,9 +822,9 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( tkn_func_id.type == TKN_TYPE_ID, prog, CURR, "Function name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_func_id );
 
-    ident_t func_id = find_ident_in_nametable( NT_FUNCS, tkn_func_id.id );
+    ident_t func_id = find_ident_in_nametable( NT_FUNC_NAMES, tkn_func_id.id );
     SYN_ASSERT( func_id != ABSENT_ID, prog, CURR, "A defined function's name" );
-    SYN_ASSERT( NT_FUNCS.list[func_id].func_info.func_type == FUNC_TYPE_RECIPE, prog,
+    SYN_ASSERT( NT_FUNC_NAMES.list[func_id].func_info.func_type == FUNC_TYPE_RECIPE, prog,
                 CURR, "Name of a RECIPE function" );
 
     TreeNode *node_func_id = new_node_var_local( TREE, func_id );
@@ -820,7 +845,7 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
         SYN_ASSERT( node_fact_args, prog, CURR, "At least one arg" );
 
         size_t num_args = count_list_len( node_fact_args );
-        size_t needed_num_args = NT_FUNCS.list[func_id].func_info.func_args_count;
+        size_t needed_num_args = NT_FUNC_NAMES.list[func_id].func_info.func_args_count;
         SYN_ASSERT( num_args == needed_num_args, prog, CURR,
                     "Number of args doesn't match function's definition" );
 
@@ -989,12 +1014,13 @@ static TreeNode *get_formal_args( FORMAL_REC_FALL_ARGS )
     TreeNode *node_list = new_node_op( TREE, TREE_OP_LIST_CONNECTOR );
 
     Token tkn_id = get_token( CURR );
-    SYN_ASSERT( tkn_id.type == TKN_TYPE_ID && check_is_ident_fresh( comp_prog, tkn_id.id ),
+    SYN_ASSERT( tkn_id.type == TKN_TYPE_ID 
+             && check_is_func_arg_fresh( comp_prog, tkn_id.id ),
                 prog, CURR, "At least one fresh variable name" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_id );
 
-    ident_t id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_id.id );
-    TreeNode *node_first_arg = new_node_var_local( TREE, id );
+    ident_t id = add_ident_into_nametable( &NT_FUNC_FORMAL_ARGS, tkn_id.id );
+    TreeNode *node_first_arg = new_node_func_arg( TREE, id );
     tree_hang_loose_node_at_left( TREE, node_first_arg, node_list );
 
     Token tkn_comma = {};
@@ -1004,12 +1030,13 @@ static TreeNode *get_formal_args( FORMAL_REC_FALL_ARGS )
         MOVE_CURR_TO_END_OF_TOKEN(tkn_comma);
 
         Token tkn_new_id = get_token( CURR );
-        SYN_ASSERT( tkn_new_id.type == TKN_TYPE_ID && check_is_ident_fresh( comp_prog, tkn_new_id.id ),
+        SYN_ASSERT( tkn_new_id.type == TKN_TYPE_ID 
+                 && check_is_func_arg_fresh( comp_prog, tkn_new_id.id ),
                     prog, CURR, "A fresh variable name" );
         MOVE_CURR_TO_END_OF_TOKEN( tkn_new_id );
 
-        ident_t new_id = add_ident_into_nametable( &NT_FUNC_VARS, tkn_new_id.id );
-        TreeNode *node_new_id = new_node_var_local( TREE, new_id );
+        ident_t new_id = add_ident_into_nametable( &NT_FUNC_FORMAL_ARGS, tkn_new_id.id );
+        TreeNode *node_new_id = new_node_func_arg( TREE, new_id );
 
         TreeNode *node_connect = new_node_op( TREE, TREE_OP_LIST_CONNECTOR );
         tree_hang_loose_node_at_left( TREE, node_new_id, node_connect );
@@ -1034,15 +1061,17 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
 
     context->in_func_recipe = 1;
 
-    clean_nametable( &NT_FUNC_VARS );
+    clean_nametable( &NT_FUNC_LOCAL_VARS );
+    clean_nametable( &NT_FUNC_FORMAL_ARGS );
 
     Token func_ident = get_token( CURR );
-    SYN_ASSERT( func_ident.type == TKN_TYPE_ID && check_is_ident_fresh(comp_prog, func_ident.id ),
+    SYN_ASSERT( func_ident.type == TKN_TYPE_ID 
+             && check_is_func_name_fresh(comp_prog, func_ident.id ),
                 prog, CURR, "Fresh function identificator" );
     MOVE_CURR_TO_END_OF_TOKEN( func_ident );
 
-    ident_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
-    NT_FUNCS.list[func_id].func_info.func_type = FUNC_TYPE_RECIPE;
+    ident_t func_id = add_ident_into_nametable( &NT_FUNC_NAMES, func_ident.id );
+    NT_FUNC_NAMES.list[func_id].func_info.func_type = FUNC_TYPE_RECIPE;
     
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
@@ -1062,7 +1091,7 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
         node_formal_args = get_formal_args( FACT_REC_FALL_ARGS );
         SYN_ASSERT( node_formal_args, prog, CURR, "Formal args" );
 
-        NT_FUNCS.list[func_id].func_info.func_args_count = count_list_len( node_formal_args );
+        NT_FUNC_NAMES.list[func_id].func_info.func_args_count = count_list_len( node_formal_args );
 
         Token tkn_as_ingr = get_token( CURR );
         SYN_ASSERT( is_tkn_keyword( tkn_as_ingr, KW_AsIngr ), prog,
@@ -1105,15 +1134,17 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
 
     context->in_func_action = 1;
 
-    clean_nametable( &NT_FUNC_VARS );
+    clean_nametable( &NT_FUNC_LOCAL_VARS );
+    clean_nametable( &NT_FUNC_FORMAL_ARGS );
 
     Token func_ident = get_token( CURR );
-    SYN_ASSERT( func_ident.type == TKN_TYPE_ID && check_is_ident_fresh(comp_prog, func_ident.id ),
+    SYN_ASSERT( func_ident.type == TKN_TYPE_ID 
+             && check_is_func_name_fresh(comp_prog, func_ident.id ),
                 prog, CURR, "Fresh function identificator" );
     MOVE_CURR_TO_END_OF_TOKEN( func_ident );
 
-    ident_t func_id = add_ident_into_nametable( &NT_FUNCS, func_ident.id );
-    NT_FUNCS.list[func_id].func_info.func_type = FUNC_TYPE_ACTION;
+    ident_t func_id = add_ident_into_nametable( &NT_FUNC_NAMES, func_ident.id );
+    NT_FUNC_NAMES.list[func_id].func_info.func_type = FUNC_TYPE_ACTION;
     
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
@@ -1133,7 +1164,7 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
         node_formal_args = get_formal_args( FACT_REC_FALL_ARGS );
         SYN_ASSERT( node_formal_args, prog, CURR, "Formal args" );
 
-        NT_FUNCS.list[func_id].func_info.func_args_count = count_list_len( node_formal_args );
+        NT_FUNC_NAMES.list[func_id].func_info.func_args_count = count_list_len( node_formal_args );
 
         Token tkn_as_ingr = get_token( CURR );
         SYN_ASSERT( is_tkn_keyword( tkn_as_ingr, KW_AsIngr ), prog,
@@ -1239,7 +1270,8 @@ static TreeNode *get_prog( FORMAL_REC_FALL_ARGS )
     TreeNode *node_func_defs = get_func_defs( FACT_REC_FALL_ARGS );
 
     // in fact this is the main function, although it is not highlighted
-    clean_nametable( &NT_FUNC_VARS );
+    clean_nametable( &NT_FUNC_LOCAL_VARS );
+    clean_nametable( &NT_FUNC_FORMAL_ARGS );
     TreeNode *node_operators = get_operators( FACT_REC_FALL_ARGS );
     SYN_ASSERT( node_operators, prog, CURR, "Operators" );
 
@@ -1265,13 +1297,21 @@ static TreeNode *get_prog( FORMAL_REC_FALL_ARGS )
     return node_prog;
 }
 
+//! @brief Somehow calculates (or just guesses) parameter 'typical num of nodes',
+//! needed for tree_ctor, based on the 'prog_str'.
+inline size_t assume_num_of_nodes( const char *prog )
+{
+    size_t guess = strlen( prog ) / 10; 
+    return guess > DEFAULT_TYPICAL_NUM_OF_NODES ? guess : DEFAULT_TYPICAL_NUM_OF_NODES;
+}
+
 Status compile_prog( const char *prog, CompiledProgram *comp_prog )
 {
     assert(prog);
 
     *comp_prog = {};
     comp_prog->tree = {};
-    tree_ctor( &comp_prog->tree, sizeof( TreeNodeData ), DEFAULT_TYPICAL_NUM_OF_NODES, 
+    tree_ctor( &comp_prog->tree, sizeof( TreeNodeData ), assume_num_of_nodes(prog), 
                TreeNodeData_dtor, print_tree_node_data);
     Status err = Nametables_ctor( &comp_prog->nametables );
     if ( err )
@@ -1396,14 +1436,21 @@ Status Nametables_ctor( Nametables *nametables )
 {
     assert(nametables);
 
-    if ( nametable_ctor( &nametables->funcs, NT_TYPE_FUNC ) != STATUS_OK )
+    if ( nametable_ctor( &nametables->func_names, NT_TYPE_FUNC_NAMES ) != STATUS_OK )
     {
         return STATUS_ERROR_MEMORY_ALLOC_ERROR;
     }
 
-    if ( nametable_ctor( &nametables->func_vars, NT_TYPE_FUNC_VAR ) != STATUS_OK )
+    if ( nametable_ctor( &nametables->func_local_vars, NT_TYPE_FUNC_LOCAL_VARS ) != STATUS_OK )
     {
-        FREE(nametables->funcs.list);
+        nametable_dtor(&nametables->func_names);
+        return STATUS_ERROR_MEMORY_ALLOC_ERROR;
+    }
+
+    if ( nametable_ctor( &nametables->func_formal_args, NT_TYPE_FUNC_FORMAL_ARGS ) != STATUS_OK )
+    {
+        nametable_dtor(&nametables->func_names);
+        nametable_dtor(&nametables->func_local_vars);
         return STATUS_ERROR_MEMORY_ALLOC_ERROR;
     }
 
@@ -1423,7 +1470,8 @@ void Nametables_dtor( Nametables *nametables )
 {
     assert(nametables);
 
-    nametable_dtor( &nametables->funcs );
-    nametable_dtor( &nametables->func_vars );
+    nametable_dtor( &nametables->func_names );
+    nametable_dtor( &nametables->func_local_vars );
+    nametable_dtor( &nametables->func_formal_args );
 }
 
