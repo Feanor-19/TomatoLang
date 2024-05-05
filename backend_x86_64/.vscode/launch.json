@@ -8,12 +8,12 @@
             "type": "cppdbg",
             "name": "Launch",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/frontend.exe",
+            "program": "${workspaceFolder}/bin/backend.exe",
             "args": [
                     "-i",
-                    "./../programs/test_program/prog.txt",
-                    "-o",
                     "./../programs/test_program/compiler_tree.txt",
+                    "-o",
+                    "./../programs/test_program/asm.txt",
                     "--img-dumps",
                     "./dumps/image_dumps/"
                     ],

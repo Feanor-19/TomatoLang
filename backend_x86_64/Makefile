@@ -37,7 +37,7 @@ SOURCES 		= $(wildcard $(SRC)/*.cpp)
 OBJFILES 		= $(patsubst $(SRC)/%,$(OBJ)/%,$(SOURCES:.cpp=.o))
 CMN_SOURCES		= $(wildcard $(CMN)/$(SRC)/*.cpp)
 CMN_OBJFILES	= $(patsubst $(CMN)/$(SRC)/%,$(CMN)/$(OBJ)/%,$(CMN_SOURCES:.cpp=.o))
-OUT 			= ./$(BIN)/frontend.exe
+OUT 			= ./$(BIN)/backend.exe
 DUMP_FOLDER 	= dumps
 
 $(OUT) : $(OBJFILES) $(CMN_OBJFILES)
@@ -51,7 +51,7 @@ $(CMN)/$(OBJ)/%.o : $(CMN)/$(SRC)/%.cpp
 
 .PHONY: run
 run:
-	$(OUT) -i $(CURR_PROG)/prog.txt -o $(CURR_PROG)/compiler_tree.txt --img-dumps $(DUMP_FOLDER)/image_dumps/
+	$(OUT) -i $(CURR_PROG)/compiler_tree.txt -o $(CURR_PROG)/asm.txt --img-dumps $(DUMP_FOLDER)/image_dumps/
 
 .PHONY: clean
 clean:
