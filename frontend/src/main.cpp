@@ -46,6 +46,8 @@ int main( int argc, const char *argv[])
         LOG( "Writing tree to file is done!" );
     }
 
+    free(prog_str);
+
     CompiledProgram_dtor( &compiled_prog );
 
     close_img_dumps();
