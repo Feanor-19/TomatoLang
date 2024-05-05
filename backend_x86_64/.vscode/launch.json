@@ -8,10 +8,10 @@
             "type": "cppdbg",
             "name": "Launch",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/middleend.exe",
+            "program": "${workspaceFolder}/bin/frontend.exe",
             "args": [
                     "-i",
-                    "./../programs/test_program/compiler_tree.txt",
+                    "./../programs/test_program/prog.txt",
                     "-o",
                     "./../programs/test_program/compiler_tree.txt",
                     "--img-dumps",

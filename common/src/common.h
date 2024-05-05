@@ -67,8 +67,7 @@ int write_tree_to_file( const char *file_name, const Tree *tree_ptr );
 
 //! @brief Reads tree from the given file. Returns 1 if
 //! all's ok, 0 if some error happens.
-//! @note Given tree is NOT ctored() by this func, YOU NEED to do it
-//! BEFORE calling this function.
+//! @note Given tree IS ctored() by this func. 
 int read_tree_from_file( const char *file_name, Tree *tree_ptr );
 
 //! @brief Returns new node of type operator and writes value 'op' into it.

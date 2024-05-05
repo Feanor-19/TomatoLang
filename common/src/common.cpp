@@ -101,6 +101,8 @@ int write_tree_to_file( const char *file_name, const Tree *tree_ptr )
     if (!file)
         return 0;
 
+    fprintf( file, "%lu ", tree_ptr->nodes_count);
+
     write_tree_node( file, tree_get_root( tree_ptr ) );
 
     fclose(file);
@@ -225,11 +227,21 @@ int read_tree_from_file( const char *file_name, Tree *tree_ptr )
     if (!file)
         return 0;
 
+    size_t nodes_count = 0;
+    if ( fscanf( file, "%lu", &nodes_count ) != 1 )
+    {
+        fclose(file);
+        return 0;
+    }
+    *tree_ptr = {};
+    tree_ctor( tree_ptr, sizeof(TreeNodeData), nodes_count, TreeNodeData_dtor, print_tree_node_data );
+
     TreeNode *root = read_tree_node( file, tree_ptr );
 
     if( !root )
     {
         tree_dtor( tree_ptr );
+        fclose(file);
         return 0;
     }
 

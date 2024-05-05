@@ -2,6 +2,7 @@
 
 #include "middleend.h"
 #include "config_middle.h"
+#include "ast_dump.h"
 
 int main(int argc, const char *argv[])
 {
@@ -20,9 +21,18 @@ int main(int argc, const char *argv[])
     }
     print_config(log_get_stream(), cfg);
 
+    LOG( "Initializing image dumps folder..." );
+    if (cfg.img_dumps_folder)
+       init_img_dumps( cfg.img_dumps_folder );
+    LOG( "Initializing image dumps folder is done!" );
 
-
-
+    Tree AST = {};
+    if (!read_tree_from_file( cfg.input_file_name, &AST ))
+    {
+        ERROR("Something went wrong during reading the tree from file.");
+        return STATUS_ERROR_CANT_READ_TREE_FROM_FILE;
+    }
+    dump_ast( &AST );
 
     log_end();
 

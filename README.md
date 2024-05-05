@@ -179,6 +179,9 @@ CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "As
 |While2|Repeat The Following:|
 |WhileEnd|Repeat Until Ready And Then Go Further!|
 
+<!-- TODO - идея для continue: "закроем глаза на то, что в этой итерации ты схалтурил. Просто переходи к следующей, но не забывай, что Большой Брат следит за тобой." -->
+<!-- TODO - идея для break:    "давай будем честны, тебе это надоело. Просто бросай все эти повторения и не возвращайся к ним больше, иди дальше." -->
+
 ### Separating symbols
 
 |Designation in grammar|Designation in program|Comment|
