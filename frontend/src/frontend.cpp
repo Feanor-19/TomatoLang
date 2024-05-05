@@ -765,7 +765,10 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( NT_FUNC_NAMES.list[func_id].func_info.func_type == FUNC_TYPE_ACTION, prog,
                 CURR, "Name of an ACTION function" );
 
-    TreeNode *node_func_id = new_node_var_local( TREE, func_id );
+    char *str_func_ident = (char *) calloc( tkn_func_id.id.len + 1, sizeof(char) );
+    memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
+
+    TreeNode *node_func_id = new_node_str( TREE, str_func_ident );
     TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
@@ -827,7 +830,10 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( NT_FUNC_NAMES.list[func_id].func_info.func_type == FUNC_TYPE_RECIPE, prog,
                 CURR, "Name of a RECIPE function" );
 
-    TreeNode *node_func_id = new_node_var_local( TREE, func_id );
+    char *str_func_ident = (char *) calloc( tkn_func_id.id.len + 1, sizeof(char) );
+    memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
+
+    TreeNode *node_func_id = new_node_str( TREE, str_func_ident );
     TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
