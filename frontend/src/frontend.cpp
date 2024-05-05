@@ -195,44 +195,19 @@ static TreeNode *get_print_str( FORMAL_REC_FALL_ARGS )
     SYN_ASSERT( tkn_str.type == TKN_TYPE_STR, prog, CURR, "String" );
     MOVE_CURR_TO_END_OF_TOKEN( tkn_str );
 
-    // first char (obligatory)
-    TreeNode *node_seq_exec_first = new_node_op( TREE, TREE_OP_SEQ_EXEC );
-    TreeNode *node_prc = new_node_op( TREE, TREE_OP_PRINT_CHAR );
-    TreeNode *node_char = new_node_num( TREE, (num_t) tkn_str.str.start[0] );
-    tree_hang_loose_node_at_right( TREE, node_char, node_prc );
-    tree_hang_loose_node_at_left( TREE, node_prc, node_seq_exec_first );
-    TreeNode *node_curr_seq_exec = node_seq_exec_first;
+    TreeNode *node_print_str = new_node_op( TREE, TREE_OP_PRINT_STR );
 
-    // other chars (optional)
-    for ( size_t ind = 1; ind < tkn_str.str.len; ind++ )
-    {
-        TreeNode *node_seq_exec = new_node_op( TREE, TREE_OP_SEQ_EXEC );
-        node_prc = new_node_op( TREE, TREE_OP_PRINT_CHAR );
-        node_char = new_node_num( TREE, (num_t) tkn_str.str.start[ind] );
-        tree_hang_loose_node_at_right( TREE, node_char, node_prc );
-        tree_hang_loose_node_at_left( TREE, node_prc, node_seq_exec );
-        tree_hang_loose_node_at_right( TREE, node_seq_exec, node_curr_seq_exec );
-        node_curr_seq_exec = node_seq_exec;
-    }
+    char *str = (char*) calloc( tkn_str.id.len + 1, sizeof(char) );
+    memcpy( str, tkn_str.id.start, tkn_str.id.len );
+    TreeNode *node_str = new_node_str(TREE, str);
 
-    TreeNode *node_last_seq_exec = new_node_op( TREE, TREE_OP_SEQ_EXEC );
-    TreeNode *node_prc_r = new_node_op( TREE, TREE_OP_PRINT_CHAR );
-    TreeNode *node_r = new_node_num( TREE, (num_t) '\n' );
-    tree_hang_loose_node_at_right( TREE, node_r, node_prc_r );
-    tree_hang_loose_node_at_left( TREE, node_prc_r, node_last_seq_exec );
-
-    TreeNode *node_prc_n = new_node_op( TREE, TREE_OP_PRINT_CHAR );
-    TreeNode *node_n = new_node_num( TREE, (num_t) '\r' );
-    tree_hang_loose_node_at_right( TREE, node_n, node_prc_n );
-    tree_hang_loose_node_at_right( TREE, node_prc_n, node_last_seq_exec );
-
-    tree_hang_loose_node_at_right( TREE, node_last_seq_exec, node_curr_seq_exec );
+    tree_hang_loose_node_at_right( TREE, node_str, node_print_str );
 
     Token dot = get_token( CURR );
     SYN_ASSERT( is_tkn_sep_char( dot, SEP_Dot ), prog, CURR, "!" );
     MOVE_CURR_TO_END_OF_TOKEN(dot);
 
-    return node_seq_exec_first;
+    return node_print_str;
 }
 
 //! @brief Checks is 'tkn' of type 'Keyword' and belongs to
