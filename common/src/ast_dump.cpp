@@ -153,8 +153,8 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
 
 #define COLOR_BG                  "#2D4059"
 #define COLOR_NODE_COLOR          "#ECC237"
-#define COLOR_NUM_NODE_FILL       "#EA5455"
-#define COLOR_VAR_LOCAL_NODE_FILL "#8ccb5e"
+#define COLOR_CONST_NODE_FILL     "#EA5455"
+#define COLOR_NUM_IDENT_NODE_FILL "#8ccb5e"
 #define COLOR_FUNC_ARG_NODE_FILL  "#2cd8de"
 #define COLOR_OP_NODE_FILL        "#FFD460"
 #define COLOR_LABEL_COLOR         "#EA5455"
@@ -184,10 +184,10 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
 
         switch (node_data.type)
         {
-        case TREE_NODE_TYPE_NUM:
+        case TREE_NODE_TYPE_CONST_NUM:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
-                                ", fillcolor=\"" COLOR_NUM_NODE_FILL "\",\n"
+                                ", fillcolor=\"" COLOR_CONST_NODE_FILL "\",\n"
                                 "label = %g];\n\n",
                                 ind, node_data.num);
             break;
@@ -202,7 +202,7 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
         case TREE_NODE_TYPE_VAR_LOCAL:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
-                                ", fillcolor=\"" COLOR_VAR_LOCAL_NODE_FILL "\",\n"
+                                ", fillcolor=\"" COLOR_NUM_IDENT_NODE_FILL "\",\n"
                                 "label = %d];\n\n",
                                 ind, node_data.id);
             break;
@@ -213,10 +213,17 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
                                 "label = %d];\n\n",
                                 ind, node_data.id);
             break;
-        case TREE_NODE_TYPE_STR:
+        case TREE_NODE_TYPE_STR_IDENT:
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
-                                ", fillcolor=\"" COLOR_NUM_NODE_FILL "\",\n"
+                                ", fillcolor=\"" COLOR_NUM_IDENT_NODE_FILL "\",\n"
+                                "label = \"%s\"];\n\n",
+                                ind, node_data.str);
+            break;
+        case TREE_NODE_TYPE_CONST_STR:
+            fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
+                                "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
+                                ", fillcolor=\"" COLOR_CONST_NODE_FILL "\",\n"
                                 "label = \"%s\"];\n\n",
                                 ind, node_data.str);
             break;

@@ -59,16 +59,15 @@ inline void write_tree_node( FILE *stream, TreeNode *node )
     case TREE_NODE_TYPE_OP:
         fprintf(stream, " %d ", get_node_data(node).op);
         break;
-    case TREE_NODE_TYPE_NUM:
+    case TREE_NODE_TYPE_CONST_NUM:
         fprintf(stream, " %g ", get_node_data(node).num);
         break;
     case TREE_NODE_TYPE_VAR_LOCAL:
-        fprintf(stream, " %d ", get_node_data(node).id);
-        break;
     case TREE_NODE_TYPE_FUNC_ARG:
         fprintf(stream, " %d ", get_node_data(node).id);
         break;
-    case TREE_NODE_TYPE_STR: 
+    case TREE_NODE_TYPE_STR_IDENT: 
+    case TREE_NODE_TYPE_CONST_STR:
         fprintf(stream, " %lu %s ", strlen(get_node_data(node).str), get_node_data(node).str );
         break;
     default:
@@ -164,9 +163,9 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
         fscanf( stream, "%d", (int*) &op );
         node = new_node_op( tree_ptr, op );
         break;
-    case TREE_NODE_TYPE_NUM:
+    case TREE_NODE_TYPE_CONST_NUM:
         fscanf( stream, "%f", &num );
-        node = new_node_num( tree_ptr, num );
+        node = new_node_const_num( tree_ptr, num );
         break;
     case TREE_NODE_TYPE_VAR_LOCAL:
         fscanf( stream, "%d", &id );
@@ -176,12 +175,19 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
         fscanf( stream, "%d", &id );
         node = new_node_func_arg( tree_ptr, id );
         break;
-    case TREE_NODE_TYPE_STR: // TODO - не протестировано!!!
+    case TREE_NODE_TYPE_STR_IDENT:
         fscanf( stream, "%lu", &str_len );
         str = (char*) calloc( str_len+1, sizeof(char) );
         skip_spaces(stream);
         read_n_chars( stream, str_len, str );
-        node = new_node_str( tree_ptr, str );
+        node = new_node_str_ident( tree_ptr, str );
+        break;
+    case TREE_NODE_TYPE_CONST_STR:
+        fscanf( stream, "%lu", &str_len );
+        str = (char*) calloc( str_len+1, sizeof(char) );
+        skip_spaces(stream);
+        read_n_chars( stream, str_len, str );
+        node = new_node_const_str( tree_ptr, str );
         break;
     default:
         ASSERT_UNREACHEABLE();
@@ -264,12 +270,12 @@ TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
-TreeNode *new_node_num( Tree *tree_ptr, num_t num )
+TreeNode *new_node_const_num( Tree *tree_ptr, num_t num )
 {
     assert(tree_ptr);
 
     TreeNodeData data = {};
-    data.type = TREE_NODE_TYPE_NUM;
+    data.type = TREE_NODE_TYPE_CONST_NUM;
     data.num = num;
     return op_new_TreeNode( tree_ptr, &data );
 }
@@ -294,12 +300,22 @@ TreeNode *new_node_func_arg( Tree *tree_ptr, ident_t id )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
-TreeNode *new_node_str( Tree *tree_ptr, char *str )
+TreeNode *new_node_str_ident( Tree *tree_ptr, char *ident )
 {
     assert(tree_ptr);
 
     TreeNodeData data = {};
-    data.type = TREE_NODE_TYPE_STR;
+    data.type = TREE_NODE_TYPE_STR_IDENT;
+    data.str = ident;
+    return op_new_TreeNode( tree_ptr, &data );
+}
+
+TreeNode *new_node_const_str( Tree *tree_ptr, char *str )
+{
+    assert(tree_ptr);
+
+    TreeNodeData data = {};
+    data.type = TREE_NODE_TYPE_CONST_STR;
     data.str = str;
     return op_new_TreeNode( tree_ptr, &data );
 }
@@ -309,7 +325,7 @@ void TreeNodeData_dtor( void *data )
     assert(data);
     
     TreeNodeData node_data = *((TreeNodeData*) data);
-    if ( node_data.type == TREE_NODE_TYPE_STR )
+    if ( node_data.type == TREE_NODE_TYPE_STR_IDENT || node_data.type == TREE_NODE_TYPE_CONST_STR )
         free(node_data.str);
 }
 
@@ -331,7 +347,7 @@ int is_node_num( TreeNode *node_ptr, num_t num )
 {
     assert(node_ptr);
 
-    return get_node_data(node_ptr).type == TREE_NODE_TYPE_NUM
+    return get_node_data(node_ptr).type == TREE_NODE_TYPE_CONST_NUM
         && are_dbls_equal(get_node_data(node_ptr).num, num);
 }
 
@@ -373,7 +389,7 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
 
     switch (data.type)
     {
-    case TREE_NODE_TYPE_NUM:
+    case TREE_NODE_TYPE_CONST_NUM:
         fprintf(stream, "data_type: NUM, data_value: %g", data.num);
         break;
     case TREE_NODE_TYPE_OP:
@@ -385,8 +401,11 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
     case TREE_NODE_TYPE_FUNC_ARG:
         fprintf(stream, "data_type: FUNC_ARG, data_value: %d", data.id);
         break;
-    case TREE_NODE_TYPE_STR:
-        fprintf(stream, "data_type: STR, data_value: \"%s\"", data.str);
+    case TREE_NODE_TYPE_STR_IDENT:
+        fprintf(stream, "data_type: STR_IDENT, data_value: \"%s\"", data.str);
+        break;
+    case TREE_NODE_TYPE_CONST_STR:
+        fprintf(stream, "data_type: STR_IDENT, data_value: \"%s\"", data.str);
         break;
     default:
         ASSERT_UNREACHEABLE();

@@ -13,13 +13,14 @@ typedef float num_t;
 
 enum TreeNodeType
 {
-    TREE_NODE_TYPE_OP        = 1, //!< AST Operator
-    TREE_NODE_TYPE_NUM       = 2, //!< Constant number of type 'num_t'
-    TREE_NODE_TYPE_VAR_LOCAL = 3, //!< Local variable in some func, defined by numerical
-                                  // id (of type 'ident_t')
-    TREE_NODE_TYPE_FUNC_ARG  = 4, //!< One of func args, defined by its sequence number
-                                  // (of type 'ident_t')
-    TREE_NODE_TYPE_STR       = 5, //!< Contains string, which can be used for different purposes.
+    TREE_NODE_TYPE_OP,        //!< AST Operator
+    TREE_NODE_TYPE_CONST_NUM, //!< Constant number of type 'num_t'
+    TREE_NODE_TYPE_VAR_LOCAL, //!< Local variable in some func, defined by numerical
+                              // id (of type 'ident_t')
+    TREE_NODE_TYPE_FUNC_ARG,  //!< One of func args, defined by its sequence number
+                              // (of type 'ident_t')
+    TREE_NODE_TYPE_STR_IDENT, //!< Contains string identificator (used for functions' names).
+    TREE_NODE_TYPE_CONST_STR, //!< Constant string.
 };
 
 struct TreeNodeData
@@ -73,8 +74,8 @@ int read_tree_from_file( const char *file_name, Tree *tree_ptr );
 //! @brief Returns new node of type operator and writes value 'op' into it.
 TreeNode *new_node_op( Tree *tree_ptr, ASTOpNameEnum op );
 
-//! @brief Returns new node of type number and writes value 'num' into it.
-TreeNode *new_node_num( Tree *tree_ptr, num_t num );
+//! @brief Returns new node of type const number and writes value 'num' into it.
+TreeNode *new_node_const_num( Tree *tree_ptr, num_t num );
 
 //! @brief Returns new node of type 'var local' and writes value 'id' into it.
 TreeNode *new_node_var_local( Tree *tree_ptr, ident_t id );
@@ -82,8 +83,11 @@ TreeNode *new_node_var_local( Tree *tree_ptr, ident_t id );
 //! @brief Returns new node of type 'func arg' and writes value 'id' into it.
 TreeNode *new_node_func_arg( Tree *tree_ptr, ident_t id );
 
-//! @brief Returns new node of type string and writes value 'str' into it.
-TreeNode *new_node_str( Tree *tree_ptr, char *str );
+//! @brief Returns new node of type 'string ident' and writes value 'ident' into it.
+TreeNode *new_node_str_ident( Tree *tree_ptr, char *ident );
+
+//! @brief Returns new node of type 'const string' and writes value 'str' into it.
+TreeNode *new_node_const_str( Tree *tree_ptr, char *str );
 
 //! @brief Should be passed to tree_ctor().
 void TreeNodeData_dtor( void *data );

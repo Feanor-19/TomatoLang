@@ -26,7 +26,7 @@ Status tr_node_asm_text( FILE *stream, const Tree *tree_ptr,
     TreeNodeData data = get_node_data( node );
     switch (data.type)
     {
-    case TREE_NODE_TYPE_NUM:
+    case TREE_NODE_TYPE_CONST_NUM:
         PRINT_ASM( "%s %f", commands_list[CMD_PUSH], data.num );
         return STATUS_OK;
         break;

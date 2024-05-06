@@ -172,7 +172,7 @@ static TreeNode *get_num( FORMAL_REC_FALL_ARGS )
     {
         MOVE_CURR_TO_END_OF_TOKEN( tkn );
 
-        return new_node_num( TREE, tkn.num );
+        return new_node_const_num( TREE, tkn.num );
     }
 
     return NULL;
@@ -199,7 +199,7 @@ static TreeNode *get_print_str( FORMAL_REC_FALL_ARGS )
 
     char *str = (char*) calloc( tkn_str.id.len + 1, sizeof(char) );
     memcpy( str, tkn_str.id.start, tkn_str.id.len );
-    TreeNode *node_str = new_node_str(TREE, str);
+    TreeNode *node_str = new_node_const_str(TREE, str);
 
     tree_hang_loose_node_at_right( TREE, node_str, node_print_str );
 
@@ -743,7 +743,7 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
     char *str_func_ident = (char *) calloc( tkn_func_id.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
 
-    TreeNode *node_func_id = new_node_str( TREE, str_func_ident );
+    TreeNode *node_func_id = new_node_str_ident( TREE, str_func_ident );
     TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
@@ -808,7 +808,7 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
     char *str_func_ident = (char *) calloc( tkn_func_id.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
 
-    TreeNode *node_func_id = new_node_str( TREE, str_func_ident );
+    TreeNode *node_func_id = new_node_str_ident( TREE, str_func_ident );
     TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
@@ -1056,7 +1056,7 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
     
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
-    TreeNode *node_func_str_id = new_node_str( TREE, str_func_ident );
+    TreeNode *node_func_str_id = new_node_str_ident( TREE, str_func_ident );
 
     TreeNode *node_func_def = new_node_op( TREE, TREE_OP_FUNC_DEF );
     TreeNode *node_func_def_helper = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
@@ -1129,7 +1129,7 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
     
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
-    TreeNode *node_func_str_id = new_node_str( TREE, str_func_ident );
+    TreeNode *node_func_str_id = new_node_str_ident( TREE, str_func_ident );
 
     TreeNode *node_func_def = new_node_op( TREE, TREE_OP_FUNC_DEF );
     TreeNode *node_func_def_helper = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
