@@ -8,7 +8,7 @@
             "type": "cppdbg",
             "name": "Launch",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/frontend.exe",
+            "program": "${workspaceFolder}/bin/frontend",
             "args": [
                     "-i",
                     "./../programs/test_program/prog.txt",

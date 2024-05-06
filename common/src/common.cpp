@@ -233,6 +233,8 @@ int read_tree_from_file( const char *file_name, Tree *tree_ptr )
         fclose(file);
         return 0;
     }
+    skip_spaces(file);
+
     *tree_ptr = {};
     tree_ctor( tree_ptr, sizeof(TreeNodeData), nodes_count, TreeNodeData_dtor, print_tree_node_data );
 

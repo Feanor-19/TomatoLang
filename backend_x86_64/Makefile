@@ -37,7 +37,7 @@ SOURCES 		= $(wildcard $(SRC)/*.cpp)
 OBJFILES 		= $(patsubst $(SRC)/%,$(OBJ)/%,$(SOURCES:.cpp=.o))
 CMN_SOURCES		= $(wildcard $(CMN)/$(SRC)/*.cpp)
 CMN_OBJFILES	= $(patsubst $(CMN)/$(SRC)/%,$(CMN)/$(OBJ)/%,$(CMN_SOURCES:.cpp=.o))
-OUT 			= ./$(BIN)/backend.exe
+OUT 			= ./$(BIN)/backend
 DUMP_FOLDER 	= dumps
 
 $(OUT) : $(OBJFILES) $(CMN_OBJFILES)

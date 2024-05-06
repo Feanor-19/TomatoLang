@@ -8,7 +8,7 @@
             "type": "cppdbg",
             "name": "Launch",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/backend.exe",
+            "program": "${workspaceFolder}/bin/backend",
             "args": [
                     "-i",
                     "./../programs/test_program/compiler_tree.txt",

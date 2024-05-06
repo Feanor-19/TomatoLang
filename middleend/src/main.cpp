@@ -32,7 +32,11 @@ int main(int argc, const char *argv[])
         ERROR("Something went wrong during reading the tree from file.");
         return STATUS_ERROR_CANT_READ_TREE_FROM_FILE;
     }
+
+    LOG("AST is successfully read from file!");
+
     dump_ast( &AST );
+    LOG("AST dump done! (if it could be done...)");
 
     log_end();
 

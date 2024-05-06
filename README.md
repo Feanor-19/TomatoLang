@@ -1,7 +1,7 @@
 <!-- TODO - переписать на русском -->
-# Programming language "TomatoLang" (WIP)
+# Язык программирования TomatoLang с ароматом эзотерики и привкусом безумия (WIP)
 
-This is a reborn of "CrazyCookingLanguage", which you can find in its own repo. The main (planned) difference is backend for x86-64 (Linux), but also lots of improvements in language's grammar and features.
+Это  "CrazyCookingLanguage"
 
 NOTE: Unlike CrazyCookingLanguage, this project is designed for Linux.
 
