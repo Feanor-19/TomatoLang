@@ -38,6 +38,8 @@ int main(int argc, const char *argv[])
     dump_ast( &AST );
     LOG("AST dump done! (if it could be done...)");
 
+    close_img_dumps();
+
     log_end();
 
     return 0;

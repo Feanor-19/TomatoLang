@@ -1,8 +1,9 @@
 #include <stdio.h>
 
-#include "frontend.h"
+#include "config_back.h"
 #include "ast_dump.h"
 #include "common.h"
+#include "backend.h"
 
 int main( int argc, const char *argv[])
 {
@@ -24,31 +25,27 @@ int main( int argc, const char *argv[])
        init_img_dumps( cfg.img_dumps_folder );
     LOG( "Initializing image dumps folder is done!" );
 
-    char *prog_str = read_file_to_str( cfg.input_file_name );
-    if (!prog_str)
+    LOG( "Reading AST from the input file..." );
+    Tree AST = {};
+    if ( !read_tree_from_file( cfg.input_file_name, &AST ) )
     {
-        print_status_message( log_get_stream(), STATUS_ERROR_CANT_READ_INPUT_FILE );
-        return STATUS_ERROR_CANT_READ_INPUT_FILE;
+        ERROR("Something went wrong during reading tree from input file.");
+    }
+    LOG( "Reading AST from the input file is done!" );
+
+    if ( cfg.img_dumps_folder )
+    {
+        LOG( "Because config includes image dumps folder, creating image dump of the AST..." );
+        init_img_dumps( cfg.img_dumps_folder );
+        dump_ast( &AST );
+        LOG( "AST image dump is created." );
     }
 
-    LOG( "Starting compilation..." );
-    CompiledProgram compiled_prog = {};
-    Status comp_err = compile_prog( prog_str, &compiled_prog );
-    if (comp_err == STATUS_OK)
-    {
-        LOG( "Compilation is done!" );
-    }
+    // make IR
 
-    if (!comp_err)
-    {
-        LOG( "Starting writing tree to file..." );
-        write_tree_to_file( cfg.output_file_name, &compiled_prog.tree );
-        LOG( "Writing tree to file is done!" );
-    }
+    // optimize IR
 
-    free(prog_str);
-
-    CompiledProgram_dtor( &compiled_prog );
+    // translate IR to asm (nasm)
 
     close_img_dumps();
 
