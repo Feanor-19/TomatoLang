@@ -5,7 +5,7 @@
 
 
 typedef size_t cnt_t;
-#define SPECF_CNT_T "%llu"
+#define SPECF_CNT_T "%lu"
 
 
 #define DEF_STATUS(name, msg) STATUS_##name,
