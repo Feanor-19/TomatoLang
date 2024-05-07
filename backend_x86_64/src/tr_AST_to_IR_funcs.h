@@ -3,7 +3,7 @@
 
 #include "back_common.h"
 
-#define FORMAL_TR_ASM_TEXT_ARGS FILE *stream, const Tree *AST, TreeNode *node, \
+#define FORMAL_TR_ASM_TEXT_ARGS const Tree *AST, IR *IR, TreeNode *node, \
                                 Counters *counters
 
 

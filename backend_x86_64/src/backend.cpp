@@ -158,13 +158,40 @@ Status translate_AST_to_IR( Tree *AST, IR* IR )
 
 }
 
-Status translate_AST_node( const Tree *AST, IR* IR, const TreeNode* node, Counters cnts )
+Status translate_AST_node( const Tree *AST, IR* IR, TreeNode* node, Counters *cnts )
 {
     assert(AST);
     assert(IR);
     assert(node);
 
-    
+    TreeNodeData data = get_node_data(node);
+    switch (data.type)
+    {
+    case TREE_NODE_TYPE_OP:
+        return AST_OPS_BACKEND[data.op](AST, IR, node, cnts);
+        break;
+    case TREE_NODE_TYPE_STR_IDENT:
+        ASSERT_UNREACHEABLE();
+        break;
+    case TREE_NODE_TYPE_VAR_LOCAL:
+        
+        break;
+    case TREE_NODE_TYPE_FUNC_ARG:
+        
+        break;
+    case TREE_NODE_TYPE_CONST_NUM:
+
+        break;
+    case TREE_NODE_TYPE_CONST_STR:
+
+        break;
+    default:
+        ASSERT_UNREACHEABLE();
+        break;
+    }
+
+    ASSERT_UNREACHEABLE();
+    return STATUS_OK;
 }
 
 void print_status_message( FILE *stream, Status status )
