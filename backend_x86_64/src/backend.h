@@ -23,21 +23,6 @@ const tr_AST_to_IR_t AST_OPS_BACKEND[] =
     NULL
 };
 
-Status IR_push_head( IR *IR, IRBlockData data );
-
-Status IR_push_tail( IR *IR, IRBlockData data );
-
-Status IR_insert_after( IR *IR, IRBlock *ref, IRBlockData data_to_insert );
-
-Status IR_insert_before( IR *IR, IRBlock *ref, IRBlockData data_to_insert );
-
-Status IR_pop_head( IR *IR );
-
-Status IR_pop_tail( IR *IR );
-
-//! @attention after this func 'block' is not a valid ptr!
-Status IR_pop( IR *IR, IRBlock *block );
-
 
 Status translate_AST_to_IR( const Tree *AST, IR* IR );
 

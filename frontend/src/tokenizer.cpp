@@ -126,7 +126,7 @@ Token get_token( const char *str )
     }
     else if ( isdigit(*str) )
     {
-        if ( sscanf( str, "%f%n", &tkn.num, (int*) &tkn.len ) == 1 )
+        if ( sscanf( str, "%lf%n", &tkn.num, (int*) &tkn.len ) == 1 )
             tkn.type = TKN_TYPE_NUM;
         else
             tkn.type = TKN_TYPE_ERROR;

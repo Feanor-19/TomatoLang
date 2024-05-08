@@ -448,20 +448,8 @@ inline ASTOpNameEnum translate_tkn_unr_op( Token tkn )
 #pragma GCC diagnostic ignored "-Wswitch-enum"
     switch (tkn.keyword)
     {
-    case KW_UnrOp_cos:
-        return TREE_OP_COS;
-        break;
-    case KW_UnrOp_exp:
-        return TREE_OP_EXP;
-        break;
-    case KW_UnrOp_ln:
-        return TREE_OP_LN;
-        break;
     case KW_UnrOp_minus:
         return TREE_OP_MINUS;
-        break;
-    case KW_UnrOp_sin:
-        return TREE_OP_SIN;
         break;
     case KW_UnrOp_sqrt:
         return TREE_OP_SQRT;

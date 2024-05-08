@@ -188,7 +188,7 @@ inline void write_dot_file( FILE *dot_file, Tree *tree_ptr )
             fprintf(dot_file,   "NODE_%lu[shape=\"record\", fontname=\"verdana\",\n"
                                 "style=bold, style=filled,\ncolor=\"" COLOR_NODE_COLOR "\""
                                 ", fillcolor=\"" COLOR_CONST_NODE_FILL "\",\n"
-                                "label = %g];\n\n",
+                                "label = \"%g\"];\n\n",
                                 ind, node_data.num);
             break;
         case TREE_NODE_TYPE_OP:

@@ -27,8 +27,10 @@ enum IRBlockType
     IR_BLOCK_TYPE_POP,      
     IR_BLOCK_TYPE_MOV,      // imagining it is universal (including XMM and 'mem to mem')
 
-    IR_BLOCK_TYPE_PUSH_XMM, // uses REG_PUSH_POP_XMM (r8?) instead of rsp
-    IR_BLOCK_TYPE_POP_XMM,
+    //! @brief Used for interactions with computing sub-stack. 
+    //! @note Able to do memory to memory operations.
+    IR_BLOCK_TYPE_COMP_PUSH, 
+    IR_BLOCK_TYPE_COMP_POP,
 
     IR_BLOCK_TYPE_ADDSD,
     IR_BLOCK_TYPE_SUBSD,
@@ -73,20 +75,28 @@ union arg
     reg_t reg;
     reg_xmm_t reg_xmm;
     mem_t mem;
+    num_t imm_const; 
 };
 
 
 struct IRBlockData
 {
-    IRBlockType type = IR_BLOCK_TYPE_DUMMY;
+    IRBlockType type    = IR_BLOCK_TYPE_DUMMY;
+
+    //! @note If just a comment is needed (not appended to some instruction), 
+    //! use 'IR_BLOCK_TYPE_DUMMY'.
+    const char* comment = NULL;
 
     union 
     {
         IRBlock *instr_ptr = NULL; // plays role of a label (e.g. 'jmp' or 'call')
 
+        struct 
+        {
         arg arg1;
         arg arg2;
         arg arg3;
+        };
     };
 };
 

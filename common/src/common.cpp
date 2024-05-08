@@ -164,7 +164,7 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
         node = new_node_op( tree_ptr, op );
         break;
     case TREE_NODE_TYPE_CONST_NUM:
-        fscanf( stream, "%f", &num );
+        fscanf( stream, "%lf", &num );
         node = new_node_const_num( tree_ptr, num );
         break;
     case TREE_NODE_TYPE_VAR_LOCAL:

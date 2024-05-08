@@ -8,7 +8,7 @@
 
 typedef int32_t ident_t;
 #define ABSENT_ID -1
-typedef float num_t;
+typedef double num_t;
 
 
 enum TreeNodeType
