@@ -156,4 +156,27 @@ inline Status IR_pop( IR *IR, IRBlock *block )
     return STATUS_OK;
 }
 
+inline IRBlockData form_IRBlockData_type( IRBlockType type, IRBlockDataType data_type )
+{
+    IRBlockData data = {};
+
+    data.type      = type;
+    data.data_type = data_type;
+    
+    return data;
+}
+
+inline mem_t form_mem_t( reg_t base_reg, int16_t disp, 
+                         reg_t index_reg = REG_DUMMY, MemScaleFactor scale = SCALE_FACTOR_0 )
+{
+    mem_t mem = {};
+
+    mem.base_reg    = base_reg;
+    mem.index_reg   = index_reg;
+    mem.scale       = scale;
+    mem.disp        = disp;
+
+    return mem;
+}
+
 #endif /* IR_INTERFACE */

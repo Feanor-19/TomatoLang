@@ -14,7 +14,7 @@ const char * const status_messages[] =
 #undef DEF_STATUS
 
 
-typedef Status(*tr_AST_to_IR_t)(const Tree*,IR*,TreeNode*,Counters*);
+typedef Status(*tr_AST_to_IR_t)(FORMAL_TR_ASM_IR_ARGS);
 
 #define DEF_AST_OP(name) tr_AST_to_IR_##name,
 const tr_AST_to_IR_t AST_OPS_BACKEND[] = 
@@ -27,7 +27,7 @@ const tr_AST_to_IR_t AST_OPS_BACKEND[] =
 Status translate_AST_to_IR( const Tree *AST, IR* IR );
 
 //! @brief Translates given node and subtree, which starts with this node, into IR.
-Status translate_AST_node( const Tree *AST, IR *IR, TreeNode *node, Counters *cnts );
+Status translate_AST_node( FORMAL_TR_ASM_IR_ARGS );
 
 
 void print_status_message( FILE *stream, Status status );

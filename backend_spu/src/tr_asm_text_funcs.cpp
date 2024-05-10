@@ -52,7 +52,7 @@
 #define PRINT_FUNC_NAME_END() PRINT( "; %s END\n", __func__ )
 
 // helpers
-inline Status helper_asm_text_cmp( const char *jmp_type, FORMAL_TR_ASM_TEXT_ARGS )
+inline Status helper_asm_text_cmp( const char *jmp_type, FORMAL_TR_ASM_IR_ARGS )
 {
     assert(jmp_type);
     PRINT_FUNC_NAME();
@@ -74,7 +74,7 @@ inline Status helper_asm_text_cmp( const char *jmp_type, FORMAL_TR_ASM_TEXT_ARGS
     return STATUS_OK;
 }
 
-Status tr_asm_text_seq_exec( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_seq_exec( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -89,7 +89,7 @@ Status tr_asm_text_seq_exec( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_dummy( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_dummy( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -107,7 +107,7 @@ Status tr_asm_text_dummy( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_func_def( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_func_def( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -133,7 +133,7 @@ Status tr_asm_text_func_def( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_main_prog( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_main_prog( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -151,7 +151,7 @@ Status tr_asm_text_main_prog( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_assign( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_assign( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -175,7 +175,7 @@ Status tr_asm_text_assign( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_cmp_more( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_more( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -186,7 +186,7 @@ Status tr_asm_text_cmp_more( FORMAL_TR_ASM_TEXT_ARGS )
                                 counters, context );
 }
 
-Status tr_asm_text_cmp_less( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_less( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -197,7 +197,7 @@ Status tr_asm_text_cmp_less( FORMAL_TR_ASM_TEXT_ARGS )
                                 counters, context );
 }
 
-Status tr_asm_text_cmp_more_eq( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_more_eq( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -208,7 +208,7 @@ Status tr_asm_text_cmp_more_eq( FORMAL_TR_ASM_TEXT_ARGS )
                                 counters, context );
 }
 
-Status tr_asm_text_cmp_less_eq( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_less_eq( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -219,7 +219,7 @@ Status tr_asm_text_cmp_less_eq( FORMAL_TR_ASM_TEXT_ARGS )
                                 counters, context );
 }
 
-Status tr_asm_text_cmp_equal( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_equal( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -230,7 +230,7 @@ Status tr_asm_text_cmp_equal( FORMAL_TR_ASM_TEXT_ARGS )
                                 counters, context );
 }
 
-Status tr_asm_text_cmp_not_eq( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cmp_not_eq( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -242,7 +242,7 @@ Status tr_asm_text_cmp_not_eq( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_add( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_add( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -259,7 +259,7 @@ Status tr_asm_text_add( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_sub( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_sub( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -276,7 +276,7 @@ Status tr_asm_text_sub( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_mul( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_mul( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -293,7 +293,7 @@ Status tr_asm_text_mul( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_div( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_div( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -311,7 +311,7 @@ Status tr_asm_text_div( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_if( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_if( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -347,7 +347,7 @@ Status tr_asm_text_if( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_while( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_while( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -377,7 +377,7 @@ Status tr_asm_text_while( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_and( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_and( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -406,7 +406,7 @@ Status tr_asm_text_and( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_or( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_or( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -435,7 +435,7 @@ Status tr_asm_text_or( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_not( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_not( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -460,7 +460,7 @@ Status tr_asm_text_not( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_sin( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_sin( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -476,7 +476,7 @@ Status tr_asm_text_sin( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_cos( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_cos( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -492,7 +492,7 @@ Status tr_asm_text_cos( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_sqrt( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_sqrt( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -508,7 +508,7 @@ Status tr_asm_text_sqrt( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_ln( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_ln( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -524,7 +524,7 @@ Status tr_asm_text_ln( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_exp( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_exp( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -540,7 +540,7 @@ Status tr_asm_text_exp( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_minus( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_minus( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -556,7 +556,7 @@ Status tr_asm_text_minus( FORMAL_TR_ASM_TEXT_ARGS )
 }
 
 
-Status tr_asm_text_call_func( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_call_func( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -607,7 +607,7 @@ Status tr_asm_text_call_func( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_return( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_return( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -647,7 +647,7 @@ Status tr_asm_text_return( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_input( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_input( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -664,7 +664,7 @@ Status tr_asm_text_input( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_print_num( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_print_num( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );
@@ -679,7 +679,7 @@ Status tr_asm_text_print_num( FORMAL_TR_ASM_TEXT_ARGS )
     return STATUS_OK;
 }
 
-Status tr_asm_text_print_char ( FORMAL_TR_ASM_TEXT_ARGS )
+Status tr_asm_text_print_char ( FORMAL_TR_ASM_IR_ARGS )
 {
     assert( stream );
     assert( tree_ptr );

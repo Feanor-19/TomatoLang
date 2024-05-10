@@ -9,7 +9,7 @@ Status translate_AST_to_IR( Tree *AST, IR* IR )
 
 }
 
-Status translate_AST_node( const Tree *AST, IR* IR, TreeNode* node, Counters *cnts )
+Status translate_AST_node( FORMAL_TR_ASM_IR_ARGS )
 {
     assert(AST);
     assert(IR);
@@ -19,7 +19,7 @@ Status translate_AST_node( const Tree *AST, IR* IR, TreeNode* node, Counters *cn
     switch (data.type)
     {
     case TREE_NODE_TYPE_OP:
-        return AST_OPS_BACKEND[data.op](AST, IR, node, cnts);
+        return AST_OPS_BACKEND[data.op](AST, IR, node, counters, context);
         break;
     case TREE_NODE_TYPE_STR_IDENT:
         ASSERT_UNREACHEABLE();

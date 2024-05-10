@@ -23,14 +23,9 @@ enum IRBlockType
 {
     IR_BLOCK_TYPE_DUMMY,
     
-    IR_BLOCK_TYPE_PUSH,     
-    IR_BLOCK_TYPE_POP,      
-    IR_BLOCK_TYPE_MOV,      // imagining it is universal (including XMM and 'mem to mem')
-
-    //! @brief Used for interactions with computing sub-stack. 
-    //! @note Able to do memory to memory operations.
-    IR_BLOCK_TYPE_COMP_PUSH, 
-    IR_BLOCK_TYPE_COMP_POP,
+    IR_BLOCK_TYPE_PUSH,     // Imagining it is universal (including XMM and 'mem to mem')
+    IR_BLOCK_TYPE_POP,      // Imagining it is universal (including XMM and 'mem to mem')
+    IR_BLOCK_TYPE_MOV,      
 
     IR_BLOCK_TYPE_ADDSD,
     IR_BLOCK_TYPE_SUBSD,
@@ -50,6 +45,15 @@ enum IRBlockType
     IR_BLOCK_TYPE_CALL,
 
     IR_BLOCK_TYPE_SQRTSD,
+};
+
+enum IRBlockDataType
+{
+    IR_BLOCK_NO_DATA,
+    IR_BLOCK_DATA_INSTR_PTR,
+    IR_BLOCK_DATA_FUNC_NAME,
+    IR_BLOCK_DATA_ARGS_DIR, // arg_src, arg_dst
+    IR_BLOCK_DATA_ARGS_NUM, // arg1, arg2
 };
 
 enum MemScaleFactor
@@ -81,7 +85,8 @@ union arg
 
 struct IRBlockData
 {
-    IRBlockType type    = IR_BLOCK_TYPE_DUMMY;
+    IRBlockType     type      = IR_BLOCK_TYPE_DUMMY;
+    IRBlockDataType data_type = IR_BLOCK_NO_DATA;
 
     //! @note If just a comment is needed (not appended to some instruction), 
     //! use 'IR_BLOCK_TYPE_DUMMY'.
@@ -89,13 +94,20 @@ struct IRBlockData
 
     union 
     {
-        IRBlock *instr_ptr = NULL; // plays role of a label (e.g. 'jmp' or 'call')
+        IRBlock *instr_ptr; // plays role of a label (e.g. 'jmp') 
+        
+        const char *func_name; //!< @attention Points to memory, allocated by AST
 
         struct 
         {
-        arg arg1;
-        arg arg2;
-        arg arg3;
+            arg arg_src;
+            arg arg_dst;
+        };
+
+        struct
+        {
+            arg arg1;
+            arg arg2;
         };
     };
 };
@@ -130,16 +142,58 @@ struct Counters
     cnt_t not_c   = 0;
 };
 
-
-// TODO fill
-const char * const REGS[] = 
+struct Context
 {
-
+    uint args_num     = 0;
+    uint loc_vars_num = 0;
 };
 
+
+#define DEF_REG( reg__ ) REG_##reg__,
+enum Regs
+{
+    #include "regs_defs.h"
+    REG_DUMMY
+};
+#undef DEF_REG
+
+#define DEF_REG( reg__ ) #reg__,
+const char * const REGS[] = 
+{
+    #include "regs_defs.h"
+    "REG_DUMMY"
+};
+#undef DEF_REG
+
+
+#define DEF_REG_XMM( reg__ ) REG_##reg__,
+enum RegsXMM
+{
+    #include "regs_xmm_def.h"
+    REG_XMM_DUMMY
+};
+#undef DEF_REG_XMM
+
+#define DEF_REG_XMM( reg__ ) #reg__,
 const char * const REGS_XMM[] = 
 {
+    #include "regs_xmm_def.h"
+    "REG_XMM_DUMMY"
+};
+#undef DEF_REG_XMM
 
+//! @brief Number of XMM registers used to pass arguments to functions.
+const size_t NUM_OF_XMM_REGS_TO_PASS_ARGS = 8;
+
+const reg_xmm_t REG_XMM_TMP_1 = REG_xmm8;
+const reg_xmm_t REG_XMM_TMP_2 = REG_xmm9;
+
+enum 
+{
+    BYTE  = 1,
+    WORD  = 2,
+    DWORD = 4,
+    QWORD = 8,
 };
 
 #endif /* BACK_COMMON_H */
