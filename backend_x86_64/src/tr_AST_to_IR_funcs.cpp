@@ -6,6 +6,10 @@
 
 // DSL
 
+#define FACT_TR_ASM_IR_ARGS AST, IR, node, counters, context
+
+#define LAST_IR_BLOCK IR->tail
+
 #define WRP(func__) do                      \
 {                                           \
     Status stat__ = func__;                 \
@@ -40,6 +44,9 @@ do{                     \
 #define TR_RIGHT_CHILD_OF( node__ ) \
     WRP(translate_AST_node( AST, IR, RIGHT( node__ ), counters, context))
 
+#define TR_NODE( node__ ) \
+    WRP(translate_AST_node( AST, IR, node__, counters, context))
+
 
 #define GET_TYPE( node__ )  (get_node_data( (node__) ).type)
 #define GET_ID( node__ )    (get_node_data( (node__) ).id)
@@ -51,6 +58,7 @@ do{                     \
 do{                                     \
     IRBlockData data = {};              \
     data.type = IR_BLOCK_TYPE_DUMMY;    \
+    data.data_type = IR_BLOCK_NO_DATA;   \
     data.comment = comment__;           \
     IR_push_tail(IR, data);             \
 }while(0)
@@ -62,20 +70,14 @@ do{                                                 \
         return STATUS_ERROR_WRONG_NODE_IN_AST;      \
 }while(0)
 
-#define IR_PUSH_TAIL(data__)                        \
-do{                                                 \
-    Status status = IR_push_tail( IR, data__ );     \
-    if (status != STATUS_OK)                        \
-        return status;                              \
-} while(0)
+#define IR_PUSH_TAIL(data__) WRP(IR_push_tail( IR, data__ ))
+#define IR_PUSH_HEAD(data__) WRP(IR_push_head( IR, data__ ))
 
-#define IR_PUSH_HEAD(data__)                        \
-do{                                                 \
-    Status status = IR_push_head( IR, data__ );     \
-    if (status != STATUS_OK)                        \
-        return status;                              \
-} while(0)
-
+#define MAKE_LABEL( label__ ) \
+    COMMENT("label " #label__ ":");                                                                 \
+    IRBlockData lbl_data_##label__ = form_IRBlockData_type( IR_BLOCK_TYPE_DUMMY, IR_BLOCK_NO_DATA );\
+    IR_PUSH_TAIL( lbl_data_##label__ );                                                             \
+    IRBlock *lbl_block_##label__ = LAST_IR_BLOCK;
 
 inline size_t min( size_t a, size_t b )
 {
@@ -228,34 +230,50 @@ inline IRBlockData get_corr_jmp_data( ASTOpNameEnum cmp_type )
 {
     IRBlockData data = {};
     data.data_type = IR_BLOCK_DATA_INSTR_PTR;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
     switch (cmp_type)
     {
     case TREE_OP_CMP_EQUAL:
         data.type = IR_BLOCK_TYPE_JE;
         break;
-    
+    case TREE_OP_CMP_LESS:
+        data.type = IR_BLOCK_TYPE_JB;
+        break;
+    case TREE_OP_CMP_LESS_EQ:
+        data.type = IR_BLOCK_TYPE_JBE;
+        break;
+    case TREE_OP_CMP_MORE:
+        data.type = IR_BLOCK_TYPE_JA;
+        break;
+    case TREE_OP_CMP_MORE_EQ:
+        data.type = IR_BLOCK_TYPE_JAE;
+        break;
+    case TREE_OP_CMP_NOT_EQ:
+        data.type = IR_BLOCK_TYPE_JNE;
+        break;
     default:
         ASSERT_UNREACHEABLE();
         break;
     }
+#pragma GCC diagnostic pop
 
     return data;
 }
 
-Status tr_AST_to_IR_IF (FORMAL_TR_ASM_IR_ARGS)
+inline Status cmp_helper( FORMAL_TR_ASM_IR_ARGS )
 {
-    ASSERT_ALL();
-
-    COMMENT("if_start");
-
     COMMENT("computing left cmp expr");
     TR_LEFT_CHILD_OF( LEFT_CURR );
+    COMMENT("pop result to xmm_tmp_1");
     IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP, IR_BLOCK_DATA_ARGS_DIR );
     pop_data.arg_dst.reg_xmm = REG_XMM_TMP_1;
     IR_PUSH_TAIL(pop_data);
 
     COMMENT("computing right cmp expr");
     TR_RIGHT_CHILD_OF( LEFT_CURR );
+    COMMENT("pop result to xmm_tmp_2");
     pop_data.arg_dst.reg_xmm = REG_XMM_TMP_2;
     IR_PUSH_TAIL(pop_data);
 
@@ -264,21 +282,92 @@ Status tr_AST_to_IR_IF (FORMAL_TR_ASM_IR_ARGS)
     comisd_data.arg2.reg_xmm = REG_XMM_TMP_2;
     IR_PUSH_TAIL(comisd_data);
 
-    IRBlockData jmp_data =;
+    return STATUS_OK;
+}
 
+Status tr_AST_to_IR_IF (FORMAL_TR_ASM_IR_ARGS)
+{
+    ASSERT_ALL();
 
-    COMMENT("if_end");
+    COMMENT("if_start");
+
+    WRP(cmp_helper( FACT_TR_ASM_IR_ARGS ));
+
+    COMMENT("jump if_yes");
+    CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_OP );
+    IRBlockData jmp_if_yes_data = get_corr_jmp_data( GET_OP( LEFT_CURR ) );
+    IR_PUSH_TAIL( jmp_if_yes_data ); // filling it later
+    IRBlock *jmp_if_yes_block = LAST_IR_BLOCK;
+
+    TreeNode *subtree_if_main_body = NULL;
+    if ( GET_TYPE( RIGHT_CURR ) == TREE_NODE_TYPE_OP && GET_OP( RIGHT_CURR ) == TREE_OP_ELSE )
+    {
+        subtree_if_main_body = LEFT( RIGHT_CURR );
+        
+        COMMENT("else branch:");
+        TR_RIGHT_CHILD_OF( RIGHT_CURR );
+    }
+    else
+    {
+        subtree_if_main_body = RIGHT_CURR;
+    }
+
+    COMMENT("jump if_end:");
+    IRBlockData jmp_if_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    IR_PUSH_TAIL( jmp_if_end_data );
+    IRBlock *jmp_if_end_block = LAST_IR_BLOCK; // filling it later
+
+    MAKE_LABEL(if_yes);
+    jmp_if_yes_block->data.instr_ptr = lbl_block_if_yes; // filling 'if_yes' label
+
+    TR_NODE( subtree_if_main_body );
+
+    MAKE_LABEL(if_end)
+    jmp_if_end_block->data.instr_ptr = lbl_block_if_end; // filling 'if_end' label
+
     return STATUS_OK;
 }
 
 Status tr_AST_to_IR_WHILE (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    MAKE_LABEL(while_start);
+
+    WRP(cmp_helper( FACT_TR_ASM_IR_ARGS ));
+
+    COMMENT("jmp while_body");
+    CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_OP );
+    IRBlockData jmp_while_body_data = get_corr_jmp_data( GET_OP( LEFT_CURR ) );
+    IR_PUSH_TAIL( jmp_while_body_data ); // filling it later
+    IRBlock *jmp_while_body_block = LAST_IR_BLOCK;
+
+    COMMENT("jmp while_end");
+    IRBlockData jmp_while_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    IR_PUSH_TAIL( jmp_while_end_data ); // filling it later
+    IRBlock *jmp_while_end_block = LAST_IR_BLOCK; 
+
+    MAKE_LABEL(while_body)
+    jmp_while_body_block->data.instr_ptr = lbl_block_while_body;
+
+    COMMENT("while body:");
+    TR_RIGHT_CHILD_CURR();
+
+    COMMENT("jmp while_start");
+    IRBlockData jmp_while_start_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    jmp_while_start_data.instr_ptr = lbl_block_while_start;
+    IR_PUSH_TAIL( jmp_while_start_data );
+
+    MAKE_LABEL(while_end)
+    jmp_while_end_block->data.instr_ptr = lbl_block_while_end;
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_ELSE (FORMAL_TR_ASM_IR_ARGS)
 {
-
+    ASSERT_UNREACHEABLE();
+    return STATUS_OK;
 }
 
 

@@ -21,7 +21,7 @@ enum Status
 
 enum IRBlockType
 {
-    IR_BLOCK_TYPE_DUMMY,
+    IR_BLOCK_TYPE_DUMMY,    // e.g. for comments or labels, which aren't at any instructions
     
     IR_BLOCK_TYPE_PUSH,     // Imagining it is universal (including XMM and 'mem to mem')
     IR_BLOCK_TYPE_POP,      // Imagining it is universal (including XMM and 'mem to mem')
@@ -89,7 +89,7 @@ struct IRBlockData
     IRBlockDataType data_type = IR_BLOCK_NO_DATA;
 
     //! @note If just a comment is needed (not appended to some instruction), 
-    //! use 'IR_BLOCK_TYPE_DUMMY'.
+    //! use 'IR_BLOCK_TYPE_DUMMY' and 'IR_BLOCK_NO_DATA'.
     const char* comment = NULL;
 
     union 
