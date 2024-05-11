@@ -55,6 +55,7 @@ enum IRBlockType
     IR_BLOCK_TYPE_JBE,
 
     IR_BLOCK_TYPE_CALL,
+    IR_BLOCK_TYPE_LEAVE,
 
     IR_BLOCK_TYPE_SQRTSD,
 };

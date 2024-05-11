@@ -78,6 +78,31 @@ do{                                                 \
     IR_PUSH_TAIL( lbl_data_##label__ );                                             \
     IRBlock *lbl_block_##label__ = LAST_IR_BLOCK;
 
+inline arg_t form_arg_t_mem_loc_var( ident_t var_local_id, Context *context )
+{
+    size_t args_num_in_curr_frame = min( context->args_num, NUM_OF_XMM_REGS_TO_PASS_ARGS );
+    return form_arg_t_mem( REG_rbp, (-1)*QWORD*( args_num_in_curr_frame + 1 + var_local_id ) );
+}
+
+inline arg_t form_arg_t_mem_func_arg( ident_t func_arg_id, Context *context )
+{
+    if ( func_arg_id < NUM_OF_XMM_REGS_TO_PASS_ARGS )
+        return form_arg_t_mem( REG_rbp, (-1)*QWORD*(func_arg_id + 1) );
+    else
+        return form_arg_t_mem( REG_rbp, QWORD*(2 + func_arg_id - NUM_OF_XMM_REGS_TO_PASS_ARGS) );
+}
+
+inline arg_t form_arg_loc_var_or_func_arg_helper( TreeNode *node_loc_var_or_func_arg, Context *context )
+{
+    assert(node_loc_var_or_func_arg);
+    assert(context);
+    
+    if      ( GET_TYPE(node_loc_var_or_func_arg) == TREE_NODE_TYPE_VAR_LOCAL )
+        return form_arg_t_mem_loc_var( GET_ID(node_loc_var_or_func_arg), context );
+    else if ( GET_TYPE(node_loc_var_or_func_arg) == TREE_NODE_TYPE_FUNC_ARG )
+        return form_arg_t_mem_func_arg( GET_ID(node_loc_var_or_func_arg), context );
+}
+
 inline size_t min( size_t a, size_t b )
 {
     return (a < b) ? a : b;
@@ -122,7 +147,7 @@ inline size_t count_args_num( TreeNode *func_def_helper )
     while (curr_list_cnctr)
     {
         res++;
-        curr_list_cnctr = curr_list_cnctr->right;
+        curr_list_cnctr = RIGHT(curr_list_cnctr);
     }
     
     return res;
@@ -137,15 +162,15 @@ int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
         return GET_ID( node );
 
     ident_t max_id = ABSENT_ID;
-    if ( node->left )
+    if ( LEFT(node) )
     {
-        ident_t max_id_in_left_subtree = count_loc_vars_max_id_in_subtree(node->left); 
+        ident_t max_id_in_left_subtree = count_loc_vars_max_id_in_subtree(LEFT(node)); 
         max_id = max_id_in_left_subtree;
     }
 
-    if ( node->right )
+    if ( RIGHT(node) )
     {
-        ident_t max_id_in_right_subtree = count_loc_vars_max_id_in_subtree(node->left); 
+        ident_t max_id_in_right_subtree = count_loc_vars_max_id_in_subtree(LEFT(node)); 
         if ( max_id_in_right_subtree != ABSENT_ID )
         {
             if (max_id == ABSENT_ID)
@@ -285,30 +310,9 @@ Status tr_AST_to_IR_ASSIGN (FORMAL_TR_ASM_IR_ARGS)
 
     CHECK_NODE_TYPE( RIGHT_CURR, TREE_NODE_TYPE_VAR_LOCAL || TREE_NODE_TYPE_FUNC_ARG );
     
-    if ( GET_TYPE(node) == TREE_NODE_TYPE_VAR_LOCAL )
-    {
-        COMMENT("assign_pop_to_local_var");
-
-        ident_t var_local_id = GET_ID(RIGHT_CURR);
-
-        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
-        size_t args_num_in_curr_frame = min( context->args_num, NUM_OF_XMM_REGS_TO_PASS_ARGS );
-        pop_data.arg_dst = form_arg_t_mem( REG_rbp, (-1)*QWORD*( args_num_in_curr_frame + 1 + var_local_id ) );
-        IR_PUSH_TAIL( pop_data );
-    }
-    else if ( GET_TYPE(node) == TREE_NODE_TYPE_FUNC_ARG )
-    {
-        COMMENT("assign_pop_to_func_arg");
-
-        ident_t func_arg_id = GET_ID(RIGHT_CURR);
-        
-        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
-        if ( func_arg_id < NUM_OF_XMM_REGS_TO_PASS_ARGS )
-            pop_data.arg_dst = form_arg_t_mem( REG_rbp, (-1)*QWORD*(func_arg_id + 1) );
-        else
-            pop_data.arg_dst = form_arg_t_mem( REG_rbp, QWORD*(2 + func_arg_id - NUM_OF_XMM_REGS_TO_PASS_ARGS) );
-        IR_PUSH_TAIL(pop_data);
-    }
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+    pop_data.arg_dst = form_arg_loc_var_or_func_arg_helper( RIGHT_CURR, context );
+    IR_PUSH_TAIL( pop_data );
 
     COMMENT("assign_end");
 
@@ -653,22 +657,115 @@ Status tr_AST_to_IR_MINUS (FORMAL_TR_ASM_IR_ARGS)
 }
 
 
-
-Status tr_AST_to_IR_CALL_FUNC (FORMAL_TR_ASM_IR_ARGS)
+inline Status call_func_helper(FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
-    COMMENT("call func start");
+    COMMENT("moving args into regs:");
+    TreeNode *node_curr_list_cnctr = RIGHT_CURR;
+    size_t curr_reg_ind = 0;
+    TreeNode *node_list_cnctr_first_not_fitting = NULL;
+    TreeNode *node_last_list_cnctr              = NULL;
+    while (node_curr_list_cnctr)
+    {
+        if ( curr_reg_ind < NUM_OF_XMM_REGS_TO_PASS_ARGS )
+        {
+            IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+            mov_data.arg_dst = form_arg_t_reg_xmm(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[curr_reg_ind]);
+            mov_data.arg_src = form_arg_loc_var_or_func_arg_helper( LEFT(node_curr_list_cnctr), context );
+            IR_PUSH_TAIL( mov_data );
+        }
+        else if ( !node_list_cnctr_first_not_fitting )
+        {
+            // if it is the first fact arg, which didn't fit into the regs, remember 
+            // corresponding list connector node
+            node_list_cnctr_first_not_fitting = node_curr_list_cnctr;
+        }
+        TreeNode *node_next = RIGHT(node_curr_list_cnctr);
+        if (!node_next)
+        {
+            node_last_list_cnctr = node_curr_list_cnctr;
+            break;
+        }
+        node_curr_list_cnctr = node_next;
+    }
 
+    if ( node_list_cnctr_first_not_fitting )
+    {
+        COMMENT("not all args fit into regs, pushing those which are left (in reverse):");
+        node_curr_list_cnctr = node_last_list_cnctr;
+        while (true)
+        {
+            IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+            push_data.arg_src = form_arg_loc_var_or_func_arg_helper( LEFT( node_curr_list_cnctr ), context );
+            IR_PUSH_TAIL( push_data );
 
+            if (node_curr_list_cnctr == node_list_cnctr_first_not_fitting)
+                break; // the 'first_not_fitting' was just pushed, no more work to do
 
-    COMMENT("call func end");
+            node_curr_list_cnctr = node_curr_list_cnctr->parent;
+        }
+        COMMENT("done pushing left args");
+    }
+
+    IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
+    call_data.func_name = GET_STR( LEFT_CURR );
+    IR_PUSH_TAIL( call_data );
+
+    return STATUS_OK;
+}
+
+Status tr_AST_to_IR_CALL_FUNC_ACTION (FORMAL_TR_ASM_IR_ARGS)
+{
+    ASSERT_ALL();
+
+    COMMENT("call func action start");
+
+    WRP(call_func_helper(FACT_TR_ASM_IR_ARGS));
+
+    COMMENT("call func action end");
+    return STATUS_OK;
+}
+
+Status tr_AST_to_IR_CALL_FUNC_RECIPE (FORMAL_TR_ASM_IR_ARGS)
+{
+    ASSERT_ALL();
+
+    COMMENT("call func recipe start");
+
+    WRP(call_func_helper(FACT_TR_ASM_IR_ARGS));
+
+    COMMENT("pushing result of the func on stack:");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm(REG_xmm0);
+    IR_PUSH_TAIL( push_data );
+
+    COMMENT("call func recipe end");
     return STATUS_OK;
 }
 
 Status tr_AST_to_IR_RETURN (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("return start");
+    
+    if ( RIGHT_CURR )
+    {
+        // there is smth to return
+        COMMENT("computing the expression to return:");
+        TR_RIGHT_CHILD_CURR();
+
+        COMMENT("pop the result into xmm0");
+        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+        pop_data.arg_dst = form_arg_t_reg_xmm(REG_xmm0);
+        IR_PUSH_TAIL( pop_data );
+    }
+
+    IR_PUSH_TAIL( form_IRBlockData_type( IR_BLOCK_TYPE_LEAVE ) );
+
+    COMMENT("return end");
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_INPUT (FORMAL_TR_ASM_IR_ARGS)
