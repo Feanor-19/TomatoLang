@@ -83,6 +83,12 @@ inline size_t min( size_t a, size_t b )
     return (a < b) ? a : b;
 }
 
+inline size_t max( size_t a, size_t b )
+{
+    return (a > b) ? a : b;
+}
+
+// ---------------------------------------------------------------------------------
 
 Status tr_AST_to_IR_SEQ_EXEC (FORMAL_TR_ASM_IR_ARGS)
 {
@@ -102,26 +108,170 @@ Status tr_AST_to_IR_DUMMY (FORMAL_TR_ASM_IR_ARGS)
     return STATUS_OK;
 }
 
+//! @brief Receives the node of type 'FUNC_DEF_HELPER' and counts the 
+//! number of func formal args, which are located in the left subtree of the 
+//! given node.
+inline size_t count_args_num( TreeNode *func_def_helper )
+{
+    assert(func_def_helper);
+    assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
+    assert( GET_OP(func_def_helper)   == TREE_OP_FUNC_DEF_HELPER );
+
+    size_t res = 0;
+    TreeNode *curr_list_cnctr = LEFT( func_def_helper );
+    while (curr_list_cnctr)
+    {
+        res++;
+        curr_list_cnctr = curr_list_cnctr->right;
+    }
+    
+    return res;
+}
+
+//! @note If there are no local vars, ABSENT_ID is returned.
+int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
+{
+    assert(node);
+
+    if ( GET_TYPE(node) == TREE_NODE_TYPE_VAR_LOCAL )
+        return GET_ID( node );
+
+    ident_t max_id = ABSENT_ID;
+    if ( node->left )
+    {
+        ident_t max_id_in_left_subtree = count_loc_vars_max_id_in_subtree(node->left); 
+        max_id = max_id_in_left_subtree;
+    }
+
+    if ( node->right )
+    {
+        ident_t max_id_in_right_subtree = count_loc_vars_max_id_in_subtree(node->left); 
+        if ( max_id_in_right_subtree != ABSENT_ID )
+        {
+            if (max_id == ABSENT_ID)
+                max_id = max_id_in_right_subtree;
+            else
+                max_id = max( max_id, max_id_in_right_subtree );
+        }
+    }
+
+    return max_id;
+}
+
+//! @brief Receives the node of type 'FUNC_DEF_HELPER' and counts the 
+//! number of local variables in the whole func body, which is the right subtree of the 
+//! given node.
+//! @note If there are no local vars, 0 is returned.
+inline size_t count_loc_vars_num( TreeNode *func_def_helper )
+{
+    assert(func_def_helper);
+    assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
+    assert( GET_OP(func_def_helper)   == TREE_OP_FUNC_DEF_HELPER );
+
+    ident_t max_id = count_loc_vars_max_id_in_subtree( RIGHT(func_def_helper) );
+    if ( max_id != ABSENT_ID )
+        return (size_t) (max_id+1);
+    else
+        return 0;
+}
+
 Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
+    CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_STR_IDENT );
 
+    size_t args_num     = count_args_num( RIGHT_CURR );
+    size_t loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+
+    IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
+    global_kw_data.func_name = GET_STR( LEFT_CURR );
+    IR_PUSH_TAIL( global_kw_data );
+
+    IRBlockData lbl_func_name_data = form_IRBlockData_type( IR_BLOCK_TYPE_LBL_FUNC_NAME );
+    lbl_func_name_data.func_name = GET_STR( LEFT_CURR );
+    IR_PUSH_TAIL( lbl_func_name_data );
+
+    COMMENT("func prologue start");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg( REG_rbp );
+    IR_PUSH_TAIL( push_data );
+
+    IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+    mov_data.arg_dst = form_arg_t_reg( REG_rbp );
+    mov_data.arg_src = form_arg_t_reg( REG_rsp );
+    IR_PUSH_TAIL( mov_data );
+
+    IRBlockData sub_data = form_IRBlockData_type( IR_BLOCK_TYPE_SUB );
+    sub_data.arg1 = form_arg_t_reg( REG_rsp );
+    sub_data.arg2 = form_arg_t_imm_const( QWORD*(args_num + loc_vars_num) );
+    IR_PUSH_TAIL( sub_data );
+    COMMENT("func prologue end");
+
+    context->args_num     = args_num;
+    context->loc_vars_num = loc_vars_num;
+
+    TR_RIGHT_CHILD_OF( RIGHT_CURR );
+
+    context->args_num     = 0;
+    context->loc_vars_num = 0;
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_FUNC_DEF_HELPER (FORMAL_TR_ASM_IR_ARGS)
 {
-
+    ASSERT_UNREACHEABLE();
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_LIST_CONNECTOR (FORMAL_TR_ASM_IR_ARGS)
 {
-
+    ASSERT_UNREACHEABLE();
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    size_t loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+
+    IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
+    global_kw_data.func_name = LBL_START;
+    IR_PUSH_TAIL( global_kw_data );
+
+    IRBlockData lbl_start_data = form_IRBlockData_type( IR_BLOCK_TYPE_LBL_FUNC_NAME );
+    lbl_start_data.func_name = LBL_START;
+    IR_PUSH_TAIL( lbl_start_data );
+
+    COMMENT("main prologue start");
+    IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+    mov_data.arg_dst = form_arg_t_reg( REG_rbp );
+    mov_data.arg_src = form_arg_t_reg( REG_rsp );
+    IR_PUSH_TAIL( mov_data );
+
+    IRBlockData sub_data = form_IRBlockData_type( IR_BLOCK_TYPE_SUB );
+    sub_data.arg1 = form_arg_t_reg( REG_rsp );
+    sub_data.arg2 = form_arg_t_imm_const( QWORD*(loc_vars_num) );
+    IR_PUSH_TAIL( sub_data );
+    COMMENT("main prologue end");
+
+    context->args_num     = 0;
+    context->loc_vars_num = loc_vars_num;
+
+    TR_RIGHT_CHILD_OF( RIGHT_CURR );
+
+    context->args_num     = 0;
+    context->loc_vars_num = 0;
+
+    COMMENT("main epilogue start");
+    IRBlockData call_exit_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
+    call_exit_data.func_name = STDLIB_EXIT;
+    IR_PUSH_TAIL(call_exit_data);
+    COMMENT("main epilogue end");
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_ASSIGN (FORMAL_TR_ASM_IR_ARGS)
@@ -506,7 +656,14 @@ Status tr_AST_to_IR_MINUS (FORMAL_TR_ASM_IR_ARGS)
 
 Status tr_AST_to_IR_CALL_FUNC (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("call func start");
+
+
+
+    COMMENT("call func end");
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_RETURN (FORMAL_TR_ASM_IR_ARGS)
@@ -521,11 +678,11 @@ Status tr_AST_to_IR_INPUT (FORMAL_TR_ASM_IR_ARGS)
     COMMENT( "input start" );
     
     IRBlockData extern_keyword_data = form_IRBlockData_type( IR_BLOCK_TYPE_EXTERN_KW );
-    extern_keyword_data.extern_func_name = STDLIB_FUNC_INPUT;
+    extern_keyword_data.func_name = STDLIB_INPUT;
     IR_PUSH_TAIL(extern_keyword_data);
 
     IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
-    call_data.func_name = STDLIB_FUNC_INPUT;
+    call_data.func_name = STDLIB_INPUT;
     IR_PUSH_TAIL(call_data);
 
     COMMENT( "push from xmm0, in which func result is located" );
@@ -553,7 +710,7 @@ Status tr_AST_to_IR_PRINT_NUM (FORMAL_TR_ASM_IR_ARGS)
     IR_PUSH_TAIL( pop_data );
 
     IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
-    call_data.func_name = STDLIB_FUNC_PRINT_NUM;
+    call_data.func_name = STDLIB_PRINT_NUM;
     IR_PUSH_TAIL(call_data);
 
     return STATUS_OK;
@@ -579,7 +736,7 @@ Status tr_AST_to_IR_PRINT_STR (FORMAL_TR_ASM_IR_ARGS)
     IR_PUSH_TAIL( mov_data );
 
     IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
-    call_data.func_name = STDLIB_FUNC_PRINT_STR;
+    call_data.func_name = STDLIB_PRINT_STR;
     IR_PUSH_TAIL(call_data);
 
     return STATUS_OK;

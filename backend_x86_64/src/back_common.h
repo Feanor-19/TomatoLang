@@ -23,8 +23,11 @@ enum Status
 
 enum IRBlockType
 {
-    IR_BLOCK_TYPE_DUMMY,     // e.g. for comments or labels, which aren't at any instructions
+    IR_BLOCK_TYPE_DUMMY,     // e.g. for comments or unnamed labels, which aren't at any instructions
     IR_BLOCK_TYPE_EXTERN_KW, // represents line in asm 'extern func_name'.
+    IR_BLOCK_TYPE_GLOBAL_KW, // represents line in asm 'global func_name'.
+
+    IR_BLOCK_TYPE_LBL_FUNC_NAME, // represents 'func_name:'
 
     IR_BLOCK_TYPE_NUM_CONST, // const of type num_t (label with DQ in .rodata).
     IR_BLOCK_TYPE_STR_CONST, // string const (label with DB in .rodata).
@@ -32,6 +35,9 @@ enum IRBlockType
     IR_BLOCK_TYPE_PUSH,      // Imagining it is universal (including XMM and 'mem to mem')
     IR_BLOCK_TYPE_POP,       // Imagining it is universal (including XMM and 'mem to mem')
     IR_BLOCK_TYPE_MOV,      
+
+    IR_BLOCK_TYPE_ADD,
+    IR_BLOCK_TYPE_SUB,
 
     IR_BLOCK_TYPE_ADDSD,
     IR_BLOCK_TYPE_SUBSD,
@@ -123,8 +129,6 @@ struct IRBlockData
         //! @brief label with DB in .rodata.
         //! @note It's a pointer to memory, allocated by AST!
         const char *str_const;
-
-        const char *extern_func_name;
         
         IRBlock *instr_ptr; // plays role of a label (e.g. 'jmp') 
         
@@ -218,9 +222,12 @@ const char * const REGS_XMM[] =
 const reg_xmm_t REG_XMM_TMP_1 = REG_xmm8;
 const reg_xmm_t REG_XMM_TMP_2 = REG_xmm9;
 
-const char * const STDLIB_FUNC_INPUT     = "input";
-const char * const STDLIB_FUNC_PRINT_NUM = "print_num";
-const char * const STDLIB_FUNC_PRINT_STR = "print_str";
+const char * const STDLIB_INPUT     = "input";
+const char * const STDLIB_PRINT_NUM = "print_num";
+const char * const STDLIB_PRINT_STR = "print_str";
+const char * const STDLIB_EXIT      = "_exit";
+
+const char * const LBL_START = "_start";
 
 //! @brief Common registers, used to pass parametres to funcs, listed in the right order.
 Regs const REGS_TO_PASS_PARAMS_TO_FUNCS[] = 
