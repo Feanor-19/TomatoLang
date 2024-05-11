@@ -732,7 +732,7 @@ static TreeNode *get_call_func_action( FORMAL_REC_FALL_ARGS )
     memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
 
     TreeNode *node_func_id = new_node_str_ident( TREE, str_func_ident );
-    TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
+    TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC_ACTION );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
     Token tkn_bracket_opn = get_token( CURR );
@@ -797,7 +797,7 @@ static TreeNode *get_call_func_recipe( FORMAL_REC_FALL_ARGS )
     memcpy( str_func_ident, tkn_func_id.id.start, tkn_func_id.id.len );
 
     TreeNode *node_func_id = new_node_str_ident( TREE, str_func_ident );
-    TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC );
+    TreeNode *node_call_op = new_node_op( TREE, TREE_OP_CALL_FUNC_RECIPE );
     tree_hang_loose_node_at_left( TREE, node_func_id, node_call_op );
 
     Token tkn_bracket_opn = get_token( CURR );
