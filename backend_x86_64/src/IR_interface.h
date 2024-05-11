@@ -156,18 +156,33 @@ inline Status IR_pop( IR *IR, IRBlock *block )
     return STATUS_OK;
 }
 
-inline IRBlockData form_IRBlockData_type( IRBlockType type, IRBlockDataType data_type )
+inline IRBlockData form_IRBlockData_type( IRBlockType type )
 {
     IRBlockData data = {};
 
     data.type      = type;
-    data.data_type = data_type;
     
     return data;
 }
 
-inline mem_t form_mem_t( reg_t base_reg, int16_t disp, 
-                         reg_t index_reg = REG_DUMMY, MemScaleFactor scale = SCALE_FACTOR_0 )
+inline arg_t form_arg_t_reg( reg_t reg )
+{
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_REG;
+    arg.reg = reg;
+    return arg;
+}
+
+inline arg_t form_arg_t_reg( reg_xmm_t reg_xmm )
+{
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_REG_XMM;
+    arg.reg_xmm = reg_xmm;
+    return arg;
+}
+
+inline arg_t form_arg_t_mem( reg_t base_reg, int16_t disp, 
+                             reg_t index_reg = REG_DUMMY, MemScaleFactor scale = SCALE_FACTOR_0 )
 {
     mem_t mem = {};
 
@@ -176,7 +191,19 @@ inline mem_t form_mem_t( reg_t base_reg, int16_t disp,
     mem.scale       = scale;
     mem.disp        = disp;
 
-    return mem;
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_MEM;
+    arg.mem = mem;
+
+    return arg;
+}
+
+inline arg_t form_arg_t_imm_const( num_t imm_const )
+{
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_IMM_CONST;
+    arg.imm_const = imm_const;
+    return arg;
 }
 
 #endif /* IR_INTERFACE */

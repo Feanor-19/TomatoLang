@@ -58,7 +58,6 @@ do{                     \
 do{                                     \
     IRBlockData data = {};              \
     data.type = IR_BLOCK_TYPE_DUMMY;    \
-    data.data_type = IR_BLOCK_NO_DATA;   \
     data.comment = comment__;           \
     IR_push_tail(IR, data);             \
 }while(0)
@@ -74,9 +73,9 @@ do{                                                 \
 #define IR_PUSH_HEAD(data__) WRP(IR_push_head( IR, data__ ))
 
 #define MAKE_LABEL( label__ ) \
-    COMMENT("label " #label__ ":");                                                                 \
-    IRBlockData lbl_data_##label__ = form_IRBlockData_type( IR_BLOCK_TYPE_DUMMY, IR_BLOCK_NO_DATA );\
-    IR_PUSH_TAIL( lbl_data_##label__ );                                                             \
+    COMMENT("label " #label__ ":");                                                 \
+    IRBlockData lbl_data_##label__ = form_IRBlockData_type( IR_BLOCK_TYPE_DUMMY );  \
+    IR_PUSH_TAIL( lbl_data_##label__ );                                             \
     IRBlock *lbl_block_##label__ = LAST_IR_BLOCK;
 
 inline size_t min( size_t a, size_t b )
@@ -142,9 +141,9 @@ Status tr_AST_to_IR_ASSIGN (FORMAL_TR_ASM_IR_ARGS)
 
         ident_t var_local_id = GET_ID(RIGHT_CURR);
 
-        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP, IR_BLOCK_DATA_ARGS_DIR );
+        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
         size_t args_num_in_curr_frame = min( context->args_num, NUM_OF_XMM_REGS_TO_PASS_ARGS );
-        pop_data.arg_dst.mem = form_mem_t( REG_rbp, (-1)*QWORD*( args_num_in_curr_frame + 1 + var_local_id ) );
+        pop_data.arg_dst = form_arg_t_mem( REG_rbp, (-1)*QWORD*( args_num_in_curr_frame + 1 + var_local_id ) );
         IR_PUSH_TAIL( pop_data );
     }
     else if ( GET_TYPE(node) == TREE_NODE_TYPE_FUNC_ARG )
@@ -153,11 +152,11 @@ Status tr_AST_to_IR_ASSIGN (FORMAL_TR_ASM_IR_ARGS)
 
         ident_t func_arg_id = GET_ID(RIGHT_CURR);
         
-        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP, IR_BLOCK_DATA_ARGS_DIR );
+        IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
         if ( func_arg_id < NUM_OF_XMM_REGS_TO_PASS_ARGS )
-            pop_data.arg_dst.mem = form_mem_t( REG_rbp, (-1)*QWORD*(func_arg_id + 1) );
+            pop_data.arg_dst = form_arg_t_mem( REG_rbp, (-1)*QWORD*(func_arg_id + 1) );
         else
-            pop_data.arg_dst.mem = form_mem_t( REG_rbp, QWORD*(2 + func_arg_id - NUM_OF_XMM_REGS_TO_PASS_ARGS) );
+            pop_data.arg_dst = form_arg_t_mem( REG_rbp, QWORD*(2 + func_arg_id - NUM_OF_XMM_REGS_TO_PASS_ARGS) );
         IR_PUSH_TAIL(pop_data);
     }
 
@@ -229,7 +228,6 @@ Status tr_AST_to_IR_DIV (FORMAL_TR_ASM_IR_ARGS)
 inline IRBlockData get_corr_jmp_data( ASTOpNameEnum cmp_type )
 {
     IRBlockData data = {};
-    data.data_type = IR_BLOCK_DATA_INSTR_PTR;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
@@ -267,7 +265,7 @@ inline Status cmp_helper( FORMAL_TR_ASM_IR_ARGS )
     COMMENT("computing left cmp expr");
     TR_LEFT_CHILD_OF( LEFT_CURR );
     COMMENT("pop result to xmm_tmp_1");
-    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP, IR_BLOCK_DATA_ARGS_DIR );
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
     pop_data.arg_dst.reg_xmm = REG_XMM_TMP_1;
     IR_PUSH_TAIL(pop_data);
 
@@ -277,7 +275,7 @@ inline Status cmp_helper( FORMAL_TR_ASM_IR_ARGS )
     pop_data.arg_dst.reg_xmm = REG_XMM_TMP_2;
     IR_PUSH_TAIL(pop_data);
 
-    IRBlockData comisd_data = form_IRBlockData_type( IR_BLOCK_TYPE_COMISD, IR_BLOCK_DATA_ARGS_NUM );
+    IRBlockData comisd_data = form_IRBlockData_type( IR_BLOCK_TYPE_COMISD );
     comisd_data.arg1.reg_xmm = REG_XMM_TMP_1;
     comisd_data.arg2.reg_xmm = REG_XMM_TMP_2;
     IR_PUSH_TAIL(comisd_data);
@@ -313,7 +311,7 @@ Status tr_AST_to_IR_IF (FORMAL_TR_ASM_IR_ARGS)
     }
 
     COMMENT("jump if_end:");
-    IRBlockData jmp_if_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    IRBlockData jmp_if_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP );
     IR_PUSH_TAIL( jmp_if_end_data );
     IRBlock *jmp_if_end_block = LAST_IR_BLOCK; // filling it later
 
@@ -343,7 +341,7 @@ Status tr_AST_to_IR_WHILE (FORMAL_TR_ASM_IR_ARGS)
     IRBlock *jmp_while_body_block = LAST_IR_BLOCK;
 
     COMMENT("jmp while_end");
-    IRBlockData jmp_while_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    IRBlockData jmp_while_end_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP );
     IR_PUSH_TAIL( jmp_while_end_data ); // filling it later
     IRBlock *jmp_while_end_block = LAST_IR_BLOCK; 
 
@@ -354,7 +352,7 @@ Status tr_AST_to_IR_WHILE (FORMAL_TR_ASM_IR_ARGS)
     TR_RIGHT_CHILD_CURR();
 
     COMMENT("jmp while_start");
-    IRBlockData jmp_while_start_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP, IR_BLOCK_DATA_INSTR_PTR );
+    IRBlockData jmp_while_start_data = form_IRBlockData_type( IR_BLOCK_TYPE_JMP );
     jmp_while_start_data.instr_ptr = lbl_block_while_start;
     IR_PUSH_TAIL( jmp_while_start_data );
 

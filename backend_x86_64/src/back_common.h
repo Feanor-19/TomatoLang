@@ -74,24 +74,37 @@ struct mem_t
     int16_t disp;
 };
 
-union arg
+
+enum IRBlockArgType
 {
-    reg_t reg;
-    reg_xmm_t reg_xmm;
-    mem_t mem;
-    num_t imm_const; 
+    IRB_ARG_TYPE_REG,
+    IRB_ARG_TYPE_REG_XMM,
+    IRB_ARG_TYPE_MEM,
+    IRB_ARG_TYPE_IMM_CONST,
+};
+
+struct arg_t
+{
+    IRBlockArgType type;
+    union 
+    {
+        reg_t reg;
+        reg_xmm_t reg_xmm;
+        mem_t mem;
+        num_t imm_const; 
+    };
 };
 
 
 struct IRBlockData
 {
     IRBlockType     type      = IR_BLOCK_TYPE_DUMMY;
-    IRBlockDataType data_type = IR_BLOCK_NO_DATA;
 
     //! @note If just a comment is needed (not appended to some instruction), 
     //! use 'IR_BLOCK_TYPE_DUMMY' and 'IR_BLOCK_NO_DATA'.
     const char* comment = NULL;
 
+    //! @note 'type' (see above) defines which one of the below union members is used.
     union 
     {
         IRBlock *instr_ptr; // plays role of a label (e.g. 'jmp') 
@@ -100,14 +113,14 @@ struct IRBlockData
 
         struct 
         {
-            arg arg_src;
-            arg arg_dst;
+            arg_t arg_src;
+            arg_t arg_dst;
         };
 
         struct
         {
-            arg arg1;
-            arg arg2;
+            arg_t arg1;
+            arg_t arg2;
         };
     };
 };
