@@ -201,26 +201,104 @@ Status tr_AST_to_IR_CMP_NOT_EQ (FORMAL_TR_ASM_IR_ARGS)
     return STATUS_OK;
 }
 
+//! @brief Computes left child of curr_node, assuming it's an expression, then pops
+//! its result in REG_XMM_TMP_1. Then does the same with right child and REG_XMM_TMP_2.
+inline Status bi_arg_instr_helper(FORMAL_TR_ASM_IR_ARGS)
+{
+    COMMENT("computing left expr");
+    TR_LEFT_CHILD_OF( LEFT_CURR );
+    COMMENT("pop result to xmm_tmp_1");
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(pop_data);
 
+    COMMENT("computing right expr");
+    TR_RIGHT_CHILD_OF( LEFT_CURR );
+    COMMENT("pop result to xmm_tmp_2");
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(pop_data);
+}
 
 Status tr_AST_to_IR_ADD (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("add start");
+
+    WRP(bi_arg_instr_helper(FACT_TR_ASM_IR_ARGS));
+
+    IRBlockData add_data = form_IRBlockData_type( IR_BLOCK_TYPE_ADDSD );
+    add_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    add_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("add end");
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_SUB (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
+    COMMENT("sub start");
 
+    WRP(bi_arg_instr_helper(FACT_TR_ASM_IR_ARGS));
+
+    IRBlockData sub_data = form_IRBlockData_type( IR_BLOCK_TYPE_SUBSD );
+    sub_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    sub_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("sub end");
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_MUL (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
+    COMMENT("mul start");
 
+    WRP(bi_arg_instr_helper(FACT_TR_ASM_IR_ARGS));
+
+    IRBlockData mul_data = form_IRBlockData_type( IR_BLOCK_TYPE_MULSD );
+    mul_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    mul_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("mul end");
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_DIV (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
+    COMMENT("div start");
 
+    WRP(bi_arg_instr_helper(FACT_TR_ASM_IR_ARGS));
+
+    IRBlockData div_data = form_IRBlockData_type( IR_BLOCK_TYPE_DIVSD );
+    div_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    div_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("div end");
+    return STATUS_OK;
 }
 
 //! @brief Translates given cmp type into corresponding 
@@ -262,23 +340,15 @@ inline IRBlockData get_corr_jmp_data( ASTOpNameEnum cmp_type )
 
 inline Status cmp_helper( FORMAL_TR_ASM_IR_ARGS )
 {
-    COMMENT("computing left cmp expr");
-    TR_LEFT_CHILD_OF( LEFT_CURR );
-    COMMENT("pop result to xmm_tmp_1");
-    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
-    pop_data.arg_dst.reg_xmm = REG_XMM_TMP_1;
-    IR_PUSH_TAIL(pop_data);
-
-    COMMENT("computing right cmp expr");
-    TR_RIGHT_CHILD_OF( LEFT_CURR );
-    COMMENT("pop result to xmm_tmp_2");
-    pop_data.arg_dst.reg_xmm = REG_XMM_TMP_2;
-    IR_PUSH_TAIL(pop_data);
+    COMMENT("cmp helper start");
+    WRP(bi_arg_instr_helper(FACT_TR_ASM_IR_ARGS));
 
     IRBlockData comisd_data = form_IRBlockData_type( IR_BLOCK_TYPE_COMISD );
-    comisd_data.arg1.reg_xmm = REG_XMM_TMP_1;
-    comisd_data.arg2.reg_xmm = REG_XMM_TMP_2;
+    comisd_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    comisd_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
     IR_PUSH_TAIL(comisd_data);
+
+    COMMENT("cmp helper end");
 
     return STATUS_OK;
 }
@@ -372,12 +442,64 @@ Status tr_AST_to_IR_ELSE (FORMAL_TR_ASM_IR_ARGS)
 
 Status tr_AST_to_IR_SQRT (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("sqrt start, computing sub-expr:");
+    TR_RIGHT_CHILD_CURR();
+
+    COMMENT("pop result to reg_xmm_tmp_1");
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(pop_data);
+
+    IRBlockData sqrt_data = form_IRBlockData_type( IR_BLOCK_TYPE_SQRTSD );
+    sqrt_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    sqrt_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(sqrt_data);
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("sqrt end");    
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_MINUS (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("minus start, computing sub-expr:");
+    TR_RIGHT_CHILD_CURR();
+
+    COMMENT("pop result to reg_xmm_tmp_1");
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(pop_data);
+
+    COMMENT("mulsd reg_xmm_tmp_1, [num_const_which_is_minus_one]");
+    COMMENT("the mentioned const:");
+    IRBlockData minus_one_data = form_IRBlockData_type( IR_BLOCK_TYPE_NUM_CONST );
+    minus_one_data.num_const = -1;
+    IR_PUSH_TAIL( minus_one_data );
+    IRBlock *minus_one_block = LAST_IR_BLOCK;
+
+    COMMENT("the mentioned mulsd:");
+    IRBlockData mulsd_data = form_IRBlockData_type( IR_BLOCK_TYPE_MULSD );
+    mulsd_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    mulsd_data.arg2 = form_arg_t_mem_var( minus_one_block );
+    IR_PUSH_TAIL(mulsd_data);
+
+    COMMENT("push back onto comp. sub-stack");
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT("sqrt end"); 
+
+    return STATUS_OK;
 }
 
 
@@ -394,15 +516,71 @@ Status tr_AST_to_IR_RETURN (FORMAL_TR_ASM_IR_ARGS)
 
 Status tr_AST_to_IR_INPUT (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT( "input start" );
+    
+    IRBlockData extern_keyword_data = form_IRBlockData_type( IR_BLOCK_TYPE_EXTERN_KW );
+    extern_keyword_data.extern_func_name = STDLIB_FUNC_INPUT;
+    IR_PUSH_TAIL(extern_keyword_data);
+
+    IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
+    call_data.func_name = STDLIB_FUNC_INPUT;
+    IR_PUSH_TAIL(call_data);
+
+    COMMENT( "push from xmm0, in which func result is located" );
+    IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
+    push_data.arg_src = form_arg_t_reg_xmm( REG_xmm0 );
+    IR_PUSH_TAIL(push_data);
+
+    COMMENT( "input end" );
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_PRINT_NUM (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("print num start");
+
+    COMMENT("compute the argument:");
+    TR_RIGHT_CHILD_CURR();
+
+    COMMENT("pop to xmm0");
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_xmm0 );
+    IR_PUSH_TAIL( pop_data );
+
+    IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
+    call_data.func_name = STDLIB_FUNC_PRINT_NUM;
+    IR_PUSH_TAIL(call_data);
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_PRINT_STR (FORMAL_TR_ASM_IR_ARGS)
 {
+    ASSERT_ALL();
 
+    COMMENT("print_str start");
+
+    CHECK_NODE_TYPE( RIGHT_CURR, TREE_NODE_TYPE_CONST_STR );
+
+    IRBlockData str_const_data = form_IRBlockData_type( IR_BLOCK_TYPE_STR_CONST );
+    str_const_data.str_const = GET_STR( RIGHT_CURR );
+    IR_PUSH_TAIL( str_const_data );
+    IRBlock *str_const_block = LAST_IR_BLOCK;
+
+    COMMENT("mov *first common reg used to pass params*, str_ptr");
+    IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+    mov_data.arg_dst = form_arg_t_reg( REGS_TO_PASS_PARAMS_TO_FUNCS[0] );
+    mov_data.arg_src = form_arg_t_const_str_addr( str_const_block );
+    IR_PUSH_TAIL( mov_data );
+
+    IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
+    call_data.func_name = STDLIB_FUNC_PRINT_STR;
+    IR_PUSH_TAIL(call_data);
+
+    return STATUS_OK;
 }

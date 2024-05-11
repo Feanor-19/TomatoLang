@@ -9,6 +9,8 @@ typedef size_t cnt_t;
 
 typedef uint8_t reg_t;
 typedef uint8_t reg_xmm_t;
+typedef IRBlock* mem_var_t; 
+typedef IRBlock* const_str_addr_t; 
 
 #define DEF_STATUS(name, msg) STATUS_##name,
 enum Status
@@ -21,10 +23,14 @@ enum Status
 
 enum IRBlockType
 {
-    IR_BLOCK_TYPE_DUMMY,    // e.g. for comments or labels, which aren't at any instructions
+    IR_BLOCK_TYPE_DUMMY,     // e.g. for comments or labels, which aren't at any instructions
+    IR_BLOCK_TYPE_EXTERN_KW, // represents line in asm 'extern func_name'.
+
+    IR_BLOCK_TYPE_NUM_CONST, // const of type num_t (label with DQ in .rodata).
+    IR_BLOCK_TYPE_STR_CONST, // string const (label with DB in .rodata).
     
-    IR_BLOCK_TYPE_PUSH,     // Imagining it is universal (including XMM and 'mem to mem')
-    IR_BLOCK_TYPE_POP,      // Imagining it is universal (including XMM and 'mem to mem')
+    IR_BLOCK_TYPE_PUSH,      // Imagining it is universal (including XMM and 'mem to mem')
+    IR_BLOCK_TYPE_POP,       // Imagining it is universal (including XMM and 'mem to mem')
     IR_BLOCK_TYPE_MOV,      
 
     IR_BLOCK_TYPE_ADDSD,
@@ -81,6 +87,8 @@ enum IRBlockArgType
     IRB_ARG_TYPE_REG_XMM,
     IRB_ARG_TYPE_MEM,
     IRB_ARG_TYPE_IMM_CONST,
+    IRB_ARG_TYPE_MEM_VAR,
+    IRB_ARG_TYPE_CONST_STR_ADDR,
 };
 
 struct arg_t
@@ -92,13 +100,15 @@ struct arg_t
         reg_xmm_t reg_xmm;
         mem_t mem;
         num_t imm_const; 
+        mem_var_t mem_var;     // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
+        const_str_addr_t addr; // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
     };
 };
 
 
 struct IRBlockData
 {
-    IRBlockType     type      = IR_BLOCK_TYPE_DUMMY;
+    IRBlockType type = IR_BLOCK_TYPE_DUMMY;
 
     //! @note If just a comment is needed (not appended to some instruction), 
     //! use 'IR_BLOCK_TYPE_DUMMY' and 'IR_BLOCK_NO_DATA'.
@@ -107,9 +117,19 @@ struct IRBlockData
     //! @note 'type' (see above) defines which one of the below union members is used.
     union 
     {
+        //! @brief label with DQ in .rodata
+        num_t num_const;
+
+        //! @brief label with DB in .rodata.
+        //! @note It's a pointer to memory, allocated by AST!
+        const char *str_const;
+
+        const char *extern_func_name;
+        
         IRBlock *instr_ptr; // plays role of a label (e.g. 'jmp') 
         
-        const char *func_name; //!< @attention Points to memory, allocated by AST
+        //!< @attention Either points to memory, allocated by AST, or to const string.
+        const char *func_name;
 
         struct 
         {
@@ -195,11 +215,39 @@ const char * const REGS_XMM[] =
 };
 #undef DEF_REG_XMM
 
-//! @brief Number of XMM registers used to pass arguments to functions.
-const size_t NUM_OF_XMM_REGS_TO_PASS_ARGS = 8;
-
 const reg_xmm_t REG_XMM_TMP_1 = REG_xmm8;
 const reg_xmm_t REG_XMM_TMP_2 = REG_xmm9;
+
+const char * const STDLIB_FUNC_INPUT     = "input";
+const char * const STDLIB_FUNC_PRINT_NUM = "print_num";
+const char * const STDLIB_FUNC_PRINT_STR = "print_str";
+
+//! @brief Common registers, used to pass parametres to funcs, listed in the right order.
+Regs const REGS_TO_PASS_PARAMS_TO_FUNCS[] = 
+{
+    REG_rdi,
+    REG_rsi,
+    REG_rdx,
+    REG_rcx,
+    REG_r8,
+    REG_r9
+};
+
+//! @brief XMM registers, used to pass parametres to funcs, listed in the right order.
+RegsXMM const REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[] = 
+{
+    REG_xmm0,
+    REG_xmm1,
+    REG_xmm2,
+    REG_xmm3,
+    REG_xmm4,
+    REG_xmm5,
+    REG_xmm6,
+    REG_xmm7
+};
+
+//! @brief Number of XMM registers used to pass arguments to functions.
+const size_t NUM_OF_XMM_REGS_TO_PASS_ARGS = SIZEARR(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS);
 
 enum 
 {

@@ -173,7 +173,7 @@ inline arg_t form_arg_t_reg( reg_t reg )
     return arg;
 }
 
-inline arg_t form_arg_t_reg( reg_xmm_t reg_xmm )
+inline arg_t form_arg_t_reg_xmm( reg_xmm_t reg_xmm )
 {
     arg_t arg = {};
     arg.type = IRB_ARG_TYPE_REG_XMM;
@@ -203,6 +203,22 @@ inline arg_t form_arg_t_imm_const( num_t imm_const )
     arg_t arg = {};
     arg.type = IRB_ARG_TYPE_IMM_CONST;
     arg.imm_const = imm_const;
+    return arg;
+}
+
+inline arg_t form_arg_t_mem_var( mem_var_t mem_var )
+{
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_MEM_VAR;
+    arg.mem_var = mem_var;
+    return arg;
+}
+
+inline arg_t form_arg_t_const_str_addr( const_str_addr_t const_str_addr )
+{
+    arg_t arg = {};
+    arg.type = IRB_ARG_TYPE_CONST_STR_ADDR;
+    arg.addr = const_str_addr;
     return arg;
 }
 
