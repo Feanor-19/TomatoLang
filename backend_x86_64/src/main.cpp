@@ -4,6 +4,7 @@
 #include "ast_dump.h"
 #include "common.h"
 #include "backend.h"
+#include "IR_interface.h"
 
 int main( int argc, const char *argv[])
 {
@@ -42,10 +43,15 @@ int main( int argc, const char *argv[])
     }
 
     // make IR
+    IR IR = {};
+    translate_AST_to_IR( &AST, &IR );
 
     // optimize IR
 
-    // translate IR to asm (nasm)
+    // translate IR to nasm
+
+    IR_dtor(&IR);
+    tree_dtor(&AST);
 
     close_img_dumps();
 

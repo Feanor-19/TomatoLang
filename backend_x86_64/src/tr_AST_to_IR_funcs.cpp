@@ -6,7 +6,7 @@
 
 // DSL
 
-#define FACT_TR_ASM_IR_ARGS AST, IR, node, counters, context
+#define FACT_TR_ASM_IR_ARGS AST, IR, node, context
 
 #define LAST_IR_BLOCK IR->tail
 
@@ -23,7 +23,7 @@ do{                     \
     assert(AST);        \
     assert(IR);         \
     assert(node);       \
-    assert(counters);   \
+    assert(context);    \
 }while(0)
 
 #define LEFT_CURR  (tree_get_left_child ( (node) ))
@@ -33,19 +33,19 @@ do{                     \
 #define RIGHT( node__ ) (tree_get_right_child( (node__) ))
 
 #define TR_LEFT_CHILD_CURR() \
-    WRP(translate_AST_node(AST, IR, LEFT_CURR, counters, context))
+    WRP(translate_AST_node_to_IR(AST, IR, LEFT_CURR, context))
 
 #define TR_RIGHT_CHILD_CURR() \
-    WRP(translate_AST_node(AST, IR, RIGHT_CURR, counters, context))
+    WRP(translate_AST_node_to_IR(AST, IR, RIGHT_CURR, context))
 
 #define TR_LEFT_CHILD_OF( node__ ) \
-    WRP(translate_AST_node( AST, IR, LEFT( node__ ), counters, context))
+    WRP(translate_AST_node_to_IR( AST, IR, LEFT( node__ ), context))
 
 #define TR_RIGHT_CHILD_OF( node__ ) \
-    WRP(translate_AST_node( AST, IR, RIGHT( node__ ), counters, context))
+    WRP(translate_AST_node_to_IR( AST, IR, RIGHT( node__ ), context))
 
 #define TR_NODE( node__ ) \
-    WRP(translate_AST_node( AST, IR, node__, counters, context))
+    WRP(translate_AST_node_to_IR( AST, IR, node__, context))
 
 
 #define GET_TYPE( node__ )  (get_node_data( (node__) ).type)
@@ -78,19 +78,6 @@ do{                                                 \
     IR_PUSH_TAIL( lbl_data_##label__ );                                             \
     IRBlock *lbl_block_##label__ = LAST_IR_BLOCK;
 
-inline arg_t form_arg_t_mem_loc_var( ident_t var_local_id, Context *context )
-{
-    size_t args_num_in_curr_frame = min( context->args_num, NUM_OF_XMM_REGS_TO_PASS_ARGS );
-    return form_arg_t_mem( REG_rbp, (-1)*QWORD*( args_num_in_curr_frame + 1 + var_local_id ) );
-}
-
-inline arg_t form_arg_t_mem_func_arg( ident_t func_arg_id, Context *context )
-{
-    if ( func_arg_id < NUM_OF_XMM_REGS_TO_PASS_ARGS )
-        return form_arg_t_mem( REG_rbp, (-1)*QWORD*(func_arg_id + 1) );
-    else
-        return form_arg_t_mem( REG_rbp, QWORD*(2 + func_arg_id - NUM_OF_XMM_REGS_TO_PASS_ARGS) );
-}
 
 inline arg_t form_arg_loc_var_or_func_arg_helper( TreeNode *node_loc_var_or_func_arg, Context *context )
 {
@@ -100,20 +87,19 @@ inline arg_t form_arg_loc_var_or_func_arg_helper( TreeNode *node_loc_var_or_func
     if      ( GET_TYPE(node_loc_var_or_func_arg) == TREE_NODE_TYPE_VAR_LOCAL )
         return form_arg_t_mem_loc_var( GET_ID(node_loc_var_or_func_arg), context );
     else if ( GET_TYPE(node_loc_var_or_func_arg) == TREE_NODE_TYPE_FUNC_ARG )
-        return form_arg_t_mem_func_arg( GET_ID(node_loc_var_or_func_arg), context );
+        return form_arg_t_mem_func_arg( GET_ID(node_loc_var_or_func_arg));
+
+    ASSERT_UNREACHEABLE();
+    return {};
 }
 
-inline size_t min( size_t a, size_t b )
-{
-    return (a < b) ? a : b;
-}
 
-inline size_t max( size_t a, size_t b )
-{
-    return (a > b) ? a : b;
-}
 
 // ---------------------------------------------------------------------------------
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
 
 Status tr_AST_to_IR_SEQ_EXEC (FORMAL_TR_ASM_IR_ARGS)
 {
@@ -136,13 +122,13 @@ Status tr_AST_to_IR_DUMMY (FORMAL_TR_ASM_IR_ARGS)
 //! @brief Receives the node of type 'FUNC_DEF_HELPER' and counts the 
 //! number of func formal args, which are located in the left subtree of the 
 //! given node.
-inline size_t count_args_num( TreeNode *func_def_helper )
+inline uint count_args_num( TreeNode *func_def_helper )
 {
     assert(func_def_helper);
     assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
     assert( GET_OP(func_def_helper)   == TREE_OP_FUNC_DEF_HELPER );
 
-    size_t res = 0;
+    uint res = 0;
     TreeNode *curr_list_cnctr = LEFT( func_def_helper );
     while (curr_list_cnctr)
     {
@@ -154,7 +140,7 @@ inline size_t count_args_num( TreeNode *func_def_helper )
 }
 
 //! @note If there are no local vars, ABSENT_ID is returned.
-int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
+static int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
 {
     assert(node);
 
@@ -176,7 +162,7 @@ int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
             if (max_id == ABSENT_ID)
                 max_id = max_id_in_right_subtree;
             else
-                max_id = max( max_id, max_id_in_right_subtree );
+                max_id = (ident_t) max( (size_t) max_id, (size_t) max_id_in_right_subtree );
         }
     }
 
@@ -187,7 +173,7 @@ int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
 //! number of local variables in the whole func body, which is the right subtree of the 
 //! given node.
 //! @note If there are no local vars, 0 is returned.
-inline size_t count_loc_vars_num( TreeNode *func_def_helper )
+inline uint count_loc_vars_num( TreeNode *func_def_helper )
 {
     assert(func_def_helper);
     assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
@@ -195,7 +181,7 @@ inline size_t count_loc_vars_num( TreeNode *func_def_helper )
 
     ident_t max_id = count_loc_vars_max_id_in_subtree( RIGHT(func_def_helper) );
     if ( max_id != ABSENT_ID )
-        return (size_t) (max_id+1);
+        return (uint) (max_id+1);
     else
         return 0;
 }
@@ -206,8 +192,8 @@ Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
 
     CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_STR_IDENT );
 
-    size_t args_num     = count_args_num( RIGHT_CURR );
-    size_t loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+    uint args_num     = count_args_num( RIGHT_CURR );
+    uint loc_vars_num = count_loc_vars_num( RIGHT_CURR );
 
     IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
     global_kw_data.func_name = GET_STR( LEFT_CURR );
@@ -260,7 +246,7 @@ Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
-    size_t loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+    uint loc_vars_num = count_loc_vars_num( RIGHT_CURR );
 
     IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
     global_kw_data.func_name = LBL_START;
@@ -278,7 +264,7 @@ Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
 
     IRBlockData sub_data = form_IRBlockData_type( IR_BLOCK_TYPE_SUB );
     sub_data.arg1 = form_arg_t_reg( REG_rsp );
-    sub_data.arg2 = form_arg_t_imm_const( QWORD*(loc_vars_num) );
+    sub_data.arg2 = form_arg_t_imm_const( QWORD*( (imm_const_t) loc_vars_num) );
     IR_PUSH_TAIL( sub_data );
     COMMENT("main prologue end");
 
@@ -307,8 +293,6 @@ Status tr_AST_to_IR_ASSIGN (FORMAL_TR_ASM_IR_ARGS)
     
     COMMENT("assign_expr");
     TR_LEFT_CHILD_CURR();
-
-    CHECK_NODE_TYPE( RIGHT_CURR, TREE_NODE_TYPE_VAR_LOCAL || TREE_NODE_TYPE_FUNC_ARG );
     
     IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
     pop_data.arg_dst = form_arg_loc_var_or_func_arg_helper( RIGHT_CURR, context );
@@ -371,6 +355,8 @@ inline Status bi_arg_instr_helper(FORMAL_TR_ASM_IR_ARGS)
     COMMENT("pop result to xmm_tmp_2");
     pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
     IR_PUSH_TAIL(pop_data);
+
+    return STATUS_OK;
 }
 
 Status tr_AST_to_IR_ADD (FORMAL_TR_ASM_IR_ARGS)
@@ -838,3 +824,5 @@ Status tr_AST_to_IR_PRINT_STR (FORMAL_TR_ASM_IR_ARGS)
 
     return STATUS_OK;
 }
+
+#pragma GCC diagnostic pop

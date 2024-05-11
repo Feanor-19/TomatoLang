@@ -124,4 +124,15 @@ int are_dbls_equal( double a, double b );
 
 void put_n_chars( FILE *stream, char c, size_t n );
 
+inline size_t min( size_t a, size_t b )
+{
+    return (a < b) ? a : b;
+}
+
+inline size_t max( size_t a, size_t b )
+{
+    return (a > b) ? a : b;
+}
+
+
 #endif /* COMMON_H */

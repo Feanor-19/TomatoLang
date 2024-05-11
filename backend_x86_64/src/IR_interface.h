@@ -21,6 +21,19 @@ inline void free_IRBlock(IR *IR, IRBlock *block)
     IR->blocks_count--;
 }
 
+inline void IR_dtor(IR *IR)
+{
+    assert(IR);
+
+    IRBlock *curr_block = IR->head;
+    while (curr_block)
+    {
+        IRBlock *next_block = curr_block->next;
+        free(curr_block);
+        curr_block = next_block;
+    }
+}
+
 inline Status IR_push_head( IR *IR, IRBlockData data )
 {
     assert(IR);
@@ -181,7 +194,7 @@ inline arg_t form_arg_t_reg_xmm( reg_xmm_t reg_xmm )
     return arg;
 }
 
-inline arg_t form_arg_t_mem( reg_t base_reg, int16_t disp, 
+inline arg_t form_arg_t_mem( reg_t base_reg, disp_t disp, 
                              reg_t index_reg = REG_DUMMY, MemScaleFactor scale = SCALE_FACTOR_0 )
 {
     mem_t mem = {};
@@ -198,7 +211,7 @@ inline arg_t form_arg_t_mem( reg_t base_reg, int16_t disp,
     return arg;
 }
 
-inline arg_t form_arg_t_imm_const( num_t imm_const )
+inline arg_t form_arg_t_imm_const( int64_t imm_const )
 {
     arg_t arg = {};
     arg.type = IRB_ARG_TYPE_IMM_CONST;
@@ -206,7 +219,7 @@ inline arg_t form_arg_t_imm_const( num_t imm_const )
     return arg;
 }
 
-inline arg_t form_arg_t_mem_var( mem_var_t mem_var )
+inline arg_t form_arg_t_mem_var( IRBlock *mem_var )
 {
     arg_t arg = {};
     arg.type = IRB_ARG_TYPE_MEM_VAR;
@@ -214,7 +227,7 @@ inline arg_t form_arg_t_mem_var( mem_var_t mem_var )
     return arg;
 }
 
-inline arg_t form_arg_t_const_str_addr( const_str_addr_t const_str_addr )
+inline arg_t form_arg_t_const_str_addr( IRBlock *const_str_addr )
 {
     arg_t arg = {};
     arg.type = IRB_ARG_TYPE_CONST_STR_ADDR;

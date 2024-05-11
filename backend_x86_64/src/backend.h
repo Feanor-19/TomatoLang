@@ -27,7 +27,7 @@ const tr_AST_to_IR_t AST_OPS_BACKEND[] =
 Status translate_AST_to_IR( const Tree *AST, IR* IR );
 
 //! @brief Translates given node and subtree, which starts with this node, into IR.
-Status translate_AST_node( FORMAL_TR_ASM_IR_ARGS );
+Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS );
 
 
 void print_status_message( FILE *stream, Status status );

@@ -9,8 +9,8 @@ typedef size_t cnt_t;
 
 typedef uint8_t reg_t;
 typedef uint8_t reg_xmm_t;
-typedef IRBlock* mem_var_t; 
-typedef IRBlock* const_str_addr_t; 
+typedef int64_t disp_t;
+typedef int64_t imm_const_t;
 
 #define DEF_STATUS(name, msg) STATUS_##name,
 enum Status
@@ -84,7 +84,7 @@ struct mem_t
     reg_t base_reg;
     reg_t index_reg;
     MemScaleFactor scale;
-    int16_t disp;
+    disp_t disp;
 };
 
 
@@ -106,9 +106,9 @@ struct arg_t
         reg_t reg;
         reg_xmm_t reg_xmm;
         mem_t mem;
-        num_t imm_const; 
-        mem_var_t mem_var;     // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
-        const_str_addr_t addr; // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
+        imm_const_t imm_const; // if num_t is needed, IRBlock of type 'NUM_CONST' must be formed
+        void *mem_var; // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
+        void *addr;    // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
     };
 };
 
@@ -131,7 +131,9 @@ struct IRBlockData
         //! @note It's a pointer to memory, allocated by AST!
         const char *str_const;
         
-        IRBlock *instr_ptr; // plays role of a label (e.g. 'jmp') 
+        //! @brief plays role of a label (e.g. 'jmp')
+        //! @attention MUST BE A PTR TO IRBlock
+        void *instr_ptr;  
         
         //!< @attention Either points to memory, allocated by AST, or to const string.
         const char *func_name;
