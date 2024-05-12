@@ -4,7 +4,7 @@
 #include "back_common.h"
 #include "IR_interface.h"
 
-#define FORMAL_TR_IR_NASM_ARGS const IRBlock* block, FILE *stream 
+#define FORMAL_TR_IR_NASM_ARGS IRBlockData block_data, FILE *stream, Counters *counters
 
 #define DEF_IRBLOCK_TYPE(name__) Status tr_IR_to_NASM_##name__ (FORMAL_TR_IR_NASM_ARGS);
 #include "IRBlockType_defs.h"

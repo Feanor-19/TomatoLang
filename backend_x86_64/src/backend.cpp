@@ -85,11 +85,13 @@ Status translate_IR_to_NASM( const IR* IR, const char *output_filename )
 
     print_nasm_header(stream);
 
+    Counters counters = {};
+
     IRBlock *curr_block = IR->head;
     while( curr_block )
     {
         IRBlockType type = curr_block->data.type;
-        TR_IR_NASM_FUNCS[ type ]( curr_block, stream );
+        TR_IR_NASM_FUNCS[ type ]( curr_block->data, stream, &counters );
         curr_block = curr_block->next;
     }
 

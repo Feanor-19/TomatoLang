@@ -4,87 +4,78 @@
 
 #define ASSERT_ALL() \
 do{                  \
-    assert(block);  \
     assert(stream);  \
 } while (0)
 
+#define BLOCK block->data
+
+#define SECTION_TEXT() PRINT("section .text")
+#define SECTION_RODATA() PRINT("section .rodata")
 
 // --------------------------------------------------------
 
-Status tr_IR_to_NASM_DUMMY (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_DUMMY (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
+
+    PRINT("; %s", block_data.comment);
 
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_EXTERN_KW (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_EXTERN_KW (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
-
+    PRINT("extern %s", block_data.func_name);
 
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_GLOBAL_KW (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_GLOBAL_KW (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
-
-
-    return STATUS_OK;
-}
-
-
-Status tr_IR_to_NASM_LBL_FUNC_NAME (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
+    PRINT("global %s", block_data.func_name);
 
     return STATUS_OK;
 }
 
 
-Status tr_IR_to_NASM_NUM_CONST (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_LBL_FUNC_NAME (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_STR_CONST (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
+    PRINT("%s:", block_data.func_name);
 
     return STATUS_OK;
 }
 
 
-Status tr_IR_to_NASM_PUSH (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_NUM_CONST (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
-
+    SECTION_RODATA();
+    PRINT("LNC_%lu\tdq%g", counters->lbl_num_const++, block_data.num_const);
+    SECTION_TEXT();
 
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_POP (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_STR_CONST (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
-
+    SECTION_RODATA();
+    PRINT("LSC_%lu \tdb \"%s\", 0x0a", counters->lbl_num_const++, block_data.num_const);
+    SECTION_TEXT();
 
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_MOV (const IRBlock* block, FILE *stream)
+
+Status tr_IR_to_NASM_PUSH (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -93,8 +84,7 @@ Status tr_IR_to_NASM_MOV (const IRBlock* block, FILE *stream)
     return STATUS_OK;
 }
 
-
-Status tr_IR_to_NASM_ADD (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_POP (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -103,7 +93,7 @@ Status tr_IR_to_NASM_ADD (const IRBlock* block, FILE *stream)
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_SUB (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_MOV (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -113,7 +103,7 @@ Status tr_IR_to_NASM_SUB (const IRBlock* block, FILE *stream)
 }
 
 
-Status tr_IR_to_NASM_ADDSD (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_ADD (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -122,25 +112,7 @@ Status tr_IR_to_NASM_ADDSD (const IRBlock* block, FILE *stream)
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_SUBSD (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_MULSD (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_DIVSD (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_SUB (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -150,7 +122,34 @@ Status tr_IR_to_NASM_DIVSD (const IRBlock* block, FILE *stream)
 }
 
 
-Status tr_IR_to_NASM_COMISD (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_ADDSD (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_SUBSD (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_MULSD (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_DIVSD (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -160,61 +159,7 @@ Status tr_IR_to_NASM_COMISD (const IRBlock* block, FILE *stream)
 }
 
 
-Status tr_IR_to_NASM_JMP (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JE (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JNE (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JA (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JAE (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JB (const IRBlock* block, FILE *stream)
-{
-    ASSERT_ALL();
-
-
-
-    return STATUS_OK;
-}
-
-Status tr_IR_to_NASM_JBE (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_COMISD (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -224,7 +169,16 @@ Status tr_IR_to_NASM_JBE (const IRBlock* block, FILE *stream)
 }
 
 
-Status tr_IR_to_NASM_CALL (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_JMP (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+    
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_JE (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -233,7 +187,7 @@ Status tr_IR_to_NASM_CALL (const IRBlock* block, FILE *stream)
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_LEAVE (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_JNE (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -242,7 +196,34 @@ Status tr_IR_to_NASM_LEAVE (const IRBlock* block, FILE *stream)
     return STATUS_OK;
 }
 
-Status tr_IR_to_NASM_RET (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_JA (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_JAE (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_JB (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_JBE (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 
@@ -252,7 +233,35 @@ Status tr_IR_to_NASM_RET (const IRBlock* block, FILE *stream)
 }
 
 
-Status tr_IR_to_NASM_SQRTSD (const IRBlock* block, FILE *stream)
+Status tr_IR_to_NASM_CALL (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+    PRINT_INSTR("call %s", block_data.func_name);
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_LEAVE (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+    PRINT_INSTR("leave");
+
+    return STATUS_OK;
+}
+
+Status tr_IR_to_NASM_RET (FORMAL_TR_IR_NASM_ARGS)
+{
+    ASSERT_ALL();
+
+    PRINT_INSTR("ret");
+
+    return STATUS_OK;
+}
+
+
+Status tr_IR_to_NASM_SQRTSD (FORMAL_TR_IR_NASM_ARGS)
 {
     ASSERT_ALL();
 

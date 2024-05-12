@@ -84,13 +84,12 @@ struct IRBlockData
 {
     IRBlockType type = IR_BLOCK_TYPE_DUMMY;
 
-    //! @note If just a comment is needed (not appended to some instruction), 
-    //! use 'IR_BLOCK_TYPE_DUMMY' and 'IR_BLOCK_NO_DATA'.
-    const char* comment = NULL;
-
     //! @note 'type' (see above) defines which one of the below union members is used.
     union 
     {
+        //! @note Comment blocks have type 'DUMMY'.
+        const char* comment = NULL;
+        
         //! @brief label with DQ in .rodata
         num_t num_const;
 
@@ -141,12 +140,9 @@ struct IR
 
 struct Counters
 {
-    cnt_t cmp_c   = 0;
-    cnt_t if_c    = 0;
-    cnt_t while_c = 0;
-    cnt_t and_c   = 0;
-    cnt_t or_c    = 0;
-    cnt_t not_c   = 0;
+    size_t lbl_cmn = 0;         //!< Some common label (in 'if', 'while', etc.)
+    size_t lbl_num_const = 0;   //!< Label, naming const of type num_t
+    size_t lbl_str_const = 0;   //!< Label, naming string const
 };
 
 struct Context
