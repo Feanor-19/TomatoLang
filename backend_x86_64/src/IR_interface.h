@@ -21,6 +21,27 @@ inline void free_IRBlock(IR *IR, IRBlock *block)
     IR->blocks_count--;
 }
 
+// inline Status IR_ctor(IR *IR)
+// {
+//     assert(IR);
+
+//     IRBlock *dummy_block = alloc_new_IRBlock(IR);
+//     if (!dummy_block)
+//         return STATUS_ERROR_MEMORY_ALLOC_ERROR;
+
+//     IRBlockData data = {};
+//     data.type = IR_BLOCK_TYPE_FOR_MAINTENANCE;
+//     dummy_block->data = data;
+    
+//     dummy_block->next = NULL;
+//     dummy_block->prev = NULL;   
+
+//     IR->head = dummy_block;
+//     IR->tail = dummy_block;
+
+//     return STATUS_OK;
+// }
+
 inline void IR_dtor(IR *IR)
 {
     assert(IR);
@@ -29,7 +50,7 @@ inline void IR_dtor(IR *IR)
     while (curr_block)
     {
         IRBlock *next_block = curr_block->next;
-        free(curr_block);
+        free_IRBlock(IR, curr_block);
         curr_block = next_block;
     }
 }
@@ -46,10 +67,18 @@ inline Status IR_push_head( IR *IR, IRBlockData data )
     new_block->next = IR->head;
     new_block->prev = NULL;
 
+    if (new_block->next)
+    {
+        new_block->next->prev = new_block;
+    }
+
     IR->head = new_block;
 
     if (IR->blocks_count == 1)
+    {
         IR->tail = new_block;
+
+    }
 
     return STATUS_OK;
 }
@@ -65,6 +94,11 @@ inline Status IR_push_tail( IR *IR, IRBlockData data )
     new_block->data = data;
     new_block->next = NULL;
     new_block->prev = IR->tail;
+
+    if (new_block->prev)
+    {
+        new_block->prev->next = new_block;
+    }
 
     IR->tail = new_block;
 
@@ -173,7 +207,7 @@ inline IRBlockData form_IRBlockData_type( IRBlockType type )
 {
     IRBlockData data = {};
 
-    data.type      = type;
+    data.type = type;
     
     return data;
 }

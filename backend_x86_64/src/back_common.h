@@ -83,6 +83,10 @@ struct arg_t
 struct IRBlockData
 {
     IRBlockType type = IR_BLOCK_TYPE_DUMMY;
+    
+    //! @brief plays role of a label (e.g. 'jmp')
+    //! @attention MUST BE A PTR TO IRBlock
+    void *instr_ptr = NULL;  
 
     //! @note 'type' (see above) defines which one of the below union members is used.
     union 
@@ -96,10 +100,6 @@ struct IRBlockData
         //! @brief label with DB in .rodata.
         //! @note It's a pointer to memory, allocated by AST!
         const char *str_const;
-        
-        //! @brief plays role of a label (e.g. 'jmp')
-        //! @attention MUST BE A PTR TO IRBlock
-        void *instr_ptr;  
         
         //!< @attention Either points to memory, allocated by AST, or to const string.
         const char *func_name;
@@ -122,6 +122,12 @@ struct IRBlockData
 struct IRBlock
 {
     IRBlockData data;
+
+    // Used in translation from IR to NASM
+    bool lbl_cmn_set = false;
+    size_t lbl_cmn       = (size_t)-1;
+    size_t lbl_str_const = (size_t)-1;
+    size_t lbl_num_const = (size_t)-1; 
 
     IRBlock *next = NULL;
     IRBlock *prev = NULL;

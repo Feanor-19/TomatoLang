@@ -123,10 +123,14 @@ Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
-    CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_STR_IDENT );
-
     TreeNode *node_right_func_def_helper = RIGHT_CURR;
-    TreeNode *node_left_func_def_helper = LEFT_CURR;
+    TreeNode *node_left_func_def_helper  = LEFT_CURR;
+
+    CHECK_NODE_TYPE(node_left_func_def_helper,  TREE_NODE_TYPE_OP);
+    CHECK_NODE_TYPE(node_right_func_def_helper, TREE_NODE_TYPE_OP);
+
+    CHECK_NODE_TYPE(LEFT(node_left_func_def_helper),  TREE_NODE_TYPE_STR_IDENT);
+    CHECK_NODE_TYPE(RIGHT(node_left_func_def_helper), TREE_NODE_TYPE_FUNC_INFO);
 
     uint args_num     = (uint) count_list_len( LEFT(node_right_func_def_helper) );
     uint loc_vars_num = (uint) get_node_data( RIGHT(node_left_func_def_helper) ).num_of_loc_vars;
@@ -207,7 +211,7 @@ Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
     context->args_num     = 0;
     context->loc_vars_num = loc_vars_num;
 
-    TR_RIGHT_CHILD_OF( RIGHT_CURR );
+    TR_RIGHT_CHILD_CURR();
 
     context->args_num     = 0;
     context->loc_vars_num = 0;
@@ -306,6 +310,7 @@ Status tr_AST_to_IR_ADD (FORMAL_TR_ASM_IR_ARGS)
     IRBlockData add_data = form_IRBlockData_type( IR_BLOCK_TYPE_ADDSD );
     add_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     add_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(add_data);
 
     COMMENT("push back onto comp. sub-stack");
     IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
@@ -327,6 +332,7 @@ Status tr_AST_to_IR_SUB (FORMAL_TR_ASM_IR_ARGS)
     IRBlockData sub_data = form_IRBlockData_type( IR_BLOCK_TYPE_SUBSD );
     sub_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     sub_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(sub_data);
 
     COMMENT("push back onto comp. sub-stack");
     IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
@@ -347,6 +353,7 @@ Status tr_AST_to_IR_MUL (FORMAL_TR_ASM_IR_ARGS)
     IRBlockData mul_data = form_IRBlockData_type( IR_BLOCK_TYPE_MULSD );
     mul_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     mul_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(mul_data);
 
     COMMENT("push back onto comp. sub-stack");
     IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
@@ -367,6 +374,7 @@ Status tr_AST_to_IR_DIV (FORMAL_TR_ASM_IR_ARGS)
     IRBlockData div_data = form_IRBlockData_type( IR_BLOCK_TYPE_DIVSD );
     div_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     div_data.arg2 = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(div_data);
 
     COMMENT("push back onto comp. sub-stack");
     IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
@@ -593,10 +601,13 @@ inline Status call_func_helper(FORMAL_TR_ASM_IR_ARGS)
     {
         if ( curr_reg_ind < NUM_OF_XMM_REGS_TO_PASS_ARGS )
         {
-            IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
-            mov_data.arg_dst = form_arg_t_reg_xmm(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[curr_reg_ind]);
-            mov_data.arg_src = form_arg_loc_var_or_func_arg_helper( LEFT(node_curr_list_cnctr), context );
-            IR_PUSH_TAIL( mov_data );
+            COMMENT("computing arg expr:");
+            TR_NODE( LEFT(node_curr_list_cnctr) );
+
+            COMMENT("pop result into arg:");
+            IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
+            pop_data.arg_dst = form_arg_t_reg_xmm(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[curr_reg_ind]);
+            IR_PUSH_TAIL( pop_data );
         }
         else if ( !node_list_cnctr_first_not_fitting )
         {
@@ -619,9 +630,10 @@ inline Status call_func_helper(FORMAL_TR_ASM_IR_ARGS)
         node_curr_list_cnctr = node_last_list_cnctr;
         while (true)
         {
-            IRBlockData push_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
-            push_data.arg_src = form_arg_loc_var_or_func_arg_helper( LEFT( node_curr_list_cnctr ), context );
-            IR_PUSH_TAIL( push_data );
+            COMMENT("computing arg expr:");
+            TR_NODE( LEFT(node_curr_list_cnctr) );
+
+            COMMENT("expr result is already on stack, no need to push");
 
             if (node_curr_list_cnctr == node_list_cnctr_first_not_fitting)
                 break; // the 'first_not_fitting' was just pushed, no more work to do
@@ -722,6 +734,10 @@ Status tr_AST_to_IR_PRINT_NUM (FORMAL_TR_ASM_IR_ARGS)
 
     COMMENT("print num start");
 
+    IRBlockData extern_keyword_data = form_IRBlockData_type( IR_BLOCK_TYPE_EXTERN_KW );
+    extern_keyword_data.func_name = STDLIB_PRINT_NUM;
+    IR_PUSH_TAIL(extern_keyword_data);
+
     COMMENT("compute the argument:");
     TR_RIGHT_CHILD_CURR();
 
@@ -742,6 +758,10 @@ Status tr_AST_to_IR_PRINT_STR (FORMAL_TR_ASM_IR_ARGS)
     ASSERT_ALL();
 
     COMMENT("print_str start");
+
+    IRBlockData extern_keyword_data = form_IRBlockData_type( IR_BLOCK_TYPE_EXTERN_KW );
+    extern_keyword_data.func_name = STDLIB_PRINT_STR;
+    IR_PUSH_TAIL(extern_keyword_data);
 
     CHECK_NODE_TYPE( RIGHT_CURR, TREE_NODE_TYPE_CONST_STR );
 
