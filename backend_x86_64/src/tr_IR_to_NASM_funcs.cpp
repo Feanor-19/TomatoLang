@@ -139,7 +139,7 @@ Status tr_IR_to_NASM_STR_CONST (FORMAL_TR_IR_NASM_ARGS)
 
     SECTION_RODATA();
     block->lbl_str_const = counters->lbl_str_const++;
-    PRINT("LSC_%lu \tdb \"%s\", 0x0a", block->lbl_str_const, block->data.str_const);
+    PRINT("LSC_%lu \tdb \"%s\", 0x0a, 0x0", block->lbl_str_const, block->data.str_const);
     SECTION_TEXT();
 
     return STATUS_OK;

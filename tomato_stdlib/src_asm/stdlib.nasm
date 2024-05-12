@@ -8,11 +8,11 @@ _exit:
             xor rdi, rdi
             syscall
 
-global _write
-; void _write(long unsigned str_len, const char *str_ptr)
+global _mywrite
+; void _mywrite(long unsigned str_len, const char *str_ptr)
 ; rdi - str_len
 ; rsi - str_ptr
-_write:
+_mywrite:
             push rdi ; str_len
 
             mov rax, 1 ; syscall num

@@ -31,10 +31,12 @@ OBJFILES_ASM    = $(patsubst $(SRC_ASM)/%,$(OBJ_ASM)/%,$(SOURCES_ASM:$(SRC_ASM_E
 SOURCES_C 		= $(wildcard $(SRC_C)/*$(SRC_C_EXT))
 OBJFILES_C    	= $(patsubst $(SRC_C)/%,$(OBJ_C)/%,$(SOURCES_C:$(SRC_C_EXT)=.o))
 
+#ld programs/test_program/obj.o  -o programs/test_program/prog -lc -ltomato -I /lib64/ld-linux-x86-64.so.2 -L tomato_stdlib/bin/
+
 .PHONY: make_lib
 make_lib: $(OBJFILES_C) $(OBJFILES_ASM)
 	rm -rf $(OUT)/*
-	ar -cvq $(OUT) $^
+	ar cr $(OUT) $^
 
 $(OBJ_ASM)/%.o : $(SRC_ASM)/%$(SRC_ASM_EXT)
 	@nasm -f elf64 -o $@ $<

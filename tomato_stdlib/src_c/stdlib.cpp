@@ -1,6 +1,6 @@
 #include "stdio.h"
 
-extern "C" void _write(long unsigned str_len, const char *str_ptr);
+extern "C" void _mywrite(long unsigned str_len, const char *str_ptr);
 extern "C" void print_str(const char *str);
 extern "C" void print_num(double x);
 extern "C" double input();
@@ -16,7 +16,7 @@ extern "C" void print_str(const char *str)
         curr++;
     }
     
-    _write(str_len, str);
+    _mywrite(str_len, str);
 }
 
 extern "C" void print_num(double x)
