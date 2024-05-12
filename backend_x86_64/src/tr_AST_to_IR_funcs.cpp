@@ -289,15 +289,17 @@ inline Status bi_arg_instr_helper(FORMAL_TR_ASM_IR_ARGS)
 {
     COMMENT("computing left expr");
     TR_LEFT_CHILD_OF( node );
-    COMMENT("pop result to xmm_tmp_1");
-    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
-    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
-    IR_PUSH_TAIL(pop_data);
 
     COMMENT("computing right expr");
     TR_RIGHT_CHILD_OF( node );
-    COMMENT("pop result to xmm_tmp_2");
+    
+    COMMENT("pop right expr result to xmm_tmp_2");
+    IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
     pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
+    IR_PUSH_TAIL(pop_data);
+    
+    COMMENT("pop left expr result to xmm_tmp_1");
+    pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     IR_PUSH_TAIL(pop_data);
 
     return STATUS_OK;
@@ -591,60 +593,45 @@ Status tr_AST_to_IR_MINUS (FORMAL_TR_ASM_IR_ARGS)
     return STATUS_OK;
 }
 
+inline TreeNode *find_list_end_cnctr( TreeNode *first_cnctr )
+{
+    TreeNode *curr = first_cnctr;
+    while (RIGHT(curr))
+    {
+        curr = RIGHT(curr);
+    }
+    return curr;
+}
 
 inline Status call_func_helper(FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
+    COMMENT("computing on sub-stack all args (in reverse order):");
 
-    COMMENT("moving args into regs:");
-    TreeNode *node_curr_list_cnctr = RIGHT_CURR;
-    size_t curr_reg_ind = 0;
-    TreeNode *node_list_cnctr_first_not_fitting = NULL;
-    TreeNode *node_last_list_cnctr              = NULL;
-    while (node_curr_list_cnctr)
+    size_t arg_cnt = 0;
+    TreeNode *node_curr_list_cnctr = find_list_end_cnctr(RIGHT_CURR);
+    while (GET_TYPE(node_curr_list_cnctr) == TREE_NODE_TYPE_OP 
+        && GET_OP(node_curr_list_cnctr)   == TREE_OP_LIST_CONNECTOR)
     {
-        if ( curr_reg_ind < NUM_OF_XMM_REGS_TO_PASS_ARGS )
-        {
-            COMMENT("computing arg expr:");
-            TR_NODE( LEFT(node_curr_list_cnctr) );
+        COMMENT("another arg expression:");
+        TR_NODE( LEFT(node_curr_list_cnctr) );
+        arg_cnt++;
 
+        node_curr_list_cnctr = node_curr_list_cnctr->parent;
+    }
+
+    size_t curr_reg_ind = 0;
+    while (arg_cnt--)
+    {
+        if (curr_reg_ind < NUM_OF_XMM_REGS_TO_PASS_ARGS)
+        {
             COMMENT("pop result into arg:");
             IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
             pop_data.arg_dst = form_arg_t_reg_xmm(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[curr_reg_ind]);
             IR_PUSH_TAIL( pop_data );
-        }
-        else if ( !node_list_cnctr_first_not_fitting )
-        {
-            // if it is the first fact arg, which didn't fit into the regs, remember 
-            // corresponding list connector node
-            node_list_cnctr_first_not_fitting = node_curr_list_cnctr;
-        }
-        TreeNode *node_next = RIGHT(node_curr_list_cnctr);
-        if (!node_next)
-        {
-            node_last_list_cnctr = node_curr_list_cnctr;
-            break;
-        }
-        node_curr_list_cnctr = node_next;
-    }
 
-    if ( node_list_cnctr_first_not_fitting )
-    {
-        COMMENT("not all args fit into regs, pushing those which are left (in reverse):");
-        node_curr_list_cnctr = node_last_list_cnctr;
-        while (true)
-        {
-            COMMENT("computing arg expr:");
-            TR_NODE( LEFT(node_curr_list_cnctr) );
-
-            COMMENT("expr result is already on stack, no need to push");
-
-            if (node_curr_list_cnctr == node_list_cnctr_first_not_fitting)
-                break; // the 'first_not_fitting' was just pushed, no more work to do
-
-            node_curr_list_cnctr = node_curr_list_cnctr->parent;
+            curr_reg_ind++;
         }
-        COMMENT("done pushing left args");
     }
 
     IRBlockData call_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );

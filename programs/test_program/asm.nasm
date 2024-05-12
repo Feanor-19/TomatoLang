@@ -19,13 +19,13 @@ section .text
 ; cmp helper start
 ; computing left expr
 			push QWORD [rbp + -8] 
-; pop result to xmm_tmp_1
-			movsd xmm8 , QWORD [rsp + 0] 
-			add rsp , 8 
 ; computing right expr
 			push QWORD [rbp + -16] 
-; pop result to xmm_tmp_2
+; pop right expr result to xmm_tmp_2
 			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
+; pop left expr result to xmm_tmp_1
+			movsd xmm8 , QWORD [rsp + 0] 
 			add rsp , 8 
 			comisd xmm8 , xmm9 
 ; cmp helper end
@@ -51,23 +51,20 @@ LCC_1:
 ; mul start
 ; computing left expr
 			push QWORD [rbp + -8] 
-; pop result to xmm_tmp_1
-			movsd xmm8 , QWORD [rsp + 0] 
-			add rsp , 8 
 ; computing right expr
 ; call func recipe start
-; moving args into regs:
-; computing arg expr:
+; computing on sub-stack all args (in reverse order):
+; another arg expression:
 ; sub start
 ; computing left expr
 			push QWORD [rbp + -8] 
-; pop result to xmm_tmp_1
-			movsd xmm8 , QWORD [rsp + 0] 
-			add rsp , 8 
 ; computing right expr
 			push QWORD [rbp + -16] 
-; pop result to xmm_tmp_2
+; pop right expr result to xmm_tmp_2
 			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
+; pop left expr result to xmm_tmp_1
+			movsd xmm8 , QWORD [rsp + 0] 
 			add rsp , 8 
 			subsd xmm8 , xmm9 
 ; push back onto comp. sub-stack
@@ -82,8 +79,11 @@ LCC_1:
 			sub rsp , 8 
 			movsd QWORD [rsp + 0] , xmm0 
 ; call func recipe end
-; pop result to xmm_tmp_2
+; pop right expr result to xmm_tmp_2
 			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
+; pop left expr result to xmm_tmp_1
+			movsd xmm8 , QWORD [rsp + 0] 
 			add rsp , 8 
 			mulsd xmm8 , xmm9 
 ; push back onto comp. sub-stack
@@ -128,8 +128,8 @@ section .text
 ; assign_start
 ; assign_expr
 ; call func recipe start
-; moving args into regs:
-; computing arg expr:
+; computing on sub-stack all args (in reverse order):
+; another arg expression:
 			push QWORD [rbp + -8] 
 ; pop result into arg:
 			movsd xmm0 , QWORD [rsp + 0] 
