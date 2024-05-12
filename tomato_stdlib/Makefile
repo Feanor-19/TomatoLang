@@ -31,18 +31,18 @@ OBJFILES_ASM    = $(patsubst $(SRC_ASM)/%,$(OBJ_ASM)/%,$(SOURCES_ASM:$(SRC_ASM_E
 SOURCES_C 		= $(wildcard $(SRC_C)/*$(SRC_C_EXT))
 OBJFILES_C    	= $(patsubst $(SRC_C)/%,$(OBJ_C)/%,$(SOURCES_C:$(SRC_C_EXT)=.o))
 
-
-$(OUT): $(OBJFILESC) $(OBJFILES_ASM)
+.PHONY: make_lib
+make_lib: $(OBJFILES_C) $(OBJFILES_ASM)
 	rm -rf $(OUT)/*
 	ar -cvq $(OUT) $^
 
 $(OBJ_ASM)/%.o : $(SRC_ASM)/%$(SRC_ASM_EXT)
-	nasm -f elf64 -o $@ -l $(LST)/$@.lst $<
+	@nasm -f elf64 -o $@ $<
 
 $(OBJ_C)/%.o : $(SRC_C)/%$(SRC_C_EXT)
-	gcc -Wall -o $@ -c $<
+	@$(CC) $(CFLAGS) -o $@ -c $<
 
-.PHONY: clean_all
-clean_all:
-	rm -f $(OBJFILES_ASM) $(OBJFILES_C) $(OUT) $(LST)/$(OBJ_C)/* $(LST)/$(OBJ_ASM)/*
+.PHONY: clean
+clean:
+	rm -f $(OBJFILES_ASM) $(OBJFILES_C) $(OUT)
 
