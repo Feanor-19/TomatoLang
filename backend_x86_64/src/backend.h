@@ -37,12 +37,16 @@ const tr_IR_to_NASM_t TR_IR_NASM_FUNCS[] =
 #undef DEF_IRBLOCK_TYPE
 
 
-Status translate_AST_to_IR( const Tree *AST, IR* IR );
+Status translate_AST_to_IR( const Tree *AST, IR *IR );
 
 //! @brief Translates given node and subtree, which starts with this node, into IR.
 Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS );
 
-Status translate_IR_to_NASM( const IR* IR, const char *output_filename );
+//! @brief Unfolds 'unrealistic' functions into combinations of realistic ones.
+//! @example push xmm_reg -> { sub rsp, QWORD; mov [rsp], xmm_reg }
+Status make_IR_realistic( IR *IR );
+
+Status translate_IR_to_NASM( const IR *IR, const char *output_filename );
 
 void print_status_message( FILE *stream, Status status );
 

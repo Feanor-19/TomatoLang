@@ -60,9 +60,10 @@ int main( int argc, const char *argv[])
     LOG("Translating AST to IR...");
     HANDLE_RET_STATUS(translate_AST_to_IR( &AST, &IR ));
     LOG("Translating AST to IR done!");
+    
     // TODO optimize IR
 
-    // TODO make realistic (e.g. pop and push, which use xmm regs)
+    make_IR_realistic( &IR );
 
     LOG("Translating IR to NASM...");
     HANDLE_RET_STATUS(translate_IR_to_NASM( &IR, cfg.output_file_name ));

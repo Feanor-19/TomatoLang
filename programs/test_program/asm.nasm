@@ -12,19 +12,21 @@ Factorial:
 section .rodata
 LNC_0 	dq 1
 section .text
-			push [LNC_0] 
-			pop [rbp + -16] 
+			push QWORD [LNC_0] 
+			pop QWORD [rbp + -16] 
 ; assign_end
 ; if_start
 ; cmp helper start
 ; computing left expr
-			push [rbp + -8] 
+			push QWORD [rbp + -8] 
 ; pop result to xmm_tmp_1
-			pop xmm8 
+			movsd xmm8 , QWORD [rsp + 0] 
+			add rsp , 8 
 ; computing right expr
-			push [rbp + -16] 
+			push QWORD [rbp + -16] 
 ; pop result to xmm_tmp_2
-			pop xmm9 
+			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
 			comisd xmm8 , xmm9 
 ; cmp helper end
 ; jump if_yes
@@ -35,9 +37,10 @@ section .text
 LCC_0:
 ; return start
 ; computing the expression to return:
-			push [rbp + -16] 
+			push QWORD [rbp + -16] 
 ; pop the result into xmm0
-			pop xmm0 
+			movsd xmm0 , QWORD [rsp + 0] 
+			add rsp , 8 
 			leave
 			ret
 ; return end
@@ -47,40 +50,49 @@ LCC_1:
 ; computing the expression to return:
 ; mul start
 ; computing left expr
-			push [rbp + -8] 
+			push QWORD [rbp + -8] 
 ; pop result to xmm_tmp_1
-			pop xmm8 
+			movsd xmm8 , QWORD [rsp + 0] 
+			add rsp , 8 
 ; computing right expr
 ; call func recipe start
 ; moving args into regs:
 ; computing arg expr:
 ; sub start
 ; computing left expr
-			push [rbp + -8] 
+			push QWORD [rbp + -8] 
 ; pop result to xmm_tmp_1
-			pop xmm8 
+			movsd xmm8 , QWORD [rsp + 0] 
+			add rsp , 8 
 ; computing right expr
-			push [rbp + -16] 
+			push QWORD [rbp + -16] 
 ; pop result to xmm_tmp_2
-			pop xmm9 
+			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
 			subsd xmm8 , xmm9 
 ; push back onto comp. sub-stack
-			push xmm8 
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm8 
 ; sub end
 ; pop result into arg:
-			pop xmm0 
+			movsd xmm0 , QWORD [rsp + 0] 
+			add rsp , 8 
 			call Factorial
 ; pushing result of the func on stack:
-			push xmm0 
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm0 
 ; call func recipe end
 ; pop result to xmm_tmp_2
-			pop xmm9 
+			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
 			mulsd xmm8 , xmm9 
 ; push back onto comp. sub-stack
-			push xmm8 
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm8 
 ; mul end
 ; pop the result into xmm0
-			pop xmm0 
+			movsd xmm0 , QWORD [rsp + 0] 
+			add rsp , 8 
 			leave
 			ret
 ; return end
@@ -100,39 +112,44 @@ _start:
 extern input
 			call input
 ; push from xmm0, in which func result is located
-			push xmm0 
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm0 
 ; input end
-			pop [rbp + -8] 
+			pop QWORD [rbp + -8] 
 ; assign_end
 ; assign_start
 ; assign_expr
 section .rodata
 LNC_1 	dq 0
 section .text
-			push [LNC_1] 
-			pop [rbp + -16] 
+			push QWORD [LNC_1] 
+			pop QWORD [rbp + -16] 
 ; assign_end
 ; assign_start
 ; assign_expr
 ; call func recipe start
 ; moving args into regs:
 ; computing arg expr:
-			push [rbp + -8] 
+			push QWORD [rbp + -8] 
 ; pop result into arg:
-			pop xmm0 
+			movsd xmm0 , QWORD [rsp + 0] 
+			add rsp , 8 
 			call Factorial
 ; pushing result of the func on stack:
-			push xmm0 
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm0 
 ; call func recipe end
-			pop [rbp + -16] 
+			pop QWORD [rbp + -16] 
 ; assign_end
 ; print num start
 extern print_num
 ; compute the argument:
-			push [rbp + -16] 
+			push QWORD [rbp + -16] 
 ; pop to xmm0
-			pop xmm0 
+			movsd xmm0 , QWORD [rsp + 0] 
+			add rsp , 8 
 			call print_num
 ; main epilogue start
+extern _exit
 			call _exit
 ; main epilogue end

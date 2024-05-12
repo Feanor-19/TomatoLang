@@ -217,6 +217,10 @@ Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
     context->loc_vars_num = 0;
 
     COMMENT("main epilogue start");
+    IRBlockData extern_exit_data = form_IRBlockData_type( IR_BLOCK_TYPE_EXTERN_KW );
+    extern_exit_data.func_name = STDLIB_EXIT;
+    IR_PUSH_TAIL(extern_exit_data);
+
     IRBlockData call_exit_data = form_IRBlockData_type( IR_BLOCK_TYPE_CALL );
     call_exit_data.func_name = STDLIB_EXIT;
     IR_PUSH_TAIL(call_exit_data);

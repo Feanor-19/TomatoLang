@@ -1,5 +1,6 @@
 #include "backend.h"
 #include "IR_interface.h"
+#include "make_real_IR_funcs.h"
 
 Status translate_AST_to_IR( const Tree *AST, IR* IR )
 {
@@ -62,6 +63,51 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
 
     return STATUS_OK;
 }
+
+//! @brief Helper func for 'make_IR_realistic'. Returns ptr to next
+//! block, which may need to be converted.
+inline IRBlock *make_IRBlock_realistic(IR *IR, IRBlock *block)
+{
+    assert(IR);
+    assert(block);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wswitch-enum"
+    switch (block->data.type)
+    {
+    case IR_BLOCK_TYPE_PUSH:
+    {
+        if      (block->data.arg_src.type == IRB_ARG_TYPE_REG_XMM)
+            return hlp_push_xmm(IR, block);
+        break;
+    }
+    case IR_BLOCK_TYPE_POP:
+    {
+        if (block->data.arg_dst.type == IRB_ARG_TYPE_REG_XMM)
+            return hlp_pop_xmm(IR, block);
+        break;
+    }
+    default:
+        break;
+    }
+#pragma GCC diagnostic pop
+
+    return block->next;
+}
+
+Status make_IR_realistic( IR *IR )
+{
+    assert(IR);
+
+    IRBlock *curr_block = IR->head;
+    while (curr_block)
+    {
+        curr_block = make_IRBlock_realistic(IR, curr_block);
+    }
+
+    return STATUS_OK;
+}
+
 
 //! @brief Prints some header lines, 
 inline Status print_nasm_header( FILE *stream )

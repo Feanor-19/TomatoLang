@@ -45,15 +45,15 @@ inline void print_arg(arg_t arg, FILE *stream)
         const char *base_reg = REGS[ arg.mem.base_reg ];
         const char *index_reg = REGS[ arg.mem.index_reg ];
         if (arg.mem.scale != 0)
-            PRINT_WO_NEWLINE(" [%s + %s * %d + %ld] ", base_reg, index_reg, arg.mem.scale, arg.mem.disp);
+            PRINT_WO_NEWLINE(" QWORD [%s + %s * %d + %ld] ", base_reg, index_reg, arg.mem.scale, arg.mem.disp);
         else
-            PRINT_WO_NEWLINE(" [%s + %ld] ", base_reg, arg.mem.disp);
+            PRINT_WO_NEWLINE(" QWORD [%s + %ld] ", base_reg, arg.mem.disp);
         break;
     }
     case IRB_ARG_TYPE_MEM_VAR:
     {
         IRBlock *target = (IRBlock*) arg.mem_var;
-        PRINT_WO_NEWLINE(" [LNC_%lu] ", target->lbl_num_const);
+        PRINT_WO_NEWLINE(" QWORD [LNC_%lu] ", target->lbl_num_const);
         break;
     }
     case IRB_ARG_TYPE_REG:
