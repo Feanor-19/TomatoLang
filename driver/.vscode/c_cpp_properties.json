@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        {
+            "name": "Cpp",
+            "configurationProvider": "ms-vscode.makefile-tools",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../common/src"
+            ]
+        }
+    ],
+    "version": 4
+}

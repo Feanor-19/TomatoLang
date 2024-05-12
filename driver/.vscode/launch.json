@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "name": "Launch",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/tomato",
+            "args": [
+                    "-i",
+                    "./../programs/test_program/prog.txt",
+                    "-o",
+                    "./../programs/test_program/prog",
+                    "--img-dumps",
+                    "./dumps/image_dumps/"
+                    ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Make",
+        }
+    ],
+}
