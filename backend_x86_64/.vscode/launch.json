@@ -13,7 +13,7 @@
                     "-i",
                     "./../programs/test_program/compiler_tree.txt",
                     "-o",
-                    "./../programs/test_program/asm.txt",
+                    "./../programs/test_program/asm.nasm",
                     "--img-dumps",
                     "./dumps/image_dumps/"
                     ],

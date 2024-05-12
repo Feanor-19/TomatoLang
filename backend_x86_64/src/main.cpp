@@ -21,11 +21,6 @@ int main( int argc, const char *argv[])
     }
     print_config(log_get_stream(), cfg);
 
-    LOG( "Initializing image dumps folder..." );
-    if (cfg.img_dumps_folder)
-       init_img_dumps( cfg.img_dumps_folder );
-    LOG( "Initializing image dumps folder is done!" );
-
     LOG( "Reading AST from the input file..." );
     Tree AST = {};
     if ( !read_tree_from_file( cfg.input_file_name, &AST ) )

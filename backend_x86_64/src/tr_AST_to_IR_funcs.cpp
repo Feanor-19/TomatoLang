@@ -119,26 +119,6 @@ Status tr_AST_to_IR_DUMMY (FORMAL_TR_ASM_IR_ARGS)
     return STATUS_OK;
 }
 
-//! @brief Receives the node of type 'FUNC_DEF_HELPER' and counts the 
-//! number of func formal args, which are located in the left subtree of the 
-//! given node.
-inline uint count_args_num( TreeNode *func_def_helper )
-{
-    assert(func_def_helper);
-    assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
-    assert( GET_OP(func_def_helper)   == TREE_OP_FUNC_DEF_HELPER );
-
-    uint res = 0;
-    TreeNode *curr_list_cnctr = LEFT( func_def_helper );
-    while (curr_list_cnctr)
-    {
-        res++;
-        curr_list_cnctr = RIGHT(curr_list_cnctr);
-    }
-    
-    return res;
-}
-
 //! @note If there are no local vars, ABSENT_ID is returned.
 static int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
 {
@@ -192,7 +172,7 @@ Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
 
     CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_STR_IDENT );
 
-    uint args_num     = count_args_num( RIGHT_CURR );
+    uint args_num     = count_list_len( LEFT(RIGHT_CURR) );
     uint loc_vars_num = count_loc_vars_num( RIGHT_CURR );
 
     IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
@@ -344,14 +324,14 @@ Status tr_AST_to_IR_CMP_NOT_EQ (FORMAL_TR_ASM_IR_ARGS)
 inline Status bi_arg_instr_helper(FORMAL_TR_ASM_IR_ARGS)
 {
     COMMENT("computing left expr");
-    TR_LEFT_CHILD_OF( LEFT_CURR );
+    TR_LEFT_CHILD_OF( node );
     COMMENT("pop result to xmm_tmp_1");
     IRBlockData pop_data = form_IRBlockData_type( IR_BLOCK_TYPE_POP );
     pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
     IR_PUSH_TAIL(pop_data);
 
     COMMENT("computing right expr");
-    TR_RIGHT_CHILD_OF( LEFT_CURR );
+    TR_RIGHT_CHILD_OF( node );
     COMMENT("pop result to xmm_tmp_2");
     pop_data.arg_dst = form_arg_t_reg_xmm( REG_XMM_TMP_2 );
     IR_PUSH_TAIL(pop_data);
@@ -478,6 +458,7 @@ inline IRBlockData get_corr_jmp_data( ASTOpNameEnum cmp_type )
     return data;
 }
 
+//! @brief Must be called for node of type 'CMP_*'!
 inline Status cmp_helper( FORMAL_TR_ASM_IR_ARGS )
 {
     COMMENT("cmp helper start");
@@ -499,7 +480,7 @@ Status tr_AST_to_IR_IF (FORMAL_TR_ASM_IR_ARGS)
 
     COMMENT("if_start");
 
-    WRP(cmp_helper( FACT_TR_ASM_IR_ARGS ));
+    WRP(cmp_helper( AST, IR, LEFT_CURR, context ));
 
     COMMENT("jump if_yes");
     CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_OP );

@@ -136,23 +136,6 @@ inline bool check_is_func_arg_fresh( CompiledProgram *comp_prog, Identificator i
     return find_ident_in_nametable( NT_FUNC_FORMAL_ARGS, ident ) == ABSENT_ID;
 }
 
-//! @brief Counts number of nodes connected as a list using TREE_OP_LIST_CONNECTOR.
-//! Receives the root of the list.
-inline size_t count_list_len( TreeNode *list_root )
-{
-    assert(list_root);
-
-    size_t num = 1;
-    TreeNode *curr = list_root;
-    while ( tree_get_right_child( curr ) )
-    {
-        num++;
-        curr = tree_get_right_child( curr );
-    }
-
-    return num;
-}
-
 static TreeNode *get_num( FORMAL_REC_FALL_ARGS )
 {
     assert(comp_prog);
@@ -582,6 +565,7 @@ static TreeNode *get_var( FORMAL_REC_FALL_ARGS )
     if ( tkn_ident.type != TKN_TYPE_ID )
         return NULL;
 
+    
     ident_t id = find_ident_in_nametable( NT_FUNC_LOCAL_VARS, tkn_ident.id );
     if (id != ABSENT_ID)
     {

@@ -59,7 +59,6 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
         break;
     }
 
-    ASSERT_UNREACHEABLE();
     return STATUS_OK;
 }
 

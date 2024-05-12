@@ -4,6 +4,7 @@
 #include "/usr/include/feanor/tree/tree.h"
 #include "logger.h"
 #include "ast_ops.h"
+#include <assert.h>
 
 
 typedef int32_t ident_t;
@@ -134,5 +135,21 @@ inline size_t max( size_t a, size_t b )
     return (a > b) ? a : b;
 }
 
+//! @brief Counts number of nodes connected as a list using TREE_OP_LIST_CONNECTOR.
+//! Receives the root of the list.
+inline size_t count_list_len( TreeNode *list_root )
+{
+    assert(list_root);
+
+    size_t num = 1;
+    TreeNode *curr = list_root;
+    while ( tree_get_right_child( curr ) )
+    {
+        num++;
+        curr = tree_get_right_child( curr );
+    }
+
+    return num;
+}
 
 #endif /* COMMON_H */
