@@ -20,45 +20,12 @@ enum Status
 #undef DEF_STATUS
 
 
-
+#define DEF_IRBLOCK_TYPE(name__) IR_BLOCK_TYPE_##name__,
 enum IRBlockType
 {
-    IR_BLOCK_TYPE_DUMMY,     // e.g. for comments or unnamed labels, which aren't at any instructions
-    IR_BLOCK_TYPE_EXTERN_KW, // represents line in asm 'extern func_name'.
-    IR_BLOCK_TYPE_GLOBAL_KW, // represents line in asm 'global func_name'.
-
-    IR_BLOCK_TYPE_LBL_FUNC_NAME, // represents 'func_name:'
-
-    IR_BLOCK_TYPE_NUM_CONST, // const of type num_t (label with DQ in .rodata).
-    IR_BLOCK_TYPE_STR_CONST, // string const (label with DB in .rodata).
-    
-    IR_BLOCK_TYPE_PUSH,      // Imagining it is universal (including XMM and 'mem to mem')
-    IR_BLOCK_TYPE_POP,       // Imagining it is universal (including XMM and 'mem to mem')
-    IR_BLOCK_TYPE_MOV,      
-
-    IR_BLOCK_TYPE_ADD,
-    IR_BLOCK_TYPE_SUB,
-
-    IR_BLOCK_TYPE_ADDSD,
-    IR_BLOCK_TYPE_SUBSD,
-    IR_BLOCK_TYPE_MULSD,
-    IR_BLOCK_TYPE_DIVSD,
-
-    IR_BLOCK_TYPE_COMISD,
-    
-    IR_BLOCK_TYPE_JMP,
-    IR_BLOCK_TYPE_JE,
-    IR_BLOCK_TYPE_JNE,
-    IR_BLOCK_TYPE_JA,
-    IR_BLOCK_TYPE_JAE,
-    IR_BLOCK_TYPE_JB,
-    IR_BLOCK_TYPE_JBE,
-
-    IR_BLOCK_TYPE_CALL,
-    IR_BLOCK_TYPE_LEAVE,
-
-    IR_BLOCK_TYPE_SQRTSD,
+    #include "IRBlockType_defs.h"
 };
+#undef DEF_IRBLOCK_TYPE
 
 enum IRBlockDataType
 {

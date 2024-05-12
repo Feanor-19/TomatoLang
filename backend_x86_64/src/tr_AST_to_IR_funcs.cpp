@@ -119,68 +119,24 @@ Status tr_AST_to_IR_DUMMY (FORMAL_TR_ASM_IR_ARGS)
     return STATUS_OK;
 }
 
-//! @note If there are no local vars, ABSENT_ID is returned.
-static int32_t count_loc_vars_max_id_in_subtree( TreeNode *node )
-{
-    assert(node);
-
-    if ( GET_TYPE(node) == TREE_NODE_TYPE_VAR_LOCAL )
-        return GET_ID( node );
-
-    ident_t max_id = ABSENT_ID;
-    if ( LEFT(node) )
-    {
-        ident_t max_id_in_left_subtree = count_loc_vars_max_id_in_subtree(LEFT(node)); 
-        max_id = max_id_in_left_subtree;
-    }
-
-    if ( RIGHT(node) )
-    {
-        ident_t max_id_in_right_subtree = count_loc_vars_max_id_in_subtree(LEFT(node)); 
-        if ( max_id_in_right_subtree != ABSENT_ID )
-        {
-            if (max_id == ABSENT_ID)
-                max_id = max_id_in_right_subtree;
-            else
-                max_id = (ident_t) max( (size_t) max_id, (size_t) max_id_in_right_subtree );
-        }
-    }
-
-    return max_id;
-}
-
-//! @brief Receives the node of type 'FUNC_DEF_HELPER' and counts the 
-//! number of local variables in the whole func body, which is the right subtree of the 
-//! given node.
-//! @note If there are no local vars, 0 is returned.
-inline uint count_loc_vars_num( TreeNode *func_def_helper )
-{
-    assert(func_def_helper);
-    assert( GET_TYPE(func_def_helper) == TREE_NODE_TYPE_OP );
-    assert( GET_OP(func_def_helper)   == TREE_OP_FUNC_DEF_HELPER );
-
-    ident_t max_id = count_loc_vars_max_id_in_subtree( RIGHT(func_def_helper) );
-    if ( max_id != ABSENT_ID )
-        return (uint) (max_id+1);
-    else
-        return 0;
-}
-
 Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
     CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_STR_IDENT );
 
-    uint args_num     = count_list_len( LEFT(RIGHT_CURR) );
-    uint loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+    TreeNode *node_right_func_def_helper = RIGHT_CURR;
+    TreeNode *node_left_func_def_helper = LEFT_CURR;
+
+    uint args_num     = (uint) count_list_len( LEFT(node_right_func_def_helper) );
+    uint loc_vars_num = (uint) get_node_data( RIGHT(node_left_func_def_helper) ).num_of_loc_vars;
 
     IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
-    global_kw_data.func_name = GET_STR( LEFT_CURR );
+    global_kw_data.func_name = GET_STR( LEFT(node_left_func_def_helper) );
     IR_PUSH_TAIL( global_kw_data );
 
     IRBlockData lbl_func_name_data = form_IRBlockData_type( IR_BLOCK_TYPE_LBL_FUNC_NAME );
-    lbl_func_name_data.func_name = GET_STR( LEFT_CURR );
+    lbl_func_name_data.func_name = GET_STR( LEFT(node_left_func_def_helper) );
     IR_PUSH_TAIL( lbl_func_name_data );
 
     COMMENT("func prologue start");
@@ -226,7 +182,7 @@ Status tr_AST_to_IR_MAIN_PROG (FORMAL_TR_ASM_IR_ARGS)
 {
     ASSERT_ALL();
 
-    uint loc_vars_num = count_loc_vars_num( RIGHT_CURR );
+    uint loc_vars_num = (uint) get_node_data( LEFT_CURR ).num_of_loc_vars;
 
     IRBlockData global_kw_data = form_IRBlockData_type( IR_BLOCK_TYPE_GLOBAL_KW );
     global_kw_data.func_name = LBL_START;
@@ -730,6 +686,7 @@ Status tr_AST_to_IR_RETURN (FORMAL_TR_ASM_IR_ARGS)
     }
 
     IR_PUSH_TAIL( form_IRBlockData_type( IR_BLOCK_TYPE_LEAVE ) );
+    IR_PUSH_TAIL( form_IRBlockData_type( IR_BLOCK_TYPE_RET ) );
 
     COMMENT("return end");
     return STATUS_OK;

@@ -52,6 +52,7 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
         break;
     }
     case TREE_NODE_TYPE_CONST_STR:
+    case TREE_NODE_TYPE_FUNC_INFO:
         ASSERT_UNREACHEABLE();
         break;
     default:
@@ -60,6 +61,40 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
     }
 
     return STATUS_OK;
+}
+
+//! @brief Prints some header lines, 
+inline Status print_nasm_header( FILE *stream )
+{
+    assert(stream);
+
+    PRINT("default rel");
+    PRINT("section .text"); 
+
+    return STATUS_OK;
+}
+
+Status translate_IR_to_NASM( const IR* IR, const char *output_filename )
+{
+    assert(IR);
+    assert(output_filename);
+
+    FILE *stream = fopen( output_filename, "w" );
+    if (!stream)
+        return STATUS_ERROR_CANT_OPEN_OUTPUT_FILE;
+
+    print_nasm_header(stream);
+
+    IRBlock *curr_block = IR->head;
+    while( curr_block )
+    {
+        IRBlockType type = curr_block->data.type;
+        TR_IR_NASM_FUNCS[ type ]( curr_block, stream );
+        curr_block = curr_block->next;
+    }
+
+    fclose(stream);
+    return STATUS_OK;   
 }
 
 void print_status_message( FILE *stream, Status status )
