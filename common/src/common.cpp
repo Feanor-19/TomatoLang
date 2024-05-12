@@ -70,6 +70,9 @@ inline void write_tree_node( FILE *stream, TreeNode *node )
     case TREE_NODE_TYPE_CONST_STR:
         fprintf(stream, " %lu %s ", strlen(get_node_data(node).str), get_node_data(node).str );
         break;
+    case TREE_NODE_TYPE_FUNC_INFO:
+        fprintf(stream, " %lu ", get_node_data(node).num_of_loc_vars);
+        break;
     default:
         ASSERT_UNREACHEABLE();
         break;
@@ -157,6 +160,7 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
     ident_t id         = 0;
     size_t str_len     = 0;
     char *str          = NULL;
+    size_t loc_vars_num= 0;
     switch (type)
     {
     case TREE_NODE_TYPE_OP:
@@ -188,6 +192,10 @@ inline TreeNode *read_tree_node( FILE *stream, Tree *tree_ptr )
         skip_spaces(stream);
         read_n_chars( stream, str_len, str );
         node = new_node_const_str( tree_ptr, str );
+        break;
+    case TREE_NODE_TYPE_FUNC_INFO:
+        fscanf( stream, "%lu", &loc_vars_num );
+        node = new_node_func_info( tree_ptr, loc_vars_num );
         break;
     default:
         ASSERT_UNREACHEABLE();
@@ -320,6 +328,16 @@ TreeNode *new_node_const_str( Tree *tree_ptr, char *str )
     return op_new_TreeNode( tree_ptr, &data );
 }
 
+TreeNode *new_node_func_info( Tree *tree_ptr, size_t num_of_loc_vars )
+{
+    assert(tree_ptr);
+
+    TreeNodeData data = {};
+    data.type = TREE_NODE_TYPE_FUNC_INFO;
+    data.num_of_loc_vars = num_of_loc_vars;
+    return op_new_TreeNode( tree_ptr, &data );
+}
+
 void TreeNodeData_dtor( void *data )
 {
     assert(data);
@@ -405,7 +423,10 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
         fprintf(stream, "data_type: STR_IDENT, data_value: \"%s\"", data.str);
         break;
     case TREE_NODE_TYPE_CONST_STR:
-        fprintf(stream, "data_type: STR_IDENT, data_value: \"%s\"", data.str);
+        fprintf(stream, "data_type: CONST_STR, data_value: \"%s\"", data.str);
+        break;
+    case TREE_NODE_TYPE_FUNC_INFO:
+        fprintf(stream, "data_type: FUNC_INFO, data_value: \"%lu\"", data.num_of_loc_vars);
         break;
     default:
         ASSERT_UNREACHEABLE();

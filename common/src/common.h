@@ -22,6 +22,7 @@ enum TreeNodeType
                               // (of type 'ident_t')
     TREE_NODE_TYPE_STR_IDENT, //!< Contains string identificator (used for functions' names).
     TREE_NODE_TYPE_CONST_STR, //!< Constant string.
+    TREE_NODE_TYPE_FUNC_INFO, //!< Stores number of local vars of the func.
 };
 
 struct TreeNodeData
@@ -33,6 +34,7 @@ struct TreeNodeData
         num_t num;
         ident_t id;
         char *str;
+        size_t num_of_loc_vars;
     };
 
 };
@@ -89,6 +91,9 @@ TreeNode *new_node_str_ident( Tree *tree_ptr, char *ident );
 
 //! @brief Returns new node of type 'const string' and writes value 'str' into it.
 TreeNode *new_node_const_str( Tree *tree_ptr, char *str );
+
+//! @brief Returns new node of type 'func info' and writes value 'num_of_loc_vars' into it.
+TreeNode *new_node_func_info( Tree *tree_ptr, size_t num_of_loc_vars );
 
 //! @brief Should be passed to tree_ctor().
 void TreeNodeData_dtor( void *data );

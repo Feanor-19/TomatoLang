@@ -1029,11 +1029,13 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
     TreeNode *node_func_str_id = new_node_str_ident( TREE, str_func_ident );
+    TreeNode *node_left_func_def_hlp = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
+    tree_hang_loose_node_at_left( TREE, node_func_str_id, node_left_func_def_hlp );
 
     TreeNode *node_func_def = new_node_op( TREE, TREE_OP_FUNC_DEF );
-    TreeNode *node_func_def_helper = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
-    tree_hang_loose_node_at_left( TREE, node_func_str_id, node_func_def );
-    tree_hang_loose_node_at_right( TREE, node_func_def_helper, node_func_def );
+    TreeNode *node_right_func_def_hlp = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
+    tree_hang_loose_node_at_left( TREE, node_left_func_def_hlp, node_func_def );
+    tree_hang_loose_node_at_right( TREE, node_right_func_def_hlp, node_func_def );
 
     Token tkn_using = get_token( CURR );
     TreeNode *node_formal_args = NULL;
@@ -1064,10 +1066,13 @@ static TreeNode *get_func_recipe( FORMAL_REC_FALL_ARGS )
     TreeNode *node_end_ret = new_node_op( TREE, TREE_OP_RETURN );
     tree_hang_loose_node_at_right( TREE, node_end_ret, node_operators );
 
-    if (node_formal_args)
-        tree_hang_loose_node_at_left( TREE, node_formal_args, node_func_def_helper );
+    TreeNode *node_loc_vars_num = new_node_func_info( TREE, NT_FUNC_LOCAL_VARS.list_curr_len + 1 );
+    tree_hang_loose_node_at_right( TREE, node_loc_vars_num, node_left_func_def_hlp );
 
-    tree_hang_loose_node_at_right( TREE, node_operators, node_func_def_helper);
+    if (node_formal_args)
+        tree_hang_loose_node_at_left( TREE, node_formal_args, node_right_func_def_hlp );
+
+    tree_hang_loose_node_at_right( TREE, node_operators, node_right_func_def_hlp);
 
     context->in_func_recipe = 0;
 
@@ -1102,11 +1107,13 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
     char *str_func_ident = (char *) calloc( func_ident.id.len + 1, sizeof(char) );
     memcpy( str_func_ident, func_ident.id.start, func_ident.id.len );
     TreeNode *node_func_str_id = new_node_str_ident( TREE, str_func_ident );
+    TreeNode *node_left_func_def_hlp = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
+    tree_hang_loose_node_at_left( TREE, node_func_str_id, node_left_func_def_hlp );
 
     TreeNode *node_func_def = new_node_op( TREE, TREE_OP_FUNC_DEF );
-    TreeNode *node_func_def_helper = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
-    tree_hang_loose_node_at_left( TREE, node_func_str_id, node_func_def );
-    tree_hang_loose_node_at_right( TREE, node_func_def_helper, node_func_def );
+    TreeNode *node_right_func_def_hlp = new_node_op( TREE, TREE_OP_FUNC_DEF_HELPER );
+    tree_hang_loose_node_at_left( TREE, node_left_func_def_hlp, node_func_def );
+    tree_hang_loose_node_at_right( TREE, node_right_func_def_hlp, node_func_def );
 
     Token tkn_using = get_token( CURR );
     TreeNode *node_formal_args = NULL;
@@ -1137,10 +1144,13 @@ static TreeNode *get_func_action( FORMAL_REC_FALL_ARGS )
     TreeNode *node_end_ret = new_node_op( TREE, TREE_OP_RETURN );
     tree_hang_loose_node_at_right( TREE, node_end_ret, node_operators );
 
-    if (node_formal_args)
-        tree_hang_loose_node_at_left( TREE, node_formal_args, node_func_def_helper );
+    TreeNode *node_loc_vars_num = new_node_func_info( TREE, NT_FUNC_LOCAL_VARS.list_curr_len + 1 );
+    tree_hang_loose_node_at_right( TREE, node_loc_vars_num, node_left_func_def_hlp );
 
-    tree_hang_loose_node_at_right( TREE, node_operators, node_func_def_helper);
+    if (node_formal_args)
+        tree_hang_loose_node_at_left( TREE, node_formal_args, node_right_func_def_hlp );
+
+    tree_hang_loose_node_at_right( TREE, node_operators, node_right_func_def_hlp);
 
     context->in_func_action = 0;
 
@@ -1242,6 +1252,9 @@ static TreeNode *get_prog( FORMAL_REC_FALL_ARGS )
     {
         node_prog = node_op_main;
     }
+
+    TreeNode *node_loc_vars_num = new_node_func_info( TREE, NT_FUNC_LOCAL_VARS.list_curr_len + 1 );
+    tree_hang_loose_node_at_left( TREE, node_loc_vars_num, node_op_main );
 
     Token prog_end = get_token( CURR );
     SYN_ASSERT( is_tkn_keyword(prog_end, KW_ProgEnd), prog, CURR, KEYWORDS[KW_ProgEnd].str );
