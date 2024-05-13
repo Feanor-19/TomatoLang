@@ -4,16 +4,19 @@ global _start
 _start:
 ; main prologue start
 			mov rbp , rsp 
-			sub rsp , 8 
+			sub rsp , 16 
 ; main prologue end
-; print_str start
-extern print_str
-section .rodata
-LSC_0 	db "Well, that's not quite a quadratic equation!", 0x0a, 0x0
-section .text
-; mov *first common reg used to pass params*, str_ptr
-			mov rdi , LSC_0 
-			call print_str
+; assign_start
+; assign_expr
+; input start
+extern input
+			call input
+; push from xmm0, in which func result is located
+			sub rsp , 8 
+			movsd QWORD [rsp + 0] , xmm0 
+; input end
+			pop QWORD [rbp + -8] 
+; assign_end
 ; main epilogue start
 extern _exit
 			call _exit

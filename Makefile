@@ -12,14 +12,14 @@ PROG_PROG = prog
 
 TOMATO_LIB = tomato_stdlib
 
-ifdef DUMP_DIR
-DO_DUMP = --img-dumps $(DUMP_DIR)
+ifdef IMG_DIR
+DO_DUMP = --img-dumps $(IMG_DIR)
 else
 DO_DUMP = 
 endif
 
 .PHONY: tomato
-tomato: front back $(PROG_DIR)/$(PROG_PROG)
+tomato: $(PROG_DIR)/$(PROG_PROG) front back
 
 
 $(PROG_DIR)/$(PROG_AST): $(PROG_DIR)/$(PROG_TEXT)
