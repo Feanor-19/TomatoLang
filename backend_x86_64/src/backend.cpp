@@ -11,6 +11,24 @@ Status translate_AST_to_IR( const Tree *AST, IR* IR )
     return translate_AST_node_to_IR( AST, IR, tree_get_root(AST), &context );
 }
 
+//! @brief Finds IRBlock of type 'NUM_CONST' with specified 'num'.
+//! If no block is found, returns NULL. 
+inline IRBlock *find_in_IR_num_const_block( const IR *IR, num_t num )
+{
+    assert(IR);
+
+    IRBlock *curr_block = IR->head;
+    while (curr_block)
+    {
+        IRBlockData curr_data = curr_block->data;
+        if (curr_data.type == IR_BLOCK_TYPE_NUM_CONST && are_num_t_identical(curr_data.num_const, num))
+            return curr_block;
+
+        curr_block = curr_block->next;
+    }
+    return NULL;
+}
+
 Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
 {
     assert(AST);
@@ -42,13 +60,21 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
     }
     case TREE_NODE_TYPE_CONST_NUM:
     {
-        IRBlockData const_data = form_IRBlockData_type( IR_BLOCK_TYPE_NUM_CONST );
-        const_data.num_const = get_node_data(node).num;
-        IR_push_tail( IR, const_data );
-        IRBlock *const_block = IR->tail;
+        num_t num = get_node_data(node).num;
+
+        // check whether needed const num block has already been created
+        IRBlock *const_block = find_in_IR_num_const_block( IR, num );
+        if ( !const_block )
+        {
+            // nope, creating a new one 
+            IRBlockData const_data = form_IRBlockData_type( IR_BLOCK_TYPE_NUM_CONST );
+            const_data.num_const = num;
+            IR_push_tail( IR, const_data );
+            const_block = IR->tail;
+        }
 
         IRBlockData push_const_data = form_IRBlockData_type( IR_BLOCK_TYPE_PUSH );
-        push_const_data.arg_src = form_arg_t_mem_var( const_block );
+        push_const_data.arg_src = form_arg_t_mem_num_cnst( const_block );
         IR_push_tail( IR, push_const_data );
         break;
     }
@@ -60,6 +86,53 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
         ASSERT_UNREACHEABLE();
         break;
     }
+
+    return STATUS_OK;
+}
+
+// //! @brief Helper func for 'optimize_num_consts'. Finds index of an elem in
+// //! 'num_const_arr' with the given 'num' and returns it. If not found, returns -1.
+// inline int64_t opt_num_consts_find(IRBlock *num_const_arr[], size_t num_const_arr_curr_len, num_t num)
+// {
+//     for (size_t ind = 0; ind < num_const_arr_curr_len; ind++)
+//     {
+//         if (num_const_arr[ind]->data.num_const == num)
+//             return ind;
+//     }
+//     return -1;
+// } 
+
+// //! @brief Merges identical num consts into one.
+// inline Status optimize_num_consts(IR *IR)
+// {
+//     assert(IR);
+
+//     //! @brief We will store here ptrs to all unique IRBlocks which has arg 'NUM_CONST'
+//     IRBlock **num_const_arr = (IRBlock**) calloc( DEFAULT_NUM_CONSTS_ARR_SIZE, sizeof(IRBlock*) );
+//     size_t num_const_arr_cap = DEFAULT_NUM_CONSTS_ARR_SIZE;
+//     size_t num_const_arr_curr_len = 0;
+
+//     IRBlock *curr_block = IR->head;
+//     while (curr_block)
+//     {
+//         IRBlockData curr_data = curr_block->data;
+//         if (curr_data.type == IRB_ARG_TYPE_MEM_NUM_CNST)
+//         {
+//             int64_t ind = opt_num_consts_find( num_const_arr, num_const_arr_curr_len, curr_data.num_const );
+//             if ( ind == -1 )
+//             {
+//                 // this is a new const, adding to the arr
+
+//                 num_const_arr[num_const_arr_curr_len++] = curr_block;
+//             }
+//         }
+//     }
+// }
+
+Status optimize_IR( IR *IR )
+{
+    assert(IR);
+
 
     return STATUS_OK;
 }

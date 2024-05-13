@@ -50,9 +50,9 @@ inline void print_arg(arg_t arg, FILE *stream)
             PRINT_WO_NEWLINE(" QWORD [%s + %ld] ", base_reg, arg.mem.disp);
         break;
     }
-    case IRB_ARG_TYPE_MEM_VAR:
+    case IRB_ARG_TYPE_MEM_NUM_CNST:
     {
-        IRBlock *target = (IRBlock*) arg.mem_var;
+        IRBlock *target = (IRBlock*) arg.mem_num_cnst;
         PRINT_WO_NEWLINE(" QWORD [LNC_%lu] ", target->lbl_num_const);
         break;
     }

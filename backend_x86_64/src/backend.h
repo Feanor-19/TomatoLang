@@ -37,10 +37,18 @@ const tr_IR_to_NASM_t TR_IR_NASM_FUNCS[] =
 #undef DEF_IRBLOCK_TYPE
 
 
+const size_t DEFAULT_NUM_CONSTS_ARR_SIZE = 10;
+
+
 Status translate_AST_to_IR( const Tree *AST, IR *IR );
 
 //! @brief Translates given node and subtree, which starts with this node, into IR.
 Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS );
+
+//! @brief Changes IR, making some small optimizations (e.g. folding
+//! sequantial (paired) 'push' and 'pop' into one 'mov' (if possible),
+//! or folding equal consts into one).
+Status optimize_IR( IR *IR );
 
 //! @brief Unfolds 'unrealistic' functions into combinations of realistic ones.
 //! @example push xmm_reg -> { sub rsp, QWORD; mov [rsp], xmm_reg }

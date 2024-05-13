@@ -48,7 +48,7 @@ enum FuncType
 
 
 const size_t REALLOC_DEFAULT_MULTIPLIER = 2;
-const double DBL_PRECISION              = 1E-10;
+const double DBL_PRECISION              = __DBL_EPSILON__;
 const mode_t DEFAULT_FILE_MODE          = 0777;
 
 
@@ -124,9 +124,7 @@ void realloc_arr_if_needed( void **arr, size_t *arr_cap_ptr, size_t arr_ind, siz
 
 void print_tree_node_data( FILE *stream, void *data_ptr );
 
-int is_dbl_zero( double a );
-
-int are_dbls_equal( double a, double b );
+bool are_num_t_identical( double a, double b );
 
 void put_n_chars( FILE *stream, char c, size_t n );
 

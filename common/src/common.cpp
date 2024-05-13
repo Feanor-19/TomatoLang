@@ -366,7 +366,7 @@ int is_node_num( TreeNode *node_ptr, num_t num )
     assert(node_ptr);
 
     return get_node_data(node_ptr).type == TREE_NODE_TYPE_CONST_NUM
-        && are_dbls_equal(get_node_data(node_ptr).num, num);
+        && are_num_t_identical(get_node_data(node_ptr).num, num);
 }
 
 int is_node_var_local( TreeNode *node_ptr, ident_t id )
@@ -434,14 +434,9 @@ void print_tree_node_data( FILE *stream, void *data_ptr )
     }
 }
 
-int is_dbl_zero( double a )
+bool are_num_t_identical( double a, double b )
 {
-    return DBL_PRECISION <= a && a <= DBL_PRECISION;
-}
-
-int are_dbls_equal( double a, double b )
-{
-    return is_dbl_zero(a - b);
+    return -DBL_PRECISION <= (a-b) && (a-b) <= DBL_PRECISION;
 }
 
 void put_n_chars( FILE *stream, char c, size_t n )

@@ -112,10 +112,7 @@ LinearRoot:
 ; func prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_2 	dq 0.000000
-section .text
-			push QWORD [LNC_2] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -24] 
 ; assign_end
 ; assign_start
@@ -130,10 +127,10 @@ section .text
 ; mulsd reg_xmm_tmp_1, [num_const_which_is_minus_one]
 ; the mentioned const:
 section .rodata
-LNC_3 	dq -1.000000
+LNC_2 	dq -1.000000
 section .text
 ; the mentioned mulsd:
-			mulsd xmm8 , QWORD [LNC_3] 
+			mulsd xmm8 , QWORD [LNC_2] 
 ; push back onto comp. sub-stack
 			sub rsp , 8 
 			movsd QWORD [rsp + 0] , xmm8 
@@ -178,10 +175,7 @@ SolvationOfLinear:
 ; func prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_4 	dq 0.000000
-section .text
-			push QWORD [LNC_4] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -24] 
 ; assign_end
 ; if_start
@@ -203,10 +197,7 @@ section .text
 ; else branch:
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_5 	dq 0.000000
-section .text
-			push QWORD [LNC_5] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -32] 
 ; assign_end
 ; assign_start
@@ -316,10 +307,7 @@ QuadraticFirstRoot:
 ; func prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_6 	dq 0.000000
-section .text
-			push QWORD [LNC_6] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -32] 
 ; assign_end
 ; assign_start
@@ -336,10 +324,10 @@ section .text
 ; mulsd reg_xmm_tmp_1, [num_const_which_is_minus_one]
 ; the mentioned const:
 section .rodata
-LNC_7 	dq -1.000000
+LNC_3 	dq -1.000000
 section .text
 ; the mentioned mulsd:
-			mulsd xmm8 , QWORD [LNC_7] 
+			mulsd xmm8 , QWORD [LNC_3] 
 ; push back onto comp. sub-stack
 			sub rsp , 8 
 			movsd QWORD [rsp + 0] , xmm8 
@@ -370,9 +358,9 @@ section .text
 ; mul start
 ; computing left expr
 section .rodata
-LNC_8 	dq 2.000000
+LNC_4 	dq 2.000000
 section .text
-			push QWORD [LNC_8] 
+			push QWORD [LNC_4] 
 ; computing right expr
 			push QWORD [rbp + -8] 
 ; pop right expr result to xmm_tmp_2
@@ -423,26 +411,20 @@ QuadraticNumberOfRoots:
 ; func prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_9 	dq 0.000000
-section .text
-			push QWORD [LNC_9] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -16] 
 ; assign_end
 ; assign_start
 ; assign_expr
 section .rodata
-LNC_10 	dq 1.000000
+LNC_5 	dq 1.000000
 section .text
-			push QWORD [LNC_10] 
+			push QWORD [LNC_5] 
 			pop QWORD [rbp + -24] 
 ; assign_end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_11 	dq 0.000000
-section .text
-			push QWORD [LNC_11] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -32] 
 ; assign_end
 ; if_start
@@ -469,10 +451,7 @@ LCC_4:
 ; assign_expr
 ; mul start
 ; computing left expr
-section .rodata
-LNC_12 	dq 2.000000
-section .text
-			push QWORD [LNC_12] 
+			push QWORD [LNC_4] 
 ; computing right expr
 			push QWORD [rbp + -24] 
 ; pop right expr result to xmm_tmp_2
@@ -523,10 +502,7 @@ LCC_6:
 ; assign_expr
 ; mul start
 ; computing left expr
-section .rodata
-LNC_13 	dq 1.000000
-section .text
-			push QWORD [LNC_13] 
+			push QWORD [LNC_5] 
 ; computing right expr
 			push QWORD [rbp + -24] 
 ; pop right expr result to xmm_tmp_2
@@ -577,10 +553,7 @@ LCC_8:
 ; assign_expr
 ; mul start
 ; computing left expr
-section .rodata
-LNC_14 	dq 0.000000
-section .text
-			push QWORD [LNC_14] 
+			push QWORD [LNC_0] 
 ; computing right expr
 			push QWORD [rbp + -24] 
 ; pop right expr result to xmm_tmp_2
@@ -624,18 +597,12 @@ SolvationOfQuadratic:
 ; func prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_15 	dq 0.000000
-section .text
-			push QWORD [LNC_15] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -32] 
 ; assign_end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_16 	dq 1.000000
-section .text
-			push QWORD [LNC_16] 
+			push QWORD [LNC_5] 
 			pop QWORD [rbp + -40] 
 ; assign_end
 ; if_start
@@ -657,10 +624,7 @@ section .text
 ; else branch:
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_17 	dq 0.000000
-section .text
-			push QWORD [LNC_17] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -48] 
 ; assign_end
 ; assign_start
@@ -707,10 +671,7 @@ extern print_num
 			call print_num
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_18 	dq 0.000000
-section .text
-			push QWORD [LNC_18] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -56] 
 ; assign_end
 ; assign_start
@@ -764,10 +725,7 @@ extern print_num
 ; else branch:
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_19 	dq 0.000000
-section .text
-			push QWORD [LNC_19] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -64] 
 ; assign_end
 ; assign_start
@@ -819,10 +777,7 @@ extern print_num
 ; computing right expr
 ; mul start
 ; computing left expr
-section .rodata
-LNC_20 	dq 2.000000
-section .text
-			push QWORD [LNC_20] 
+			push QWORD [LNC_4] 
 ; computing right expr
 			push QWORD [rbp + -40] 
 ; pop right expr result to xmm_tmp_2
@@ -852,10 +807,7 @@ section .text
 LCC_12:
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_21 	dq 0.000000
-section .text
-			push QWORD [LNC_21] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -72] 
 ; assign_end
 ; assign_start
@@ -872,10 +824,10 @@ section .text
 ; mulsd reg_xmm_tmp_1, [num_const_which_is_minus_one]
 ; the mentioned const:
 section .rodata
-LNC_22 	dq -1.000000
+LNC_6 	dq -1.000000
 section .text
 ; the mentioned mulsd:
-			mulsd xmm8 , QWORD [LNC_22] 
+			mulsd xmm8 , QWORD [LNC_6] 
 ; push back onto comp. sub-stack
 			sub rsp , 8 
 			movsd QWORD [rsp + 0] , xmm8 
@@ -988,18 +940,12 @@ _start:
 ; main prologue end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_23 	dq 1.000000
-section .text
-			push QWORD [LNC_23] 
+			push QWORD [LNC_5] 
 			pop QWORD [rbp + -8] 
 ; assign_end
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_24 	dq 0.000000
-section .text
-			push QWORD [LNC_24] 
+			push QWORD [LNC_0] 
 			pop QWORD [rbp + -16] 
 ; assign_end
 ; print_str start

@@ -253,11 +253,11 @@ inline arg_t form_arg_t_imm_const( int64_t imm_const )
     return arg;
 }
 
-inline arg_t form_arg_t_mem_var( IRBlock *mem_var )
+inline arg_t form_arg_t_mem_num_cnst( IRBlock *mem_num_cnst )
 {
     arg_t arg = {};
-    arg.type = IRB_ARG_TYPE_MEM_VAR;
-    arg.mem_var = mem_var;
+    arg.type = IRB_ARG_TYPE_MEM_NUM_CNST;
+    arg.mem_num_cnst = mem_num_cnst;
     return arg;
 }
 

@@ -593,7 +593,7 @@ Status tr_AST_to_IR_MINUS (FORMAL_TR_ASM_IR_ARGS)
     COMMENT("the mentioned mulsd:");
     IRBlockData mulsd_data = form_IRBlockData_type( IR_BLOCK_TYPE_MULSD );
     mulsd_data.arg1 = form_arg_t_reg_xmm( REG_XMM_TMP_1 );
-    mulsd_data.arg2 = form_arg_t_mem_var( minus_one_block );
+    mulsd_data.arg2 = form_arg_t_mem_num_cnst( minus_one_block );
     IR_PUSH_TAIL(mulsd_data);
 
     COMMENT("push back onto comp. sub-stack");

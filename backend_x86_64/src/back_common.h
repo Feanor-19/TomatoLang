@@ -61,7 +61,7 @@ enum IRBlockArgType
     IRB_ARG_TYPE_REG_XMM,
     IRB_ARG_TYPE_MEM,
     IRB_ARG_TYPE_IMM_CONST,
-    IRB_ARG_TYPE_MEM_VAR,
+    IRB_ARG_TYPE_MEM_NUM_CNST,
     IRB_ARG_TYPE_CONST_STR_ADDR,
 };
 
@@ -74,7 +74,7 @@ struct arg_t
         reg_xmm_t reg_xmm;
         mem_t mem;
         imm_const_t imm_const; // if num_t is needed, IRBlock of type 'NUM_CONST' must be formed
-        void *mem_var; // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
+        void *mem_num_cnst; // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
         void *addr;    // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
     };
 };
