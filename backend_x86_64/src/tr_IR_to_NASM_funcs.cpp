@@ -127,7 +127,7 @@ Status tr_IR_to_NASM_NUM_CONST (FORMAL_TR_IR_NASM_ARGS)
 
     SECTION_RODATA();
     block->lbl_num_const = counters->lbl_num_const++;
-    PRINT("LNC_%lu \tdq %g", block->lbl_num_const, block->data.num_const);
+    PRINT("LNC_%lu \tdq %#lf", block->lbl_num_const, block->data.num_const);
     SECTION_TEXT();
 
     return STATUS_OK;

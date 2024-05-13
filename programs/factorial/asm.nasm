@@ -6,11 +6,13 @@ Factorial:
 			push rbp 
 			mov rbp , rsp 
 			sub rsp , 24 
+; Laying out func args into stack:
+			movsd QWORD [rbp + -8] , xmm0 
 ; func prologue end
 ; assign_start
 ; assign_expr
 section .rodata
-LNC_0 	dq 1
+LNC_0 	dq 1.000000
 section .text
 			push QWORD [LNC_0] 
 			pop QWORD [rbp + -16] 
@@ -120,7 +122,7 @@ extern input
 ; assign_start
 ; assign_expr
 section .rodata
-LNC_1 	dq 0
+LNC_1 	dq 0.000000
 section .text
 			push QWORD [LNC_1] 
 			pop QWORD [rbp + -16] 

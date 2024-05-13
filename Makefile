@@ -2,7 +2,7 @@ all: front middle back
 
 clean: clean_front clean_middle clean_back
 
-PROG_DIR = programs/test_program/
+PROG_DIR = programs/factorial
 
 PROG_TEXT = prog.txt
 PROG_AST  = compiler_tree.txt

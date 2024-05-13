@@ -157,6 +157,19 @@ Status tr_AST_to_IR_FUNC_DEF (FORMAL_TR_ASM_IR_ARGS)
     sub_data.arg1 = form_arg_t_reg( REG_rsp );
     sub_data.arg2 = form_arg_t_imm_const( QWORD*(args_num + loc_vars_num) );
     IR_PUSH_TAIL( sub_data );
+    
+    COMMENT("Laying out func args into stack:");
+
+    size_t num_of_args_to_lay_out = min(args_num, NUM_OF_XMM_REGS_TO_PASS_ARGS);
+
+    for (size_t func_arg_id = 0; func_arg_id < num_of_args_to_lay_out; func_arg_id++)
+    {
+        IRBlockData mov_arg_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+        mov_arg_data.arg_dst = form_arg_t_mem( REG_rbp, (-1)*QWORD*((disp_t) func_arg_id+1) );
+        mov_arg_data.arg_src = form_arg_t_reg_xmm(REGS_XMM_TO_PASS_PARAMS_TO_FUNCS[ func_arg_id ]);
+        IR_PUSH_TAIL( mov_arg_data );
+    }
+    
     COMMENT("func prologue end");
 
     context->args_num     = args_num;
