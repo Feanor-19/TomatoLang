@@ -1,4 +1,4 @@
-#include "stdio.h"
+//#include "stdio.h"
 
 extern "C" 
 {
@@ -7,9 +7,9 @@ void _mywrite(long unsigned str_len, const char *str_ptr);
 void print_str(const char *str);
 void print_num(double x);
 double input();
-}
+void print_int(long unsigned x);
 
-extern "C" void print_str(const char *str)
+void print_str(const char *str)
 {
     const char *curr = str;
     long unsigned str_len = 0;
@@ -23,22 +23,60 @@ extern "C" void print_str(const char *str)
     _mywrite(str_len, str);
 }
 
-extern "C" void print_num(double x)
+void print_num(double x)
 {
-    printf("%g\n", x);
+    // printf("%g\n", x);
+
+    if (x < 0)
+    {
+        print_str("-");
+        x = -x;
+    }
+
+    unsigned long int_part = (unsigned long) x;
+    print_int(int_part);
+    print_str(".");
+
+    double non_int_part = x - (double) int_part;
+
+    const int pres = 6;
+    char dig[pres+1] = {0};
+
+    for(int i = 0; i < pres; i++)
+    {
+        non_int_part *= 10;
+        int_part = (unsigned long) non_int_part;
+
+        dig[i] = (char) int_part + '0';
+
+        non_int_part -= (double) int_part;
+    }
+
+    // find last '0'
+    for(int i = pres-1; i >= 0; i--)
+    {
+        if (dig[i] != '0')
+        {
+            dig[i+1] = '\0';
+            break;
+        }
+    }
+
+    print_str(dig);
+    print_str("\n");
 }
 
-inline bool isspace(char c)
+inline bool myisspace(char c)
 {
     return c == '\n' || c == ' ';
 }
 
-inline bool issep(char c)
+inline bool myissep(char c)
 {
     return c == ',' || c == '.';
 }
 
-inline bool isdigit(char c)
+inline bool myisdigit(char c)
 {
     return '0' <= c && c <= '9';
 }
@@ -54,7 +92,7 @@ inline void print_err_msg(char wrong_c)
     _mywrite(str_len2, err_msg2);
 }
 
-extern "C" double input()
+double input()
 {
     double res = 0;
     
@@ -62,14 +100,21 @@ extern "C" double input()
     
     char c = 0;
     double del = 0.1;
+    bool neg = false;
 
     _myread(1, &c);
-    while( isspace(c) )
+    while( myisspace(c) )
         _myread(1, &c);
 
-    while (!issep(c) && !isspace(c))
+    if (c == '-')
     {
-        if (!isdigit(c))
+        neg = true;
+        _myread(1, &c);
+    }
+
+    while (!myissep(c) && !myisspace(c))
+    {
+        if (!myisdigit(c))
         {
             print_err_msg(c);
             return 0;
@@ -78,11 +123,11 @@ extern "C" double input()
         _myread(1, &c);
     }
 
-    if (isspace(c))
+    if (myisspace(c))
         return res;
 
 
-    if (!issep(c))
+    if (!myissep(c))
     {
         print_err_msg(c);
 
@@ -91,9 +136,9 @@ extern "C" double input()
 
     _myread(1, &c); // reading sep char
 
-    while (!isspace(c))
+    while (!myisspace(c))
     {
-        if (!isdigit(c))
+        if (!myisdigit(c))
         {
             print_err_msg(c);
             return 0;
@@ -103,5 +148,9 @@ extern "C" double input()
         _myread(1, &c);
     }
 
+    if (neg)
+        res = -res;
+
     return res;
+}
 }

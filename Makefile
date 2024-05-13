@@ -19,7 +19,7 @@ DO_DUMP =
 endif
 
 .PHONY: tomato
-tomato: $(PROG_DIR)/$(PROG_PROG) front back
+tomato: $(PROG_DIR)/$(PROG_PROG)
 
 
 $(PROG_DIR)/$(PROG_AST): $(PROG_DIR)/$(PROG_TEXT)
@@ -32,8 +32,9 @@ $(PROG_DIR)/$(PROG_OBJ): $(PROG_DIR)/$(PROG_NASM)
 	nasm -f elf64 -o $(PROG_DIR)/$(PROG_OBJ) $(PROG_DIR)/$(PROG_NASM)
 
 $(PROG_DIR)/$(PROG_PROG): $(PROG_DIR)/$(PROG_OBJ) 
-	ld $(PROG_DIR)/$(PROG_OBJ) -o $(PROG_DIR)/$(PROG_PROG) -lc -I /lib64/ld-linux-x86-64.so.2 -ltomato -L $(TOMATO_LIB)/bin
+	ld $(PROG_DIR)/$(PROG_OBJ) -o $(PROG_DIR)/$(PROG_PROG) -ltomato -L $(TOMATO_LIB)/bin
 
+#-lc -I /lib64/ld-linux-x86-64.so.2
 
 .PHONY: cook
 cook:

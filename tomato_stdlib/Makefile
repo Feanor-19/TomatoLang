@@ -12,7 +12,7 @@ CFLAGS = -std=c++17 -Wall -Wextra -Weffc++ 													\
 		-Wsuggest-override -Wswitch-default -Wswitch-enum -Wsync-nand -Wundef 				\
 		-Wunreachable-code -Wunused -Wuseless-cast -Wvariadic-macros -Wno-literal-suffix 	\
 		-Wno-missing-field-initializers -Wno-narrowing -Wno-old-style-cast -Wno-varargs 	\
-		-Wstack-protector -pie -fPIE -Werror=vla
+		-Wstack-protector -Werror=vla -fPIE -pie
 
 SRC_ASM_EXT = .nasm
 SRC_C_EXT   = .cpp
@@ -39,10 +39,10 @@ make_lib: $(OBJFILES_C) $(OBJFILES_ASM)
 	ar cr $(OUT) $^
 
 $(OBJ_ASM)/%.o : $(SRC_ASM)/%$(SRC_ASM_EXT)
-	@nasm -f elf64 -o $@ $<
+	nasm -f elf64 -o $@ $<
 
 $(OBJ_C)/%.o : $(SRC_C)/%$(SRC_C_EXT)
-	@$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) -fno-stack-protector $(CFLAGS) -o $@ -c $<
 
 .PHONY: clean
 clean:
