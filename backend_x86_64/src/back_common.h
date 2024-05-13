@@ -194,6 +194,8 @@ const char * const REGS_XMM[] =
 const reg_xmm_t REG_XMM_TMP_1 = REG_xmm8;
 const reg_xmm_t REG_XMM_TMP_2 = REG_xmm9;
 
+const reg_t REG_TMP_1 = REG_r8;
+
 const char * const STDLIB_INPUT     = "input";
 const char * const STDLIB_PRINT_NUM = "print_num";
 const char * const STDLIB_PRINT_STR = "print_str";

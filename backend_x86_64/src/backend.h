@@ -45,9 +45,13 @@ Status translate_AST_to_IR( const Tree *AST, IR *IR );
 //! @brief Translates given node and subtree, which starts with this node, into IR.
 Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS );
 
+//! @brief Sets common label for each IRBlock, which is pointed at by some other block.
+//! @note Pointer to another block (needing common label) is stored in the field 'instr_ptr'.
+// Other types of labels aren't set this way.
+void set_cmn_labels( const IR* IR );
+
 //! @brief Changes IR, making some small optimizations (e.g. folding
-//! sequantial (paired) 'push' and 'pop' into one 'mov' (if possible),
-//! or folding equal consts into one).
+//! sequantial (paired) 'push' and 'pop' into one 'mov' (if possible)).
 Status optimize_IR( IR *IR );
 
 //! @brief Unfolds 'unrealistic' functions into combinations of realistic ones.

@@ -16,8 +16,8 @@ Discriminant:
 section .rodata
 LNC_0 	dq 0.000000
 section .text
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -32] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -32] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -112,8 +112,8 @@ LinearRoot:
 ; func prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -24] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -24] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -175,8 +175,8 @@ SolvationOfLinear:
 ; func prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -24] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -24] , r8 
 ; assign_end
 ; if_start
 ; cmp helper start
@@ -197,8 +197,8 @@ SolvationOfLinear:
 ; else branch:
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -32] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -32] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -307,8 +307,8 @@ QuadraticFirstRoot:
 ; func prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -32] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -32] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -411,21 +411,21 @@ QuadraticNumberOfRoots:
 ; func prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
 section .rodata
 LNC_5 	dq 1.000000
 section .text
-			push QWORD [LNC_5] 
-			pop QWORD [rbp + -24] 
+			mov r8 , QWORD [LNC_5] 
+			mov QWORD [rbp + -24] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -32] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -32] , r8 
 ; assign_end
 ; if_start
 ; cmp helper start
@@ -597,13 +597,13 @@ SolvationOfQuadratic:
 ; func prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -32] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -32] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_5] 
-			pop QWORD [rbp + -40] 
+			mov r8 , QWORD [LNC_5] 
+			mov QWORD [rbp + -40] , r8 
 ; assign_end
 ; if_start
 ; cmp helper start
@@ -624,8 +624,8 @@ SolvationOfQuadratic:
 ; else branch:
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -48] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -48] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -671,8 +671,8 @@ extern print_num
 			call print_num
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -56] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -56] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -725,8 +725,8 @@ extern print_num
 ; else branch:
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -64] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -64] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -807,8 +807,8 @@ extern print_num
 LCC_12:
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -72] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -72] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
@@ -940,13 +940,13 @@ _start:
 ; main prologue end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_5] 
-			pop QWORD [rbp + -8] 
+			mov r8 , QWORD [LNC_5] 
+			mov QWORD [rbp + -8] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; print_str start
 extern print_str

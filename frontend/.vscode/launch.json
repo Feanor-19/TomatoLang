@@ -11,9 +11,9 @@
             "program": "${workspaceFolder}/bin/frontend",
             "args": [
                     "-i",
-                    "./../programs/test_program/prog.txt",
+                    "./../programs/quadratic/prog.txt",
                     "-o",
-                    "./../programs/test_program/compiler_tree.txt",
+                    "./../programs/quadratic/compiler_tree.txt",
                     "--img-dumps",
                     "./dumps/image_dumps/"
                     ],

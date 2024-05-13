@@ -15,6 +15,12 @@ inline IRBlock *hlp_push_xmm(IR *IR, IRBlock *block)
     sub_rsp_data.arg2 = form_arg_t_imm_const( QWORD );
     IR_insert_after( IR, block, sub_rsp_data );
 
+    if ( block->lbl_cmn_set )
+    {
+        IR->tail->lbl_cmn_set = true;
+        IR->tail->lbl_cmn = block->lbl_cmn;
+    }
+
     // mov [rsp], reg_xmm
     IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
     mov_data.arg_dst = form_arg_t_mem( REG_rsp, 0 );
@@ -38,6 +44,12 @@ inline IRBlock *hlp_pop_xmm(IR *IR, IRBlock *block)
     mov_data.arg_dst = block->data.arg_dst;
     mov_data.arg_src = form_arg_t_mem( REG_rsp, 0 );
     IR_insert_after( IR, block, mov_data );
+
+    if ( block->lbl_cmn_set )
+    {
+        IR->tail->lbl_cmn_set = true;
+        IR->tail->lbl_cmn = block->lbl_cmn;
+    }
 
     // add rsp, QWORD_SIZE
     IRBlockData add_data = form_IRBlockData_type( IR_BLOCK_TYPE_ADD );

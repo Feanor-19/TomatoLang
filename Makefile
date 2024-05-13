@@ -2,7 +2,7 @@ all: front middle back stdlib
 
 clean: clean_front clean_middle clean_back
 
-PROG_DIR = programs/quadratic
+PROG_DIR = programs/factorial
 
 PROG_TEXT = prog.txt
 PROG_AST  = compiler_tree.txt

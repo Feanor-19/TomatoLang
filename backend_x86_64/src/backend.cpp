@@ -90,49 +90,103 @@ Status translate_AST_node_to_IR( FORMAL_TR_ASM_IR_ARGS )
     return STATUS_OK;
 }
 
-// //! @brief Helper func for 'optimize_num_consts'. Finds index of an elem in
-// //! 'num_const_arr' with the given 'num' and returns it. If not found, returns -1.
-// inline int64_t opt_num_consts_find(IRBlock *num_const_arr[], size_t num_const_arr_curr_len, num_t num)
-// {
-//     for (size_t ind = 0; ind < num_const_arr_curr_len; ind++)
-//     {
-//         if (num_const_arr[ind]->data.num_const == num)
-//             return ind;
-//     }
-//     return -1;
-// } 
+inline bool is_IRB_ARG_mem_type( IRBlockArgType arg_type )
+{
+    return arg_type == IRB_ARG_TYPE_CONST_STR_ADDR
+        || arg_type == IRB_ARG_TYPE_MEM
+        || arg_type == IRB_ARG_TYPE_MEM_NUM_CNST;
+}
 
-// //! @brief Merges identical num consts into one.
-// inline Status optimize_num_consts(IR *IR)
-// {
-//     assert(IR);
+inline IRBlock* opt_seq_push_pop_hlp( IR *IR, IRBlock *push_block )
+{
+    assert(IR);
+    assert(push_block);
 
-//     //! @brief We will store here ptrs to all unique IRBlocks which has arg 'NUM_CONST'
-//     IRBlock **num_const_arr = (IRBlock**) calloc( DEFAULT_NUM_CONSTS_ARR_SIZE, sizeof(IRBlock*) );
-//     size_t num_const_arr_cap = DEFAULT_NUM_CONSTS_ARR_SIZE;
-//     size_t num_const_arr_curr_len = 0;
+    IRBlock *pop_block = push_block->next;
 
-//     IRBlock *curr_block = IR->head;
-//     while (curr_block)
-//     {
-//         IRBlockData curr_data = curr_block->data;
-//         if (curr_data.type == IRB_ARG_TYPE_MEM_NUM_CNST)
-//         {
-//             int64_t ind = opt_num_consts_find( num_const_arr, num_const_arr_curr_len, curr_data.num_const );
-//             if ( ind == -1 )
-//             {
-//                 // this is a new const, adding to the arr
+    IRBlockData push_data = push_block->data;
+    IRBlockData pop_data = pop_block->data;
 
-//                 num_const_arr[num_const_arr_curr_len++] = curr_block;
-//             }
-//         }
-//     }
-// }
+    if ( pop_block->lbl_cmn_set )
+        return pop_block->next; // optimization can't be done
+
+    IRBlock *first_inserted_block = NULL;
+    IRBlock *last_inserted_block = NULL;
+    if ( is_IRB_ARG_mem_type(push_data.arg_src.type) && is_IRB_ARG_mem_type(pop_data.arg_dst.type) )
+    {
+        // mov some_reg, arg_src
+        // mov arg_dst, some_reg
+
+        IRBlockData mov_to_reg = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+        mov_to_reg.arg_dst = form_arg_t_reg( REG_TMP_1 );
+        mov_to_reg.arg_src = push_data.arg_src;
+        IR_insert_after( IR, pop_block, mov_to_reg );
+        
+        first_inserted_block = pop_block->next;
+
+        IRBlockData mov_from_reg = form_IRBlockData_type(IR_BLOCK_TYPE_MOV);
+        mov_from_reg.arg_dst = pop_data.arg_dst;
+        mov_from_reg.arg_src = form_arg_t_reg( REG_TMP_1 );
+        IR_insert_after( IR, first_inserted_block, mov_from_reg );
+
+        last_inserted_block = first_inserted_block->next;
+    }
+    else
+    {
+        // mov arg_dst, arg_src
+
+        IRBlockData mov_data = form_IRBlockData_type( IR_BLOCK_TYPE_MOV );
+        mov_data.arg_dst = pop_data.arg_dst;
+        mov_data.arg_src = push_data.arg_src;
+        IR_insert_after(IR, pop_block, mov_data);
+
+        first_inserted_block = pop_block->next;
+
+        last_inserted_block = first_inserted_block;
+    }
+
+    if ( push_block->lbl_cmn_set )
+    {
+        first_inserted_block->lbl_cmn_set = true;
+        first_inserted_block->lbl_cmn = push_block->lbl_cmn;
+    }
+
+        IR_pop(IR, push_block);
+        IR_pop(IR, pop_block);
+
+    return last_inserted_block;
+}
+
+//! @brief Optimizes each pair of sequential ('push', 'pop') with
+//! identical 'arg_src' and 'arg_dst' into one 'mov'. 
+//! @note Exception: if both 'arg_src' and 'arg_dst' are of type 'mem',
+//! the arg is moved through some srcatch reg.  
+inline void optimize_seq_push_pop( IR *IR )
+{
+    assert(IR);
+    
+    IRBlock *curr_block = IR->head;
+    while (curr_block->next)
+    {
+        IRBlockData curr_data = curr_block->data;
+        IRBlockData next_data = curr_block->next->data;
+
+        if (curr_data.type == IR_BLOCK_TYPE_PUSH && next_data.type == IR_BLOCK_TYPE_POP)
+        {
+            curr_block = opt_seq_push_pop_hlp( IR, curr_block );
+        }
+        else
+        {
+            curr_block = curr_block->next;
+        }
+    }
+}
 
 Status optimize_IR( IR *IR )
 {
     assert(IR);
 
+    optimize_seq_push_pop(IR);
 
     return STATUS_OK;
 }
@@ -196,10 +250,11 @@ inline Status print_nasm_header( FILE *stream )
 //! @brief Sets common label for each IRBlock, which is pointed at by some other block.
 //! @note Pointer to another block (needing common label) is stored in the field 'instr_ptr'.
 // Other types of labels aren't set this way.
-inline void set_cmn_labels( const IR* IR, Counters *counters )
+void set_cmn_labels( const IR* IR )
 {
     assert(IR);
-    assert(counters);
+
+    size_t lbl_cmn = 0;
 
     IRBlock *curr_block = IR->head;
     while (curr_block)
@@ -208,7 +263,7 @@ inline void set_cmn_labels( const IR* IR, Counters *counters )
         if (target)
         {
             target->lbl_cmn_set = true;
-            target->lbl_cmn = counters->lbl_cmn++;
+            target->lbl_cmn = lbl_cmn++;
         }   
 
         curr_block = curr_block->next;
@@ -227,7 +282,6 @@ Status translate_IR_to_NASM( const IR* IR, const char *output_filename )
     print_nasm_header(stream);
 
     Counters counters = {};
-    set_cmn_labels(IR, &counters);
 
     IRBlock *curr_block = IR->head;
     while( curr_block )

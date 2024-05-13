@@ -11,7 +11,7 @@ do{                                                             \
     Status status__ = func__;                                   \
     if (status__ != STATUS_OK)                                  \
     {                                                           \
-        ERROR( "Some error happened during translation:" );     \
+        ERROR( "Some error happened:" );     \
         print_status_message( log_get_stream(), status__ );     \
         putc( '\n', log_get_stream() );                         \
         ERROR( "Shutting down." );                              \
@@ -61,9 +61,11 @@ int main( int argc, const char *argv[])
     HANDLE_RET_STATUS(translate_AST_to_IR( &AST, &IR ));
     LOG("Translating AST to IR done!");
     
-    // TODO optimize IR
+    set_cmn_labels(&IR);
 
-    make_IR_realistic( &IR );
+    HANDLE_RET_STATUS(optimize_IR( &IR ));
+
+    HANDLE_RET_STATUS(make_IR_realistic( &IR ));
 
     LOG("Translating IR to NASM...");
     HANDLE_RET_STATUS(translate_IR_to_NASM( &IR, cfg.output_file_name ));

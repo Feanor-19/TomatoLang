@@ -14,8 +14,8 @@ Factorial:
 section .rodata
 LNC_0 	dq 1.000000
 section .text
-			push QWORD [LNC_0] 
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; if_start
 ; cmp helper start
@@ -124,8 +124,8 @@ extern input
 section .rodata
 LNC_1 	dq 0.000000
 section .text
-			push QWORD [LNC_1] 
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [LNC_1] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; if_start
 ; cmp helper start
@@ -166,16 +166,13 @@ section .text
 LCC_2:
 ; assign_start
 ; assign_expr
-section .rodata
-LNC_2 	dq 1.000000
-section .text
-			push QWORD [LNC_2] 
-			pop QWORD [rbp + -24] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -24] , r8 
 ; assign_end
 ; assign_start
 ; assign_expr
-			push QWORD [rbp + -24] 
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [rbp + -24] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; label if_end:
 LCC_3:
