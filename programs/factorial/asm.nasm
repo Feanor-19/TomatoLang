@@ -106,7 +106,7 @@ global _start
 _start:
 ; main prologue start
 			mov rbp , rsp 
-			sub rsp , 24 
+			sub rsp , 32 
 ; main prologue end
 ; assign_start
 ; assign_expr
@@ -127,6 +127,23 @@ section .text
 			push QWORD [LNC_1] 
 			pop QWORD [rbp + -16] 
 ; assign_end
+; if_start
+; cmp helper start
+; computing left expr
+			push QWORD [rbp + -8] 
+; computing right expr
+			push QWORD [rbp + -16] 
+; pop right expr result to xmm_tmp_2
+			movsd xmm9 , QWORD [rsp + 0] 
+			add rsp , 8 
+; pop left expr result to xmm_tmp_1
+			movsd xmm8 , QWORD [rsp + 0] 
+			add rsp , 8 
+			comisd xmm8 , xmm9 
+; cmp helper end
+; jump if_yes
+			je LCC_2
+; else branch:
 ; assign_start
 ; assign_expr
 ; call func recipe start
@@ -143,6 +160,25 @@ section .text
 ; call func recipe end
 			pop QWORD [rbp + -16] 
 ; assign_end
+; jump if_end:
+			jmp LCC_3
+; label if_yes:
+LCC_2:
+; assign_start
+; assign_expr
+section .rodata
+LNC_2 	dq 1.000000
+section .text
+			push QWORD [LNC_2] 
+			pop QWORD [rbp + -24] 
+; assign_end
+; assign_start
+; assign_expr
+			push QWORD [rbp + -24] 
+			pop QWORD [rbp + -16] 
+; assign_end
+; label if_end:
+LCC_3:
 ; print num start
 extern print_num
 ; compute the argument:
