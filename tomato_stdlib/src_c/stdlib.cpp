@@ -124,7 +124,7 @@ double input()
     }
 
     if (myisspace(c))
-        return res;
+        goto final;
 
 
     if (!myissep(c))
@@ -148,6 +148,7 @@ double input()
         _myread(1, &c);
     }
 
+final:
     if (neg)
         res = -res;
 

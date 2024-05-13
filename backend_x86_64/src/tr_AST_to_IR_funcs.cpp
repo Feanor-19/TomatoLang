@@ -506,7 +506,7 @@ Status tr_AST_to_IR_WHILE (FORMAL_TR_ASM_IR_ARGS)
 
     MAKE_LABEL(while_start);
 
-    WRP(cmp_helper( FACT_TR_ASM_IR_ARGS ));
+    WRP(cmp_helper( AST, IR, LEFT_CURR, context ));
 
     COMMENT("jmp while_body");
     CHECK_NODE_TYPE( LEFT_CURR, TREE_NODE_TYPE_OP );

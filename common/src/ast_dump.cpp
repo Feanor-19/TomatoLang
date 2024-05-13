@@ -48,6 +48,7 @@ inline void assemble_cmn_file_name()
     if ( FOLDER_PATH[FOLDER_PATH_LEN - 1] != '/' )
     {
         *name_ptr = '/';
+        FOLDER_PATH_LEN += 1;
         name_ptr += 1;
     }
 

@@ -1,8 +1,8 @@
-all: front middle back
+all: front middle back stdlib
 
 clean: clean_front clean_middle clean_back
 
-PROG_DIR = programs/factorial
+PROG_DIR = programs/quadratic
 
 PROG_TEXT = prog.txt
 PROG_AST  = compiler_tree.txt
@@ -75,3 +75,7 @@ run_front:
 .PHONY: clean_front
 clean_front:
 	@make clean -C frontend
+
+.PHONY: stdlib
+stdlib:
+	@make -C tomato_stdlib

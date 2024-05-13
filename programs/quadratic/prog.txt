@@ -129,6 +129,11 @@ Nothing Repeat The Following:
     Scream In Despair: "Please, enter coefficient c:"!
     Quickly Obtain As Much As The Universe Says Units Of Carrots!
 
+    Scream In Despair: "Here are the entered coefficients:"!
+    Serve Apples!
+    Serve Beetroots!
+    Serve Carrots!
+
     Perform SolvationOfQuadratic (Using Apples, Beetroots, Carrots As Ingredients)!
 
     Scream In Despair: "Done! Do you want to solve another equation? [1/0]"!
