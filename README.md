@@ -206,6 +206,7 @@ Here Are Some Skills You Need To Have:
 
 Skill To Cook Factorial Using Mathematicians As Ingredients:
     Quickly Obtain 1 Units Of Math!
+
     In Case There Happens To Be Just The Same Amount Of Mathematicians
     Comparing With Math Urgently Do The Following Steps:
         There Is No Time To Explain, Use Math As The Result Of This Skill!
@@ -218,7 +219,14 @@ Skill To Cook Factorial Using Mathematicians As Ingredients:
 Here Is The Recipe Itself:
 Quickly Obtain As Much As The Universe Says Units Of Mathematicians!
 Quickly Obtain 0 Units Of Answer!
-Place Cooked Beforehand Factorial (Using Mathematicians As Ingredients) Right Into Answer!
+
+In Case There Happens To Be Just The Same Amount Of Mathematicians
+Comparing With Answer Urgently Do The Following Steps:
+    Quickly Obtain 1 Units Of TheOne!
+    Place TheOne Right Into Answer!
+Otherwise You Should Do A Completely Different Thing:
+    Place Cooked Beforehand Factorial (Using Mathematicians As Ingredients) Right Into Answer!
+Now, Breathe Out And Continue Whatever You Were Doing!
 Serve Answer!
 
 That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
@@ -363,6 +371,11 @@ Nothing Repeat The Following:
     Scream In Despair: "Please, enter coefficient c:"!
     Quickly Obtain As Much As The Universe Says Units Of Carrots!
 
+    Scream In Despair: "Here are the entered coefficients:"!
+    Serve Apples!
+    Serve Beetroots!
+    Serve Carrots!
+
     Perform SolvationOfQuadratic (Using Apples, Beetroots, Carrots As Ingredients)!
 
     Scream In Despair: "Done! Do you want to solve another equation? [1/0]"!
@@ -380,4 +393,4 @@ That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
 
 AST (is generated if `--img_dumps` is specified):
 
-![](readme_imgs/quadratic_AST.jpg)
+![](readme_imgs/quadratic.jpg)

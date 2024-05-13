@@ -1,0 +1,399 @@
+digraph{
+splines=ortho;
+bgcolor="#2D4059";
+
+
+NODE_0[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = "4"];
+
+NODE_1[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_2[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = MAIN_PROG];
+
+NODE_3[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = PRINT_NUM];
+
+NODE_4[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 1];
+
+NODE_5[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_6[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ELSE];
+
+NODE_7[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_8[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 1];
+
+NODE_9[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_10[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = LIST_CONNECTOR];
+
+NODE_11[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = CALL_FUNC_RECIPE];
+
+NODE_12[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = "Factorial"];
+
+NODE_13[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_14[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_15[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 1];
+
+NODE_16[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 2];
+
+NODE_17[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 2];
+
+NODE_18[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_19[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = "1"];
+
+NODE_20[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 1];
+
+NODE_21[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_22[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = CMP_EQUAL];
+
+NODE_23[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = IF];
+
+NODE_24[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_25[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_26[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 1];
+
+NODE_27[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_28[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = "0"];
+
+NODE_29[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_30[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_31[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = INPUT];
+
+NODE_32[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = "2"];
+
+NODE_33[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = RETURN];
+
+NODE_34[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_35[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = RETURN];
+
+NODE_36[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_37[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SUB];
+
+NODE_38[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#2cd8de",
+label = 0];
+
+NODE_39[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = LIST_CONNECTOR];
+
+NODE_40[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = CALL_FUNC_RECIPE];
+
+NODE_41[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = "Factorial"];
+
+NODE_42[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = MUL];
+
+NODE_43[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#2cd8de",
+label = 0];
+
+NODE_44[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_45[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = SEQ_EXEC];
+
+NODE_46[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = RETURN];
+
+NODE_47[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_48[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_49[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#2cd8de",
+label = 0];
+
+NODE_50[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = CMP_EQUAL];
+
+NODE_51[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = IF];
+
+NODE_52[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = 0];
+
+NODE_53[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = ASSIGN];
+
+NODE_54[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#EA5455",
+label = "1"];
+
+NODE_55[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#2cd8de",
+label = 0];
+
+NODE_56[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = LIST_CONNECTOR];
+
+NODE_57[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = FUNC_DEF_HELPER];
+
+NODE_58[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = FUNC_DEF];
+
+NODE_59[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#FFD460",
+label = FUNC_DEF_HELPER];
+
+NODE_60[shape="record", fontname="verdana",
+style=bold, style=filled,
+color="#ECC237", fillcolor="#8ccb5e",
+label = "Factorial"];
+
+NODE_1->NODE_58[color="#F07B3F", penwidth=2];
+NODE_1->NODE_2[color="#F07B3F", penwidth=2];
+NODE_58->NODE_2[style=invis];
+{rank=same NODE_58 NODE_2}NODE_2->NODE_0[color="#F07B3F", penwidth=2];
+NODE_2->NODE_25[color="#F07B3F", penwidth=2];
+NODE_0->NODE_25[style=invis];
+{rank=same NODE_0 NODE_25}NODE_3->NODE_4[color="#F07B3F", penwidth=2];
+NODE_5->NODE_23[color="#F07B3F", penwidth=2];
+NODE_5->NODE_3[color="#F07B3F", penwidth=2];
+NODE_23->NODE_3[style=invis];
+{rank=same NODE_23 NODE_3}NODE_6->NODE_13[color="#F07B3F", penwidth=2];
+NODE_6->NODE_7[color="#F07B3F", penwidth=2];
+NODE_13->NODE_7[style=invis];
+{rank=same NODE_13 NODE_7}NODE_7->NODE_11[color="#F07B3F", penwidth=2];
+NODE_7->NODE_8[color="#F07B3F", penwidth=2];
+NODE_11->NODE_8[style=invis];
+{rank=same NODE_11 NODE_8}NODE_10->NODE_9[color="#F07B3F", penwidth=2];
+NODE_11->NODE_12[color="#F07B3F", penwidth=2];
+NODE_11->NODE_10[color="#F07B3F", penwidth=2];
+NODE_12->NODE_10[style=invis];
+{rank=same NODE_12 NODE_10}NODE_13->NODE_18[color="#F07B3F", penwidth=2];
+NODE_13->NODE_14[color="#F07B3F", penwidth=2];
+NODE_18->NODE_14[style=invis];
+{rank=same NODE_18 NODE_14}NODE_14->NODE_16[color="#F07B3F", penwidth=2];
+NODE_14->NODE_15[color="#F07B3F", penwidth=2];
+NODE_16->NODE_15[style=invis];
+{rank=same NODE_16 NODE_15}NODE_18->NODE_19[color="#F07B3F", penwidth=2];
+NODE_18->NODE_17[color="#F07B3F", penwidth=2];
+NODE_19->NODE_17[style=invis];
+{rank=same NODE_19 NODE_17}NODE_22->NODE_21[color="#F07B3F", penwidth=2];
+NODE_22->NODE_20[color="#F07B3F", penwidth=2];
+NODE_21->NODE_20[style=invis];
+{rank=same NODE_21 NODE_20}NODE_23->NODE_22[color="#F07B3F", penwidth=2];
+NODE_23->NODE_6[color="#F07B3F", penwidth=2];
+NODE_22->NODE_6[style=invis];
+{rank=same NODE_22 NODE_6}NODE_24->NODE_27[color="#F07B3F", penwidth=2];
+NODE_24->NODE_5[color="#F07B3F", penwidth=2];
+NODE_27->NODE_5[style=invis];
+{rank=same NODE_27 NODE_5}NODE_25->NODE_30[color="#F07B3F", penwidth=2];
+NODE_25->NODE_24[color="#F07B3F", penwidth=2];
+NODE_30->NODE_24[style=invis];
+{rank=same NODE_30 NODE_24}NODE_27->NODE_28[color="#F07B3F", penwidth=2];
+NODE_27->NODE_26[color="#F07B3F", penwidth=2];
+NODE_28->NODE_26[style=invis];
+{rank=same NODE_28 NODE_26}NODE_30->NODE_31[color="#F07B3F", penwidth=2];
+NODE_30->NODE_29[color="#F07B3F", penwidth=2];
+NODE_31->NODE_29[style=invis];
+{rank=same NODE_31 NODE_29}NODE_34->NODE_45[color="#F07B3F", penwidth=2];
+NODE_34->NODE_33[color="#F07B3F", penwidth=2];
+NODE_45->NODE_33[style=invis];
+{rank=same NODE_45 NODE_33}NODE_35->NODE_42[color="#F07B3F", penwidth=2];
+NODE_37->NODE_38[color="#F07B3F", penwidth=2];
+NODE_37->NODE_36[color="#F07B3F", penwidth=2];
+NODE_38->NODE_36[style=invis];
+{rank=same NODE_38 NODE_36}NODE_39->NODE_37[color="#F07B3F", penwidth=2];
+NODE_40->NODE_41[color="#F07B3F", penwidth=2];
+NODE_40->NODE_39[color="#F07B3F", penwidth=2];
+NODE_41->NODE_39[style=invis];
+{rank=same NODE_41 NODE_39}NODE_42->NODE_43[color="#F07B3F", penwidth=2];
+NODE_42->NODE_40[color="#F07B3F", penwidth=2];
+NODE_43->NODE_40[style=invis];
+{rank=same NODE_43 NODE_40}NODE_44->NODE_51[color="#F07B3F", penwidth=2];
+NODE_44->NODE_35[color="#F07B3F", penwidth=2];
+NODE_51->NODE_35[style=invis];
+{rank=same NODE_51 NODE_35}NODE_45->NODE_53[color="#F07B3F", penwidth=2];
+NODE_45->NODE_44[color="#F07B3F", penwidth=2];
+NODE_53->NODE_44[style=invis];
+{rank=same NODE_53 NODE_44}NODE_46->NODE_47[color="#F07B3F", penwidth=2];
+NODE_50->NODE_49[color="#F07B3F", penwidth=2];
+NODE_50->NODE_48[color="#F07B3F", penwidth=2];
+NODE_49->NODE_48[style=invis];
+{rank=same NODE_49 NODE_48}NODE_51->NODE_50[color="#F07B3F", penwidth=2];
+NODE_51->NODE_46[color="#F07B3F", penwidth=2];
+NODE_50->NODE_46[style=invis];
+{rank=same NODE_50 NODE_46}NODE_53->NODE_54[color="#F07B3F", penwidth=2];
+NODE_53->NODE_52[color="#F07B3F", penwidth=2];
+NODE_54->NODE_52[style=invis];
+{rank=same NODE_54 NODE_52}NODE_56->NODE_55[color="#F07B3F", penwidth=2];
+NODE_57->NODE_56[color="#F07B3F", penwidth=2];
+NODE_57->NODE_34[color="#F07B3F", penwidth=2];
+NODE_56->NODE_34[style=invis];
+{rank=same NODE_56 NODE_34}NODE_58->NODE_59[color="#F07B3F", penwidth=2];
+NODE_58->NODE_57[color="#F07B3F", penwidth=2];
+NODE_59->NODE_57[style=invis];
+{rank=same NODE_59 NODE_57}NODE_59->NODE_60[color="#F07B3F", penwidth=2];
+NODE_59->NODE_32[color="#F07B3F", penwidth=2];
+NODE_60->NODE_32[style=invis];
+{rank=same NODE_60 NODE_32}
+}
