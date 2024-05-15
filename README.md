@@ -1,16 +1,415 @@
-<!-- TODO - переписать на русском -->
-# Язык программирования TomatoLang с ароматом эзотерики и привкусом безумия (WIP)
+# Язык программирования TomatoLang с ароматом эзотерики и привкусом безумия
 
-Это учебный проект, представляющий собой маленький Си-подобный язык программирования. Этот ЯП не преследует цели быть удобным/эффективным/в каком-либо ещё виде настоящим ЯП, т.к. иначе он бы превратился в маленькое подмножество Си или Python (смотря что считать "эффективностью"). Поэтому писать программы на этом ЯП тяжело, неудобно, но это не мешает получить базовые навыки создания компилятора, а отсутствие необходимости быть строгим позволяет добавить юмора и творчества. 
+Это учебный проект, представляющий собой компилятор маленького Си-подобного языка программирования. Этот ЯП не преследует цели быть удобным / эффективным / в каком-либо ещё виде "настоящим" ЯП, т.к. иначе он бы имел синтаксис, очень похожий на Си, Python или другой популярный ЯП. Поэтому писать программы на этом языке тяжело, неудобно и не имеет никакого практического смысла! Однако, это не мешает мне, как автору проекта, получить некоторые базовые знания о создании компилятора, а отсутствие необходимости быть строгим позволяет добавить юмора и творчества. 
 
-Этот репозиторий представляет собой вторую версию языка (первая находится в другом репо "Language"). Большая часть данного README перенесена оттуда, где оно было написано на англйиском (зачем? не знаю, спросите меня из прошлого), и на данный момент а) не переведена на русский, б) может быть неверной в некоторых деталях, но в общих чертах всё актуально и верно.
+Примечание: этот репозиторий представляет собой вторую версию данного языка. Первая версия расположена в другом репозитории ("Language"), информация о ней расположена там же. 
 
-Прямо сейчас идёт работа над бэкендом, преобразующим AST в ассемблерный код (`NASM`). 
+## Примеры программ и их наиболее близкие аналоги на языке Си
 
-## Build
+Здесь могло бы быть длинное и довольно неловкое описание идеи языка (что должны напоминать программы, написанные на нём), однако лучше всего за себя будут говорить сами программы, а каждый сам для себя может решить, на что они похожи и в чём заключается идея: 
 
-Repo includes Makefile. Build with `make` in order to build all three programs at once.
-Also each program directory (frontend, middleend, backend) has its own Makefile.
+### Программа, считающая факториал введённого числа:
+
+- TomatoLang
+
+```
+The Recipe Of The Most Delicious Dish One Can Ever Imagine!
+
+Here Are Some Skills You Need To Have:
+
+Skill To Cook Factorial Using Mathematicians As Ingredients:
+    Quickly Obtain 1 Units Of Math!
+
+    In Case There Happens To Be Just The Same Amount Of Mathematicians
+    Comparing With Math Urgently Do The Following Steps:
+        There Is No Time To Explain, Use Math As The Result Of This Skill!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+    There Is No Time To Explain, Use Mathematicians Angrily Fried With Cooked Beforehand
+    Factorial (Using Mathematicians Unfortunately Without Math As Ingredients)
+    As The Result Of This Skill!
+
+Here Is The Recipe Itself:
+Quickly Obtain As Much As The Universe Says Units Of Mathematicians!
+Quickly Obtain 0 Units Of Answer!
+
+In Case There Happens To Be Just The Same Amount Of Mathematicians
+Comparing With Answer Urgently Do The Following Steps:
+    Quickly Obtain 1 Units Of TheOne!
+    Place TheOne Right Into Answer!
+Otherwise You Should Do A Completely Different Thing:
+    Place Cooked Beforehand Factorial (Using Mathematicians As Ingredients) Right Into Answer!
+Now, Breathe Out And Continue Whatever You Were Doing!
+Serve Answer!
+
+That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
+```
+
+- Язык C:
+
+```c
+#include <stdio.h>
+
+double Factorial( double Mathematicians )
+{
+    double Math = 1;
+    if ( Mathematicians == Math )
+    {
+        return Math;
+    }
+
+    return Mathematicians * Factorial(Mathematicians - Math);
+}
+
+int main()
+{
+    double Mathematicians;
+    scanf( "%lf", &Mathematicians );
+    double Answer = 0;
+
+    if ( Mathematicians == Answer )
+    {
+        double TheOne = 1;
+        Answer = TheOne;
+    }
+    else
+    {
+        Answer = Factorial( Mathematicians );
+    }
+
+    printf("%lf\n", Answer);
+}
+```
+
+### Программа, решающая квадратные уравнения:
+
+- TomatoLang:
+
+```
+The Recipe Of The Most Delicious Dish One Can Ever Imagine!
+
+Here Are Some Skills You Need To Have:
+
+Skill To Cook Discriminant Using Apples, Beetroots, Carrots As Ingredients:
+    Quickly Obtain 0 Units Of Discr!
+    Place Beetroots Angrily Fried With Beetroots Unfortunately Without
+    4 Units Of Apples Madly Fried With Carrots Right Into Discr!
+
+    There Is No Time To Explain, Use Discr As The Result Of This Skill!
+
+# ax + b = 0, a != 0 #
+Skill To Cook LinearRoot Using Aubergines, Beans As Ingredients:
+    Quickly Obtain 0 Units Of Result!
+    Place Emotionally Rinsed Beans Thickly Spread On Aubergines Right Into Result!
+
+    There Is No Time To Explain, Use Result As The Result Of This Skill!
+
+# ax + b = 0 #
+Skill To Do SolvationOfLinear Using Aubergines, Beans As Ingredients:
+    Quickly Obtain 0 Units Of Nothing!
+    In Case There Happens To Be Just The Same Amount Of Aubergines
+    Comparing With Nothing Urgently Do The Following Steps:
+        In Case There Happens To Be Just The Same Amount Of Beans
+        Comparing With Nothing Urgently Do The Following Steps:
+            Scream In Despair: "Well, there is kinda the whole infinity and a small carriage of roots..."!
+        Otherwise You Should Do A Completely Different Thing:
+            Scream In Despair: "Quite interesting, that's also not a linear equation."!
+            Scream In Despair: "It's not an equation at all: there are simply no roots, even imaginary ones!"!
+        Now, Breathe Out And Continue Whatever You Were Doing!
+    Otherwise You Should Do A Completely Different Thing:
+        Quickly Obtain 0 Units Of Root!
+        Place Cooked Beforehand LinearRoot (Using Aubergines, Beans As Ingredients)
+        Right Into Root!
+        Scream In Despair: "Here is the only linear root:"!
+        Serve Root!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+Skill To Cook QuadraticFirstRoot Using Apples, Beetroots, Dicsr As Ingredients:
+    Quickly Obtain 0 Units Of Result!
+    Place The Following Prepared Beforehand: Madly Rinsed Beetroots Fiercely
+    Mixed With Hastily Peeled Dicsr; Thickly Spread On The Following Prepared Beforehand:
+    2 Units Of Apples; Right Into Result!
+
+    There Is No Time To Explain, Use Result As The Result Of This Skill!
+
+Skill To Cook QuadraticNumberOfRoots Using Dicsr As Ingredients:
+    Quickly Obtain 0 Units Of Result!
+    Quickly Obtain 1 Units Of Neutral!
+    Quickly Obtain 0 Units Of Nothing!
+    In Case There Happens To Be More Dicsr
+    Comparing With Nothing Urgently Do The Following Steps:
+        Place 2 Units Of Neutral Right Into Result!
+        There Is No Time To Explain, Use Result As The Result Of This Skill!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+    In Case There Happens To Be Just The Same Amount Of Dicsr
+    Comparing With Nothing Urgently Do The Following Steps:
+        Place 1 Units Of Neutral Right Into Result!
+        There Is No Time To Explain, Use Result As The Result Of This Skill!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+    In Case There Happens To Be Less Dicsr
+    Comparing With Nothing Urgently Do The Following Steps:
+        Place 0 Units Of Neutral Right Into Result!
+        There Is No Time To Explain, Use Result As The Result Of This Skill!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+# ax^2 + bx + c = 0 #
+Skill To Do SolvationOfQuadratic Using Apples, Beetroots, Carrots As Ingredients:
+    Quickly Obtain 0 Units Of Nothing!
+    Quickly Obtain 1 Units Of Neutral!
+    In Case There Happens To Be Just The Same Amount Of Apples
+    Comparing With Nothing Urgently Do The Following Steps:
+        Scream In Despair: "Well, that's not quite a quadratic equation, "!
+        Scream In Despair: "smells more like a linear one. Anyway..."!
+        Perform SolvationOfLinear (Using Beetroots, Carrots As Ingredients)!
+    Otherwise You Should Do A Completely Different Thing:
+        Quickly Obtain 0 Units Of Discr!
+        Place Cooked Beforehand Discriminant (Using Apples, Beetroots, Carrots As Ingredients)
+        Right Into Discr!
+        Scream In Despair: "Here is the discriminant of your equation:"!
+        Serve Discr!
+
+        Quickly Obtain 0 Units Of NumOfRoots!
+        Place Cooked Beforehand QuadraticNumberOfRoots (Using Discr As Ingredients)
+        Right Into NumOfRoots!
+        Scream In Despair: "The number of roots is:"!
+        Serve NumOfRoots!
+
+        In Case There Happens To Be Just The Same Amount Of NumOfRoots
+        Comparing With Nothing Urgently Do The Following Steps:
+            Scream In Despair: "No real roots!"!
+        Otherwise You Should Do A Completely Different Thing:
+            Quickly Obtain 0 Units Of FirstRoot!
+            Place Cooked Beforehand QuadraticFirstRoot (Using Apples, Beetroots, Discr As Ingredients)
+            Right Into FirstRoot!
+            Scream In Despair: "Aaaand here is the first root:"!
+            Serve FirstRoot!
+
+            In Case There Happens To Be Just The Same Amount Of NumOfRoots
+            Comparing With 2 Units Of Neutral Urgently Do The Following Steps:
+                Quickly Obtain 0 Units Of SecondRoot!
+                Place Angrily Rinsed Beetroots Hastily Spread On Apples Unfortunately
+                Without FirstRoot Right Into SecondRoot!
+                Scream In Despair: "And the second root is:"!
+                Serve SecondRoot!
+            Now, Breathe Out And Continue Whatever You Were Doing!
+        Now, Breathe Out And Continue Whatever You Were Doing!
+    Now, Breathe Out And Continue Whatever You Were Doing!
+
+Here Is The Recipe Itself:
+
+Quickly Obtain 1 Units Of Neutral!
+Quickly Obtain 0 Units Of Nothing!
+
+Scream In Despair: "Hi, I can solve quadratic equations, like ax^2 + bx + c = 0!"!
+Scream In Despair: "Do you want to make a try? [1/0]"!
+
+Quickly Obtain As Much As The Universe Says Units Of Ans!
+As Long As There Happens To Be Not The Same Amount Of Ans Comparing With
+Nothing Repeat The Following:
+    Scream In Despair: "Please, enter coefficient a:"!
+    Quickly Obtain As Much As The Universe Says Units Of Apples!
+
+    Scream In Despair: "Please, enter coefficient b:"!
+    Quickly Obtain As Much As The Universe Says Units Of Beetroots!
+
+    Scream In Despair: "Please, enter coefficient c:"!
+    Quickly Obtain As Much As The Universe Says Units Of Carrots!
+
+    Scream In Despair: "Here are the entered coefficients:"!
+    Serve Apples!
+    Serve Beetroots!
+    Serve Carrots!
+
+    Perform SolvationOfQuadratic (Using Apples, Beetroots, Carrots As Ingredients)!
+
+    Scream In Despair: "Done! Do you want to solve another equation? [1/0]"!
+    Place As Much As The Universe Says Units Of Neutral Right Into Ans!
+
+    Throw Away Apples!
+    Throw Away Beetroots!
+    Throw Away Carrots!
+Repeat Until Ready And Then Go Further!
+
+Scream In Despair: "Goodbye!"!
+
+That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
+```
+
+- Язык C:
+
+```c
+#include <stdio.h>
+#include <math.h>
+
+float get_dicsriminant( float a, float b, float c )
+{
+    float discriminant = b*b - 4 * a*c;
+
+    return discriminant;
+}
+
+// ax + b = 0, a != 0
+float get_linear_root( float a, float b )
+{
+    float res = -b / a;
+    return res;
+}
+
+// ax + b = 0
+void solve_linear( float a, float b )
+{
+    if ( a == 0 )
+    {
+        if ( b == 0)
+        {
+            printf( "Well, there is kinda the whole infinity and a small carriage of roots...\n" );
+        }
+        else
+        {
+            printf( "Quite interesting, that's also not a linear equation. It's not an "
+                    "equation at all: there are simply no roots, even imaginary ones!\n" );
+        }
+    }
+    else
+    {
+        float root = get_linear_root( a, b );
+
+        printf( "Here is the only linear root:\n" );
+        printf( "%f\n", root );
+    }
+}
+
+//! ax^2 + bx + c = 0, a != 0
+float get_quadratic_first_root( float a, float b, float discriminant)
+{
+    float res = (-b + sqrt( discriminant ) ) / (2 * a);
+}
+
+float get_quadratic_number_of_roots( float discriminant )
+{
+    float res = 0;
+    if ( discriminant > 0 )
+    {
+        res = 2;
+        return res;
+    }
+
+    if ( discriminant == 0 )
+    {
+        res = 1;
+        return res;
+    }
+
+    if ( discriminant < 0 )
+    {
+        res = 0;
+        return res;
+    }
+}
+
+// ax^2 + bx + c = 0
+void solve_quadratic( float a, float b, float c )
+{
+    if ( a == 0)
+    {
+        printf( "Well, that's not quite a quadratic equation, "
+                "smells more like a linear one. Anyway...\n" );
+
+        solve_linear( b, c );
+    }
+    else
+    {
+        float discriminant = get_dicsriminant( a, b, c );
+        printf( "Here is the discriminant of your equation:\n" );
+        printf( "%f\n", discriminant );
+
+        float n_of_roots = get_quadratic_number_of_roots( discriminant );
+        printf( "The number of roots is:\n" );
+        printf( "%f\n", n_of_roots );
+
+        if ( n_of_roots == 0)
+        {
+            printf( "No real roots!\n" );
+        }
+        else
+        {
+            float first_root = get_quadratic_first_root( a, b, discriminant );
+
+            printf( "Aaaand here is the first root:\n" );
+            printf( "%f\n", first_root );
+
+            if ( n_of_roots == 2 )
+            {
+                float second_root = -b / a - first_root;
+                printf( "And the second root is:\n" );
+                printf( "%f\n", second_root );
+            }
+        }
+    }
+}
+
+int main()
+{
+    printf( "Hi, I can solve quadratic equations, like ax^2 + bx + c = 0! "
+            "Do you want to make a try? [1/0]\n" );
+
+    float ans = 0;
+    scanf( "%f", &ans );
+
+    while ( ans != 0 )
+    {
+        printf( "Please, enter coefficient a:\n" );
+        float a = 0;
+        scanf( "%f", &a );
+
+        printf( "Please, enter coefficient b:\n" );
+        float b = 0;
+        scanf( "%f", &b );
+
+        printf( "Please, enter coefficient c:\n" );
+        float c = 0;
+        scanf( "%f", &c );
+
+        solve_quadratic( a, b, c );
+
+        printf( "Done! Do you want to solve another equation? [1/0]\n" );
+        scanf( "%f", &ans );
+    }
+
+    printf( "Goodbye!\n" );
+}
+```
+
+## Использование
+
+Доступны следующие команды (из общей директории TomatoLang):
+
+**Сборка**:
+
+- Сборка всех частей компилятора:
+```
+make
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Компиляция программы на TomatoLang**:
+```
+make tomato PROG_DIR=*имя папки c программой, см. ниже* [IMG_DIR=*имя папки для дампа AST*]
+```
+- PROG_DIR: текст программы должен быть в данной папке в файле `prog.txt`. В этой же папке будут создаваться все промежуточные файлы и финальный результат `prog`.
 
 NOTE: `tree` library is used in the project! You can find it in its own repo. The only place it is included in is `common\src\common.h`.
 
@@ -199,197 +598,11 @@ CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "As
 
 - Factorial:
 
-```
-The Recipe Of The Most Delicious Dish One Can Ever Imagine!
-
-Here Are Some Skills You Need To Have:
-
-Skill To Cook Factorial Using Mathematicians As Ingredients:
-    Quickly Obtain 1 Units Of Math!
-
-    In Case There Happens To Be Just The Same Amount Of Mathematicians
-    Comparing With Math Urgently Do The Following Steps:
-        There Is No Time To Explain, Use Math As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-    There Is No Time To Explain, Use Mathematicians Angrily Fried With Cooked Beforehand
-    Factorial (Using Mathematicians Unfortunately Without Math As Ingredients)
-    As The Result Of This Skill!
-
-Here Is The Recipe Itself:
-Quickly Obtain As Much As The Universe Says Units Of Mathematicians!
-Quickly Obtain 0 Units Of Answer!
-
-In Case There Happens To Be Just The Same Amount Of Mathematicians
-Comparing With Answer Urgently Do The Following Steps:
-    Quickly Obtain 1 Units Of TheOne!
-    Place TheOne Right Into Answer!
-Otherwise You Should Do A Completely Different Thing:
-    Place Cooked Beforehand Factorial (Using Mathematicians As Ingredients) Right Into Answer!
-Now, Breathe Out And Continue Whatever You Were Doing!
-Serve Answer!
-
-That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
-```
 
 AST (is generated if `--img_dumps` is specified):
 ![](readme_imgs/factorial.jpg)
 
 ---
-
-- Quadratic equation solver:
-
-```
-The Recipe Of The Most Delicious Dish One Can Ever Imagine!
-
-Here Are Some Skills You Need To Have:
-
-Skill To Cook Discriminant Using Apples, Beetroots, Carrots As Ingredients:
-    Quickly Obtain 0 Units Of Discr!
-    Place Beetroots Angrily Fried With Beetroots Unfortunately Without
-    4 Units Of Apples Madly Fried With Carrots Right Into Discr!
-
-    There Is No Time To Explain, Use Discr As The Result Of This Skill!
-
-# ax + b = 0, a != 0 #
-Skill To Cook LinearRoot Using Aubergines, Beans As Ingredients:
-    Quickly Obtain 0 Units Of Result!
-    Place Emotionally Rinsed Beans Thickly Spread On Aubergines Right Into Result!
-
-    There Is No Time To Explain, Use Result As The Result Of This Skill!
-
-# ax + b = 0 #
-Skill To Do SolvationOfLinear Using Aubergines, Beans As Ingredients:
-    Quickly Obtain 0 Units Of Nothing!
-    In Case There Happens To Be Just The Same Amount Of Aubergines
-    Comparing With Nothing Urgently Do The Following Steps:
-        In Case There Happens To Be Just The Same Amount Of Beans
-        Comparing With Nothing Urgently Do The Following Steps:
-            Scream In Despair: "Well, there is kinda the whole infinity and a small carriage of roots..."!
-        Otherwise You Should Do A Completely Different Thing:
-            Scream In Despair: "Quite interesting, that's also not a linear equation."!
-            Scream In Despair: "It's not an equation at all: there are simply no roots, even imaginary ones!"!
-        Now, Breathe Out And Continue Whatever You Were Doing!
-    Otherwise You Should Do A Completely Different Thing:
-        Quickly Obtain 0 Units Of Root!
-        Place Cooked Beforehand LinearRoot (Using Aubergines, Beans As Ingredients)
-        Right Into Root!
-        Scream In Despair: "Here is the only linear root:"!
-        Serve Root!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-Skill To Cook QuadraticFirstRoot Using Apples, Beetroots, Dicsr As Ingredients:
-    Quickly Obtain 0 Units Of Result!
-    Place The Following Prepared Beforehand: Madly Rinsed Beetroots Fiercely
-    Mixed With Hastily Peeled Dicsr; Thickly Spread On The Following Prepared Beforehand:
-    2 Units Of Apples; Right Into Result!
-
-    There Is No Time To Explain, Use Result As The Result Of This Skill!
-
-Skill To Cook QuadraticNumberOfRoots Using Dicsr As Ingredients:
-    Quickly Obtain 0 Units Of Result!
-    Quickly Obtain 1 Units Of Neutral!
-    Quickly Obtain 0 Units Of Nothing!
-    In Case There Happens To Be More Dicsr
-    Comparing With Nothing Urgently Do The Following Steps:
-        Place 2 Units Of Neutral Right Into Result!
-        There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-    In Case There Happens To Be Just The Same Amount Of Dicsr
-    Comparing With Nothing Urgently Do The Following Steps:
-        Place 1 Units Of Neutral Right Into Result!
-        There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-    In Case There Happens To Be Less Dicsr
-    Comparing With Nothing Urgently Do The Following Steps:
-        Place 0 Units Of Neutral Right Into Result!
-        There Is No Time To Explain, Use Result As The Result Of This Skill!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-# ax^2 + bx + c = 0 #
-Skill To Do SolvationOfQuadratic Using Apples, Beetroots, Carrots As Ingredients:
-    Quickly Obtain 0 Units Of Nothing!
-    Quickly Obtain 1 Units Of Neutral!
-    In Case There Happens To Be Just The Same Amount Of Apples
-    Comparing With Nothing Urgently Do The Following Steps:
-        Scream In Despair: "Well, that's not quite a quadratic equation, "!
-        Scream In Despair: "smells more like a linear one. Anyway..."!
-        Perform SolvationOfLinear (Using Beetroots, Carrots As Ingredients)!
-    Otherwise You Should Do A Completely Different Thing:
-        Quickly Obtain 0 Units Of Discr!
-        Place Cooked Beforehand Discriminant (Using Apples, Beetroots, Carrots As Ingredients)
-        Right Into Discr!
-        Scream In Despair: "Here is the discriminant of your equation:"!
-        Serve Discr!
-
-        Quickly Obtain 0 Units Of NumOfRoots!
-        Place Cooked Beforehand QuadraticNumberOfRoots (Using Discr As Ingredients)
-        Right Into NumOfRoots!
-        Scream In Despair: "The number of roots is:"!
-        Serve NumOfRoots!
-
-        In Case There Happens To Be Just The Same Amount Of NumOfRoots
-        Comparing With Nothing Urgently Do The Following Steps:
-            Scream In Despair: "No real roots!"!
-        Otherwise You Should Do A Completely Different Thing:
-            Quickly Obtain 0 Units Of FirstRoot!
-            Place Cooked Beforehand QuadraticFirstRoot (Using Apples, Beetroots, Discr As Ingredients)
-            Right Into FirstRoot!
-            Scream In Despair: "Aaaand here is the first root:"!
-            Serve FirstRoot!
-
-            In Case There Happens To Be Just The Same Amount Of NumOfRoots
-            Comparing With 2 Units Of Neutral Urgently Do The Following Steps:
-                Quickly Obtain 0 Units Of SecondRoot!
-                Place Angrily Rinsed Beetroots Hastily Spread On Apples Unfortunately
-                Without FirstRoot Right Into SecondRoot!
-                Scream In Despair: "And the second root is:"!
-                Serve SecondRoot!
-            Now, Breathe Out And Continue Whatever You Were Doing!
-        Now, Breathe Out And Continue Whatever You Were Doing!
-    Now, Breathe Out And Continue Whatever You Were Doing!
-
-Here Is The Recipe Itself:
-
-Quickly Obtain 1 Units Of Neutral!
-Quickly Obtain 0 Units Of Nothing!
-
-Scream In Despair: "Hi, I can solve quadratic equations, like ax^2 + bx + c = 0!"!
-Scream In Despair: "Do you want to make a try? [1/0]"!
-
-Quickly Obtain As Much As The Universe Says Units Of Ans!
-As Long As There Happens To Be Not The Same Amount Of Ans Comparing With
-Nothing Repeat The Following:
-    Scream In Despair: "Please, enter coefficient a:"!
-    Quickly Obtain As Much As The Universe Says Units Of Apples!
-
-    Scream In Despair: "Please, enter coefficient b:"!
-    Quickly Obtain As Much As The Universe Says Units Of Beetroots!
-
-    Scream In Despair: "Please, enter coefficient c:"!
-    Quickly Obtain As Much As The Universe Says Units Of Carrots!
-
-    Scream In Despair: "Here are the entered coefficients:"!
-    Serve Apples!
-    Serve Beetroots!
-    Serve Carrots!
-
-    Perform SolvationOfQuadratic (Using Apples, Beetroots, Carrots As Ingredients)!
-
-    Scream In Despair: "Done! Do you want to solve another equation? [1/0]"!
-    Place As Much As The Universe Says Units Of Neutral Right Into Ans!
-
-    Throw Away Apples!
-    Throw Away Beetroots!
-    Throw Away Carrots!
-Repeat Until Ready And Then Go Further!
-
-Scream In Despair: "Goodbye!"!
-
-That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!
-```
 
 AST (is generated if `--img_dumps` is specified):
 

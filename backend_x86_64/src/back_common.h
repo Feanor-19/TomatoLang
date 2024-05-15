@@ -65,6 +65,8 @@ enum IRBlockArgType
     IRB_ARG_TYPE_CONST_STR_ADDR,
 };
 
+struct IRBlock;
+
 struct arg_t
 {
     IRBlockArgType type;
@@ -74,8 +76,8 @@ struct arg_t
         reg_xmm_t reg_xmm;
         mem_t mem;
         imm_const_t imm_const; // if num_t is needed, IRBlock of type 'NUM_CONST' must be formed
-        void *mem_num_cnst; // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
-        void *addr;    // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
+        IRBlock *mem_num_cnst; // must be ptr to IRBlock of type 'NUM_CONST', translates as VALUE
+        IRBlock *addr;    // must be ptr to IRBlock of type 'STR_CONST', translates as ADDRESS
     };
 };
 
@@ -86,7 +88,7 @@ struct IRBlockData
     
     //! @brief plays role of a label (e.g. 'jmp')
     //! @attention MUST BE A PTR TO IRBlock
-    void *instr_ptr = NULL;  
+    IRBlock *instr_ptr = NULL;  
 
     //! @note 'type' (see above) defines which one of the below union members is used.
     union 

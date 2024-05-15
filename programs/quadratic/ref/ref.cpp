@@ -1,26 +1,29 @@
 #include <stdio.h>
 #include <math.h>
 
-float get_dicsriminant( float a, float b, float c )
+double Discriminant( double Apples, double Beetroots, double Carrots )
 {
-    float discriminant = b*b - 4 * a*c;
+    double Discr = 0;
+    Discr = Beetroots*Beetroots - 4 * Apples*Carrots;
 
-    return discriminant;
+    return Discr;
 }
 
 // ax + b = 0, a != 0
-float get_linear_root( float a, float b )
+double LinearRoot( double Aubergines, double Beans )
 {
-    float res = -b / a;
-    return res;
+    double Result = 0;
+    Result = -Beans / Aubergines;
+    return Result;
 }
 
 // ax + b = 0
-void solve_linear( float a, float b )
+void SolvationOfLinear( double Aubergines, double Beans )
 {
-    if ( a == 0 )
+    double Nothing = 0;
+    if ( Aubergines == 0 )
     {
-        if ( b == 0)
+        if ( Beans == 0)
         {
             printf( "Well, there is kinda the whole infinity and a small carriage of roots...\n" );
         }
@@ -32,22 +35,22 @@ void solve_linear( float a, float b )
     }
     else
     {
-        float root = get_linear_root( a, b );
+        double root = LinearRoot( Aubergines, Beans );
 
         printf( "Here is the only linear root:\n" );
-        printf( "%f\n", root );
+        printf( "%lf\n", root );
     }
 }
 
 //! ax^2 + bx + c = 0, a != 0
-float get_quadratic_first_root( float a, float b, float discriminant)
+double QuadraticFirstRoot( double a, double b, double discriminant)
 {
-    float res = (-b + sqrt( discriminant ) ) / (2 * a);
+    double res = (-b + sqrt( discriminant ) ) / (2 * a);
 }
 
-float get_quadratic_number_of_roots( float discriminant )
+double QuadraticNumberOfRoots( double discriminant )
 {
-    float res = 0;
+    double res = 0;
     if ( discriminant > 0 )
     {
         res = 2;
@@ -68,24 +71,24 @@ float get_quadratic_number_of_roots( float discriminant )
 }
 
 // ax^2 + bx + c = 0
-void solve_quadratic( float a, float b, float c )
+void SolvationOfQuadratic( double a, double b, double c )
 {
     if ( a == 0)
     {
         printf( "Well, that's not quite a quadratic equation, "
                 "smells more like a linear one. Anyway...\n" );
 
-        solve_linear( b, c );
+        SolvationOfLinear( b, c );
     }
     else
     {
-        float discriminant = get_dicsriminant( a, b, c );
+        double discriminant = Discriminant( a, b, c );
         printf( "Here is the discriminant of your equation:\n" );
-        printf( "%f\n", discriminant );
+        printf( "%lf\n", discriminant );
 
-        float n_of_roots = get_quadratic_number_of_roots( discriminant );
+        double n_of_roots = QuadraticNumberOfRoots( discriminant );
         printf( "The number of roots is:\n" );
-        printf( "%f\n", n_of_roots );
+        printf( "%lf\n", n_of_roots );
 
         if ( n_of_roots == 0)
         {
@@ -93,16 +96,16 @@ void solve_quadratic( float a, float b, float c )
         }
         else
         {
-            float first_root = get_quadratic_first_root( a, b, discriminant );
+            double first_root = QuadraticFirstRoot( a, b, discriminant );
 
             printf( "Aaaand here is the first root:\n" );
-            printf( "%f\n", first_root );
+            printf( "%lf\n", first_root );
 
             if ( n_of_roots == 2 )
             {
-                float second_root = -b / a - first_root;
+                double second_root = -b / a - first_root;
                 printf( "And the second root is:\n" );
-                printf( "%f\n", second_root );
+                printf( "%lf\n", second_root );
             }
         }
     }
@@ -110,30 +113,41 @@ void solve_quadratic( float a, float b, float c )
 
 int main()
 {
+    double Neutral = 1;
+    double Nothing = 0;
+
     printf( "Hi, I can solve quadratic equations, like ax^2 + bx + c = 0! "
             "Do you want to make a try? [1/0]\n" );
 
-    float ans = 0;
-    scanf( "%f", &ans );
+    double Ans = 0;
+    scanf( "%lf", &Ans );
 
-    while ( ans != 0 )
+    while ( Ans != Nothing )
     {
         printf( "Please, enter coefficient a:\n" );
-        float a = 0;
-        scanf( "%f", &a );
+        double Apples = 0;
+        scanf( "%lf", &Apples );
 
         printf( "Please, enter coefficient b:\n" );
-        float b = 0;
-        scanf( "%f", &b );
+        double Beetroots = 0;
+        scanf( "%lf", &Beetroots );
 
         printf( "Please, enter coefficient c:\n" );
-        float c = 0;
-        scanf( "%f", &c );
+        double Carrots = 0;
+        scanf( "%lf", &Carrots );
 
-        solve_quadratic( a, b, c );
+        printf( "Here are the entered coefficients:\n" );
+        printf("%lf\n", Apples);
+        printf("%lf\n", Beetroots);
+        printf("%lf\n", Carrots);
+
+        SolvationOfQuadratic( Apples, Beetroots, Carrots );
 
         printf( "Done! Do you want to solve another equation? [1/0]\n" );
-        scanf( "%f", &ans );
+        
+        double tmp;
+        scanf( "%lf", &tmp );
+        Ans = tmp * Neutral;
     }
 
     printf( "Goodbye!\n" );
