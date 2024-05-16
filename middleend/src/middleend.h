@@ -23,6 +23,13 @@ const char * const status_messages[] =
 #undef DEF_STATUS
 
 
+//! @brief Helper function for 'optimize_AST'. Applies optimization
+//! 'fold constants' to specified subtree. Sets correspondingly *changes
+Status opt_fold_consts(TreeNode *node, bool *changes);
+
+//! @brief Applies optimizations to AST, changing it.
+Status optimize_AST(Tree *AST);
+
 void print_status_message( FILE *stream, Status status );
 
 int init_log( Config cfg );
