@@ -43,69 +43,78 @@ void SolvationOfLinear( double Aubergines, double Beans )
 }
 
 //! ax^2 + bx + c = 0, a != 0
-double QuadraticFirstRoot( double a, double b, double discriminant)
+double QuadraticFirstRoot( double Apples, double Beetroots, double Dicsr)
 {
-    double res = (-b + sqrt( discriminant ) ) / (2 * a);
+    double Result = 0;
+    Result = (-Beetroots + sqrt( Dicsr ) ) / (2 * Apples);
+
+    return Result;
 }
 
-double QuadraticNumberOfRoots( double discriminant )
+double QuadraticNumberOfRoots( double Dicsr )
 {
-    double res = 0;
-    if ( discriminant > 0 )
+    double Result = 0;
+    double Neutral = 1;
+    double Nothing = 0;
+    if ( Dicsr > 0 )
     {
-        res = 2;
-        return res;
+        Result = 2*Neutral;
+        return Result;
     }
 
-    if ( discriminant == 0 )
+    if ( Dicsr == 0 )
     {
-        res = 1;
-        return res;
+        Result = 1*Neutral;
+        return Result;
     }
 
-    if ( discriminant < 0 )
+    if ( Dicsr < 0 )
     {
-        res = 0;
-        return res;
+        Result = 0;
+        return Result;
     }
 }
 
 // ax^2 + bx + c = 0
-void SolvationOfQuadratic( double a, double b, double c )
+void SolvationOfQuadratic( double Apples, double Beetroots, double Carrots )
 {
-    if ( a == 0)
+    double Nothing = 0;
+    double Neutral = 1;
+    if ( Apples == 0)
     {
         printf( "Well, that's not quite a quadratic equation, "
                 "smells more like a linear one. Anyway...\n" );
 
-        SolvationOfLinear( b, c );
+        SolvationOfLinear( Beetroots, Carrots );
     }
     else
     {
-        double discriminant = Discriminant( a, b, c );
+        double Discr = Discriminant( Apples, Beetroots, Carrots );
         printf( "Here is the discriminant of your equation:\n" );
-        printf( "%lf\n", discriminant );
+        printf( "%lf\n", Discr );
 
-        double n_of_roots = QuadraticNumberOfRoots( discriminant );
+        double NumOfRoots = QuadraticNumberOfRoots( Discr );
         printf( "The number of roots is:\n" );
-        printf( "%lf\n", n_of_roots );
+        printf( "%lf\n", NumOfRoots );
 
-        if ( n_of_roots == 0)
+        if ( NumOfRoots == 0)
         {
             printf( "No real roots!\n" );
         }
         else
         {
-            double first_root = QuadraticFirstRoot( a, b, discriminant );
+            double FirstRoot = 0;
+            FirstRoot = QuadraticFirstRoot( Apples, Beetroots, Discr );
 
             printf( "Aaaand here is the first root:\n" );
-            printf( "%lf\n", first_root );
+            printf( "%lf\n", FirstRoot );
 
-            if ( n_of_roots == 2 )
+            if ( NumOfRoots == 2 )
             {
-                double second_root = -b / a - first_root;
+                double SecondRoot = 0;
+                SecondRoot = -Beetroots / Apples - FirstRoot;
                 printf( "And the second root is:\n" );
-                printf( "%lf\n", second_root );
+                printf( "%lf\n", SecondRoot );
             }
         }
     }
