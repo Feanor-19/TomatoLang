@@ -42,12 +42,18 @@ int main(int argc, const char *argv[])
     }
     
     LOG( "Optimizing AST..." );
-
+    status = optimize_AST(&AST);
+    if (status != STATUS_OK)
+    {
+        ERROR("Something went wrong during optimizing AST. Shutting down...");
+        print_status_message( log_get_stream(), status );
+        goto finally;
+    }
     LOG( "Optimizing AST done!" );
 
     if ( cfg.img_dumps_folder )
     {
-        LOG( "Creating image dunp of the AST after optimization..." );
+        LOG( "Creating image dump of the AST after optimization..." );
         dump_ast( &AST );
         LOG( "AST image dump is created." );
     }

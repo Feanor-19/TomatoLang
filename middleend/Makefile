@@ -22,7 +22,7 @@ SRC 	= src
 BIN 	= bin
 CMN 	= ./../common
 LOGS 	= ./logs
-CURR_PROG = ./../programs/test_program
+CURR_PROG = ./../programs/quadratic
 
 COMMON_LIB_DIR = /usr/lib/feanor
 COMMON_INC_DIR = /usr/include/feanor

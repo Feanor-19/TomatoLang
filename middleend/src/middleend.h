@@ -25,7 +25,7 @@ const char * const status_messages[] =
 
 //! @brief Helper function for 'optimize_AST'. Applies optimization
 //! 'fold constants' to specified subtree. Sets correspondingly *changes
-Status opt_fold_consts(TreeNode *node, bool *changes);
+Status opt_fold_consts(Tree *AST, TreeNode *node, bool *changes);
 
 //! @brief Applies optimizations to AST, changing it.
 Status optimize_AST(Tree *AST);
