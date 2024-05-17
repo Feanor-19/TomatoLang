@@ -1,6 +1,6 @@
 # Язык программирования TomatoLang с ароматом эзотерики и привкусом безумия
 
-WIP ON README
+# WIP ON README
 
 Это учебный проект, представляющий собой компилятор маленького Си-подобного языка программирования. Этот ЯП не преследует цели быть удобным / эффективным / в каком-либо ещё виде "настоящим" ЯП, т.к. иначе он бы имел синтаксис, очень похожий на Си, Python или другой популярный ЯП. Поэтому писать программы на этом языке тяжело, неудобно и не имеет никакого практического смысла! Однако, это не мешает мне, как автору проекта, получить некоторые базовые знания о создании компилятора, а отсутствие необходимости быть строгим позволяет добавить юмора и творчества. 
 
@@ -407,6 +407,8 @@ int main()
 }
 ```
 
+Дальше будут рассмотрены все составляющие компилятора и ЯП TomatoLang.
+
 ## Схема работы компилятора
 
 ![](readme_imgs/compiler_plan.png)
@@ -417,8 +419,167 @@ int main()
 4. Вызывается установленный ассемблер `NASM`, который преобразовывает `ассебмлерный код` в `объектный файл`.
 5. Вызывается установленный `GNU Linker (ld)`, на вход которому даётся `объектный файл` программы и `стандартная библиотека` ЯП TomatoLang (`libtomato.a`). На выходе получается `исполняемый файл ELF64`.
 
+Ниже будут рассмотрены подробнее некоторые составляющие.
 
+## Общие особенности ЯП TomatoLang
 
+Следующие факты не относятся напрямую к какой-либо из частей компилятора, а потому вынесены сюда:
+
+1. Единственный тип данных: число с плавающей запятой. В `Backend` аналогично типу данных `double` из языка Си.
+2. Есть константные строки, но они не являются отдельным типом данных, а только как часть оператора "печать строки".
+
+## Frontend
+
+Для начала рассмотрим грамматику (ниже будут объяснены некоторые особенности):
+
+### Грамматика
+
+Используемые обозначения:
+
+1. Терминалы и ключевые слова заключены в `""`, нетерминалы пишутся без.
+2. `+` означает `один или больше`.
+3. `*` означает `ноль или больше`.
+4. `?...?` означает некоторый `особый случай` (кратко описанный там же).
+5. `<...>` означает что-то связанное с `контекстом`.
+6. `{...}` означает что-то `необязательное` (технически, `ноль или один`).
+7. `(...)` используетя для обозначения группы терминалов и нетерминалов.
+8. `|` означает выбор `ИЛИ`.
+
+```py
+Prog            ::= "ProgStart" { FuncDefs } Operators "ProgEnd"
+FuncDefs        ::= "FuncDefsStart" FuncDef+ "FuncDefsEnd"
+FuncDef         ::= FuncRecipe | FuncAction
+FuncRecipe      ::= "FuncRecipeHeader" Id {"Using" FormalArgs "AsIngr"} "Colon" Operators
+FuncAction      ::= "FuncActionHeader" Id {"Using" FormalArgs "AsIngr"} "Colon" Operators
+FormalArgs      ::= Id<Var> ( "Comma" Id<Var> )*
+FactArgs        ::= Expr ( "Comma" Expr )*
+Operators       ::= Op+
+Op              ::= VarBirth | VarDeath | Assign | If | While | Return<in FuncRecipe> | CallFuncAction | PrintNum | PrintStr
+PrintStr        ::= "PrintStr" ?string in quotes? "Dot"
+PrintNum        ::= "PrintNum" Id<Var> "Dot"
+Return          ::= "Return1" Expr "Return2"
+VarBirth        ::= "VarBirthOp" Num "UnitsOf" Id "Dot"
+VarDeath        ::= "VarDeathOp" Id<Var> "Dot"
+Assign          ::= "Asgn1" Expr "Asgn2" Id<Var> "Dot"
+Expr            ::= Mulive ( ?Amp (group)? ("OpAdd" | "OpSub") Mulive )*
+Mulive          ::= Unr ( ?Amp (group)? ( "OpMul" | "OpDiv" ) Unr )*
+Unr             ::= ( ?Amp (group)? ?UnrOp (group)? Ingr ) | Ingr
+Ingr            ::= ( Num "UnitsOf" Primal ) | Primal
+Primal          ::= ("InBracketsStart" Expr "Semicolon") | CallFuncRecipe | Id<Var>
+Id              ::= ['a'-'z','A'-'Z']['a'-'z','A'-'Z','_','0'-'9']*
+Num             ::= ( "InputOp" ) | ( ?float number? )
+If              ::= "If1" "Cond" ?CmpOp (group)? Expr "CmpWith" Expr "If2" Operators { "Else" Operators } "IfEnd"
+While           ::= "While1" "Cond" ?CmpOp (group)? Expr "CmpWith" Expr "While2" Operators "WhileEnd"
+CallFuncRecipe  ::= "CallFuncRecipe" Id<func> {"BracketOpn" "Using" FactArgs "AsIngr" "BracketCls"}
+CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "AsIngr" "BracketCls"} "Dot"
+```
+
+#### Ключевые слова
+
+|Обозначение в грамматике|Написание в тексте программы|
+|-|-|
+|Amp_10|Fanatically|
+|Amp_1|Angrily|
+|Amp_2|Unfortunately|
+|Amp_3|Madly|
+|Amp_4|Thickly|
+|Amp_5|Rapidly|
+|Amp_6|Hastily|
+|Amp_7|Emotionally|
+|Amp_8|Desperately|
+|Amp_9|Fiercely|
+|AsIngr|As Ingredients|
+|Asgn1|Place|
+|Asgn2|Right Into|
+|CallFuncAction|Perform|
+|CallFuncRecipe|Cooked Beforehand|
+|CmpOp_equal|Just The Same Amount Of|
+|CmpOp_lessOrEqual|The Same Amount Or Less Of|
+|CmpOp_less|Less|
+|CmpOp_moreOrEqual|The Same Amount Or More Of|
+|CmpOp_more|More|
+|CmpOp_notEqual|Not The Same Amount Of|
+|CmpWith|Comparing With|
+|Cond|There Happens To Be|
+|Else|Otherwise You Should Do A Completely Different Thing:|
+|FuncActionHeader|Skill To Do|
+|FuncDefsEnd|Here Is The Recipe Itself:|
+|FuncDefsStart|Here Are Some Skills You Need To Have:|
+|FuncRecipeHeader|Skill To Cook|
+|If1|In Case|
+|If2|Urgently Do The Following Steps:|
+|IfEnd|Now, Breathe Out And Continue Whatever You Were Doing!|
+|InBracketsStart|The Following Prepared Beforehand:|
+|InputOp|As Much As The Universe Says|
+|OpAdd|Mixed With|
+|OpDiv|Spread On|
+|OpMul|Fried With|
+|OpSub|Without|
+|PrintNum|Serve|
+|PrintStr|Scream In Despair:|
+|ProgEnd|That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!|
+|ProgStart|The Recipe Of The Most Delicious Dish One Can Ever Imagine!|
+|Return1|There Is No Time To Explain, Use|
+|Return2|As The Result Of This Skill!|
+|UnitsOf|Units Of|
+|UnrOp_cos|Diced|
+|UnrOp_exp|Grated|
+|UnrOp_ln|Squeezed|
+|UnrOp_minus|Rinsed|
+|UnrOp_sin|Sliced|
+|UnrOp_sqrt|Peeled|
+|Using|Using|
+|VarBirthOp|Quickly Obtain|
+|VarDeathOp|Throw Away|
+|While1|As Long As|
+|While2|Repeat The Following:|
+|WhileEnd|Repeat Until Ready And Then Go Further!|
+
+<!-- TODO - идея для continue: "закроем глаза на то, что в этой итерации ты схалтурил. Просто переходи к следующей, но не забывай, что Большой Брат следит за тобой." -->
+<!-- TODO - идея для break:    "давай будем честны, тебе это надоело. Просто бросай все эти повторения и не возвращайся к ним больше, иди дальше." -->
+
+#### Разделяющие символы
+
+|Обозначение в грамматике|Написание в тексте программы|
+|-|-|
+|Dot|!|
+|Semicolon|;|
+|Colon|:|
+|Comma|,|
+|BracketOpn|(|
+|BracketCls|)|
+
+### Особенности грамматики
+
+- Как было сказано в самом начале, на ЯП TomatoLang `ужасно неудобно писать программы`. 
+- Переносы строки и пробелы не играют роли, но помогают хоть как-то структурировать текст программы.
+- Ключевые слова очень длинные, некоторые представляют собой целые предложения (а иногда даже несколько), но благодаря этому достигается `эффект единого текста`, пускай и напоминающего бред сумасшедшего.
+- В некоторых местах обязательными являются так называемые `амплификаторы` (_любой*_ из 10 вариантов), придающие тексту экспрессивности. _*Не допускается тавтология! Использование одного и того же амплификатора подряд приводит к ошибке компиляции ~~(и двойке за эссе по английскому)~~._
+- Числовые константы разрешены в очень ограниченном числе мест, а так же отсутствует возможность использования констант вместе с переменными в выражениях. Причина в том, что переменные в данном ЯП представляют собой ингредиенты и блюда, арифметические операции - некоторые варианты готовки; нельзя ведь "пожарить мясо с числом 19"! **Однако**, допускается умножение константы на переменную слева, вида `4 Units Of Apples`.
+- Всё, заключенное в символы `#`, является комментарием. 
+
+## Backend
+
+![](readme_imgs/backend_plan.png)
+
+Получаемое на вход `AST` `Backend` сначала преобразовывает в `IR` (Intermediate Representation, промежуточное представление). `IR` представляет собой линейную последовательность (двусвязный список) инструкций, практически идентичных инструкциям архитектуры x86-64, за исключением некоторых "нереалистичных" особенностей. Такой подход (в отличие от прямой трансляции сразу в текст NASM) позволяет легко и понятно производить оптимизации, после которых `IR` приводится к "реалистичному" виду, а затем и в финальный ассебмлерный текст.
+
+На данный момент единственной "нереалистичной" особенностью `IR` является наличие у инструкций `push` и `pop` возможности взаимодействовать с xmm регистрами, что не является самым оптимальным решением (например, можно было объединить инструкции `add` - `addsd`, `sub` - `subsd` в одну по схожему принципу).
+
+Данная "нереалистичность" позволяет применять оптимизацию, заключающуюся в свёртке последовательных `push` и `pop` в один `mov`. Т.к. `Backend` работает по принципу `стековой арифметики`, такая конструкция при трансляции больших выражений встречается очень часто. На данный момент это единственная оптимизация, но добавление новых не должно оказаться затруднительным.
+
+## Стандартная библиотека ЯП TomatoLang 
+
+Расположена в `tomato_stdlib`, частично написана на ассемблере, частично на Си. Не использует стандартную библиотеку Си ценой очень простых и скудных реализаций ф-й печати и ввода числа (что, впрочем, подстать духу языка). Реализованы следующие основные функции:
+
+- `print_str` - печать константной строки в `stdout`.
+- `print_num` - печать числа с плавающей запятой в `stdout`.
+- `input`     - ввод числа с плавающей запятой из `stdin`.
+- `_exit`     - завершение программы, обёртка над соответствующим syscall.
+
+Все остальные ф-ии, которые можно найти в исходниках, являются вспомогательными.
+
+**Необычная особенность `print_num`**: в случае наличия в вводе чего-то, что не получается интерпретировать как число, не возвращает ошибку (т.к. не заложен такой функционал), но печатает сообщение об ошибке и с предупреждением о последующем `Undefined Behaviour`.
 
 
 
@@ -526,120 +687,6 @@ Programs written in this programming language try to look like crazy recipes of 
 1. All space symbols are ignored, new line symbols also don't matter, but they separate keywords and other constructions from each other.
 2. Everything surrounded by single `#` is considered a comment and is ignored, e.g. `Quickly Obtain #comment# 10 Units Of Milk!`.
 
-### Grammar
-
-Note:
-
-1. Terminal symbols and keywords are surrounded with qoutes `""`, non-terminal symbols are written as is.
-2. `+` means `one or more`.
-3. `*` means `zero or more`.
-4. `?...?` means some special case.
-5. `<...>` means something connected with context.
-6. `{...}` means something which is not obligatory.
-
-```py
-Prog            ::= "ProgStart" { FuncDefs } Operators "ProgEnd"
-FuncDefs        ::= "FuncDefsStart" FuncDef+ "FuncDefsEnd"
-FuncDef         ::= FuncRecipe | FuncAction
-FuncRecipe      ::= "FuncRecipeHeader" Id {"Using" FormalArgs "AsIngr"} "Colon" Operators
-FuncAction      ::= "FuncActionHeader" Id {"Using" FormalArgs "AsIngr"} "Colon" Operators
-FormalArgs      ::= Id<Var> ( "Comma" Id<Var> )*
-FactArgs        ::= Expr ( "Comma" Expr )*
-Operators       ::= Op+
-Op              ::= VarBirth | VarDeath | Assign | If | While | Return<in FuncRecipe> | CallFuncAction | PrintNum | PrintStr
-PrintStr        ::= "PrintStr" ?string in quotes? "Dot"
-PrintNum        ::= "PrintNum" Id<Var> "Dot"
-Return          ::= "Return1" Expr "Return2"
-VarBirth        ::= "VarBirthOp" Num "UnitsOf" Id "Dot"
-VarDeath        ::= "VarDeathOp" Id<Var> "Dot"
-Assign          ::= "Asgn1" Expr "Asgn2" Id<Var> "Dot"
-Expr            ::= Mulive ( ?Amp (group)? ("OpAdd" | "OpSub") Mulive )*
-Mulive          ::= Unr ( ?Amp (group)? ( "OpMul" | "OpDiv" ) Unr )*
-Unr             ::= ( ?Amp (group)? ?UnrOp (group)? Ingr ) | Ingr
-Ingr            ::= ( Num "UnitsOf" Primal ) | Primal
-Primal          ::= ("InBracketsStart" Expr "Semicolon") | CallFuncRecipe | Id<Var>
-Id              ::= ['a'-'z','A'-'Z']['a'-'z','A'-'Z','_','0'-'9']*
-Num             ::= ( "InputOp" ) | ( ?float number? )
-If              ::= "If1" "Cond" ?CmpOp (group)? Expr "CmpWith" Expr "If2" Operators { "Else" Operators } "IfEnd"
-While           ::= "While1" "Cond" ?CmpOp (group)? Expr "CmpWith" Expr "While2" Operators "WhileEnd"
-CallFuncRecipe  ::= "CallFuncRecipe" Id<func> {"BracketOpn" "Using" FactArgs "AsIngr" "BracketCls"}
-CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "AsIngr" "BracketCls"} "Dot"
-```
-
-### Keywords
-
-|Designation in grammar|Designation in program|Comment
-|-|-|-|
-|Amp_10|Fanatically|
-|Amp_1|Angrily|
-|Amp_2|Unfortunately|
-|Amp_3|Madly|
-|Amp_4|Thickly|
-|Amp_5|Rapidly|
-|Amp_6|Hastily|
-|Amp_7|Emotionally|
-|Amp_8|Desperately|
-|Amp_9|Fiercely|
-|AsIngr|As Ingredients|
-|Asgn1|Place|
-|Asgn2|Right Into|
-|CallFuncAction|Perform|
-|CallFuncRecipe|Cooked Beforehand|
-|CmpOp_equal|Just The Same Amount Of|
-|CmpOp_lessOrEqual|The Same Amount Or Less Of|
-|CmpOp_less|Less|
-|CmpOp_moreOrEqual|The Same Amount Or More Of|
-|CmpOp_more|More|
-|CmpOp_notEqual|Not The Same Amount Of|
-|CmpWith|Comparing With|
-|Cond|There Happens To Be|
-|Else|Otherwise You Should Do A Completely Different Thing:|
-|FuncActionHeader|Skill To Do|
-|FuncDefsEnd|Here Is The Recipe Itself:|
-|FuncDefsStart|Here Are Some Skills You Need To Have:|
-|FuncRecipeHeader|Skill To Cook|
-|If1|In Case|
-|If2|Urgently Do The Following Steps:|
-|IfEnd|Now, Breathe Out And Continue Whatever You Were Doing!|
-|InBracketsStart|The Following Prepared Beforehand:|
-|InputOp|As Much As The Universe Says|
-|OpAdd|Mixed With|
-|OpDiv|Spread On|
-|OpMul|Fried With|
-|OpSub|Without|
-|PrintNum|Serve|
-|PrintStr|Scream In Despair:|
-|ProgEnd|That's All! Don't Forget To Check It On Your Friends Before Tasting Yourself!|
-|ProgStart|The Recipe Of The Most Delicious Dish One Can Ever Imagine!|
-|Return1|There Is No Time To Explain, Use|
-|Return2|As The Result Of This Skill!|
-|UnitsOf|Units Of|
-|UnrOp_cos|Diced|
-|UnrOp_exp|Grated|
-|UnrOp_ln|Squeezed|
-|UnrOp_minus|Rinsed|
-|UnrOp_sin|Sliced|
-|UnrOp_sqrt|Peeled|
-|Using|Using|
-|VarBirthOp|Quickly Obtain|
-|VarDeathOp|Throw Away|
-|While1|As Long As|
-|While2|Repeat The Following:|
-|WhileEnd|Repeat Until Ready And Then Go Further!|
-
-<!-- TODO - идея для continue: "закроем глаза на то, что в этой итерации ты схалтурил. Просто переходи к следующей, но не забывай, что Большой Брат следит за тобой." -->
-<!-- TODO - идея для break:    "давай будем честны, тебе это надоело. Просто бросай все эти повторения и не возвращайся к ним больше, иди дальше." -->
-
-### Separating symbols
-
-|Designation in grammar|Designation in program|Comment|
-|-|-|-|
-|Dot|!|
-|Semicolon|;|
-|Colon|:|
-|Comma|,|
-|BracketOpn|(|
-|BracketCls|)|
 
 ### Program examples
 
