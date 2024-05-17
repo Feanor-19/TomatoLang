@@ -421,6 +421,12 @@ int main()
 
 Ниже будут рассмотрены подробнее некоторые составляющие.
 
+## Пример AST для программы "factorial", упомянутой выше.
+
+![](readme_imgs/factorial.jpg)
+
+Как получить такую картинку и расшифровку используемыех цветовых обозначений см. ниже.
+
 ## Общие особенности ЯП TomatoLang
 
 Следующие факты не относятся напрямую к какой-либо из частей компилятора, а потому вынесены сюда:
@@ -581,123 +587,45 @@ CallFuncAction  ::= "CallFuncAction" Id<func> {"BracketOpn" "Using" FactArgs "As
 
 **Необычная особенность `print_num`**: в случае наличия в вводе чего-то, что не получается интерпретировать как число, не возвращает ошибку (т.к. не заложен такой функционал), но печатает сообщение об ошибке и с предупреждением о последующем `Undefined Behaviour`.
 
+## Сборка и использование
 
-
-
-
-
-
-
-
-
-## Использование
+Используется собственная библиотека бинарного дерева `tree`, которая может быть найдена в соседнем репозитории. Для сборки данного проекта требуется склонировать `tree` и воспользоваться расположенным там Makefile, чтобы собрать (`make`) и скопировать в нужные директории libtree.a и заголовочные файлы (`make make_lib && make copy_lib`) Вероятнее всего, эти директории придётся создать самостоятельно. 
 
 Доступны следующие команды (из общей директории TomatoLang):
 
-**Сборка**:
+### Сборка:
 
 - Сборка всех частей компилятора:
 ```
 make
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-**Компиляция программы на TomatoLang**:
+- Доступна возможность сборки в отдельности каждой из частей компилятора (`front`, `middle`, `back`, `stdlib`)
 ```
-make tomato PROG_DIR=*имя папки c программой, см. ниже* [IMG_DIR=*имя папки для дампа AST*]
+make *название части*
 ```
-- PROG_DIR: текст программы должен быть в данной папке в файле `prog.txt`. В этой же папке будут создаваться все промежуточные файлы и финальный результат `prog`.
 
-NOTE: `tree` library is used in the project! You can find it in its own repo. The only place it is included in is `common\src\common.h`.
+### Использование компилятора
 
-## Usage
+**С помощью Makefile, вызывающего с нужными аргументами все составляющие компилятора**:
 
-The project is the compiler of the programming language, separated into three parts: `fronted`, `middleend` and `backend`.
+```
+make tomato PROG_DIR=*имя папки c программой, см. ниже* [IMG_DIR=*имя папки для картинки AST*]
+```
+- PROG_DIR: текст программы должен быть в данной папке в файле `prog.txt`. В этой же папке будут создаваться все промежуточные файлы и финальный исполняемый файл `prog`.
+- IMG_DIR: имя директории, в которой появится картинка AST, созданная с помощью инструмента `graphviz dot`. Конечно, требует установленного и доступного из терминала `dot`.
 
-1. `Frontend` takes `text file with program` and creates `compilator tree`.
-2. `Middleend` does some work with the `compilator tree`, e.g. folding constants. (BUT: due to some specifics of the language, no simple optimizations with the compiler tree can be done).
-3. `Backend` is currently absent, it is planned that it will create object files, compatible with GNU linker.
-### Command line flags (common for all parts of the compiler)
+Запуск полученного исполняемого файла:
+```
+make cook PROG_DIR=*имя папки c программой*
+```
 
-1. `-h` - prints help.
-2. `-i` - specifies input file.
-3. `-o` - specifies output file.
-4. `-l` - specifies log file.
-5. `--img-dumps` - if specified, creates img of the AST.
+**Самостоятельно**:
 
-When there is no corresponding flag, default configuration is used (see below).
+Каждая из частей может быть использована по отдельности. В директориях `bin` лежат исполнямые файлы (`frontend`, `middleend`, `backend`). У всех одинаковые доступные флаги:
 
-### Return values (common for all parts of the compiler)
-
-Please, see corresponding `*_statuses.h`.
-
-### Compiler Frontend
-
-Run `frontend` or `make run_front` from root folder.
-
-Default configuration (all files are located in the root folder):
-
-1. Input file: `prog.txt`.
-2. Output file: `compiler_tree.txt`.
-3. Log file: `stdout`.
-
-#### Speicifc command line flags
-
-1. `--img-dumps` - turns on image dumps and specifies folder for this dumps.
-
-### Compiler Middleend
-
-Run `middleend` or `make run_middle` from root folder.
-
-Default configuration (all files are located in the root folder):
-
-1. Input file: `compiler_tree.txt`.
-2. Output file: `compiler_tree_new.txt`.
-3. Log file: `stdout`.
-
-### Compiler Backend (ABSENT CURRENTLY)
-
-Run `backend.exe` or `make run_back` (sometimes doesn't work propely, I really don't know why <!-- TODO -->) from root folder.
-
-Default configuration (all files are located in the root folder):
-
-1. Input file: `compiler_tree.txt`.
-2. Output file: `asm.txt`.
-3. Log file: `stdout`.
-
-## Programming language description
-
-### Main idea
-
-Programs written in this programming language try to look like crazy recipes of some crazy dish. "Crazy" means that there is no list of ingredients in the beginning, or some other common sense things, which one can usually find in real-life recipes. So, the programmer plays the role of the author of a recipe, and the processor - of the chef, who is going to cook it. That's why most of the verbs in the text of the program must be read in the imperative mood.
-
-### Some notes and details
-
-1. All space symbols are ignored, new line symbols also don't matter, but they separate keywords and other constructions from each other.
-2. Everything surrounded by single `#` is considered a comment and is ignored, e.g. `Quickly Obtain #comment# 10 Units Of Milk!`.
-
-
-### Program examples
-
-- Factorial:
-
-
-AST (is generated if `--img_dumps` is specified):
-![](readme_imgs/factorial.jpg)
-
----
-
-AST (is generated if `--img_dumps` is specified):
-
-![](readme_imgs/quadratic.jpg)
+1. `-h` - печатает помощь и завершает программу.
+2. `-i` - указание входного файла.
+3. `-o` - указание выходного файла.
+4. `-l` - указание файла для логов (в ином случае использует `stdout`).
+5. `--img-dumps` - если указан, создаёт картинку AST с помощью `graphviz dot` в указанной после флага директории.

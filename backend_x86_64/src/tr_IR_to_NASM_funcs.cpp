@@ -31,7 +31,7 @@ inline void print_arg(arg_t arg, FILE *stream)
     {
     case IRB_ARG_TYPE_CONST_STR_ADDR:
     {
-        IRBlock *target = (IRBlock*) arg.addr;
+        IRBlock *target = arg.addr;
         PRINT_WO_NEWLINE(" LSC_%lu ", target->lbl_str_const );
         break;
     }
@@ -52,7 +52,7 @@ inline void print_arg(arg_t arg, FILE *stream)
     }
     case IRB_ARG_TYPE_MEM_NUM_CNST:
     {
-        IRBlock *target = (IRBlock*) arg.mem_num_cnst;
+        IRBlock *target = arg.mem_num_cnst;
         PRINT_WO_NEWLINE(" QWORD [LNC_%lu] ", target->lbl_num_const);
         break;
     }
@@ -289,7 +289,7 @@ inline Status jmp_helper( const char *jmp_type, FORMAL_TR_IR_NASM_ARGS )
 {
     UNUSED(counters);
 
-    IRBlock *target = (IRBlock*) block->data.instr_ptr;
+    IRBlock *target = block->data.instr_ptr;
     assert(target->lbl_cmn_set);
     PRINT_INSTR("%s LCC_%lu", jmp_type, target->lbl_cmn);
 

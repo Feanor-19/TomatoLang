@@ -551,23 +551,8 @@ LCC_7:
 LCC_8:
 ; assign_start
 ; assign_expr
-; mul start
-; computing left expr
-			push QWORD [LNC_0] 
-; computing right expr
-			push QWORD [rbp + -24] 
-; pop right expr result to xmm_tmp_2
-			movsd xmm9 , QWORD [rsp + 0] 
-			add rsp , 8 
-; pop left expr result to xmm_tmp_1
-			movsd xmm8 , QWORD [rsp + 0] 
-			add rsp , 8 
-			mulsd xmm8 , xmm9 
-; push back onto comp. sub-stack
-			sub rsp , 8 
-			movsd QWORD [rsp + 0] , xmm8 
-; mul end
-			pop QWORD [rbp + -16] 
+			mov r8 , QWORD [LNC_0] 
+			mov QWORD [rbp + -16] , r8 
 ; assign_end
 ; return start
 ; computing the expression to return:

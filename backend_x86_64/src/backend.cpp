@@ -259,7 +259,7 @@ void set_cmn_labels( const IR* IR )
     IRBlock *curr_block = IR->head;
     while (curr_block)
     {
-        IRBlock *target = (IRBlock*) curr_block->data.instr_ptr; 
+        IRBlock *target = curr_block->data.instr_ptr; 
         if (target)
         {
             target->lbl_cmn_set = true;

@@ -24,6 +24,7 @@ tomato: $(PROG_DIR)/$(PROG_PROG)
 
 $(PROG_DIR)/$(PROG_AST): $(PROG_DIR)/$(PROG_TEXT)
 	./frontend/bin/frontend -i $(PROG_DIR)/$(PROG_TEXT) -o $(PROG_DIR)/$(PROG_AST) $(DO_DUMP)
+	./middleend/bin/middleend -i $(PROG_DIR)/$(PROG_AST) -o $(PROG_DIR)/$(PROG_AST)
 
 $(PROG_DIR)/$(PROG_NASM): $(PROG_DIR)/$(PROG_AST)
 	./backend_x86_64/bin/backend -i $(PROG_DIR)/$(PROG_AST) -o $(PROG_DIR)/$(PROG_NASM)
