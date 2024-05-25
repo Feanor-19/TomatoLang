@@ -641,7 +641,79 @@ make cook PROG_DIR=*имя папки c программой*
 
 |Цвет|Обозначение|
 |-|-|
-|Жёлтый|Операторы (полный список, использующийся для кодогенерации, [тут](./common/src/ast_ops_defs.h))|
+|Жёлтый|Операторы [полный список, использующийся для кодогенерации](./common/src/ast_ops_defs.h))|
 |Зелёный|Идентификаторы, включая два типа: строковые (имена функций) и числовые (индексы локальных переменных)|
 |Голубой|Идентификаторы (числовые) формальных аргументов|
 |Красный|Константы, включая числовые и строковые|
+
+### Выдержка из формата AST
+
+1. Данные, хранящиеся в узле AST:
+
+```c
+struct TreeNodeData
+{
+    TreeNodeType type;
+    union
+    {
+        ASTOpNameEnum op;
+        num_t num;
+        ident_t id;
+        char *str;
+        size_t num_of_loc_vars;
+    };
+
+};
+```
+
+2. Типы узлов определяются следующим перечислением:
+
+```c
+enum TreeNodeType
+{
+    TREE_NODE_TYPE_OP,        //!< AST Operator
+    TREE_NODE_TYPE_CONST_NUM, //!< Constant number of type 'num_t'
+    TREE_NODE_TYPE_VAR_LOCAL, //!< Local variable in some func, defined by numerical
+                              // id (of type 'ident_t')
+    TREE_NODE_TYPE_FUNC_ARG,  //!< One of func args, defined by its sequence number
+                              // (of type 'ident_t')
+    TREE_NODE_TYPE_STR_IDENT, //!< Contains string identificator (used for functions' names).
+    TREE_NODE_TYPE_CONST_STR, //!< Constant string.
+    TREE_NODE_TYPE_FUNC_INFO, //!< Stores number of local vars of the func.
+};
+```
+
+_Примечание: только узлы типа "OP" (оператор) могут иметь потомков, остальные являются листьями._ 
+
+3. Все поддерживамые операторы (ASTOp):
+
+|Имя оператора|Описание|Требования
+|-|-|-|
+|DUMMY|Фиктивный оператор|
+|SEQ_EXEC|Оператор последовательного исполнения|Левое поддерево - операторы, которые должны выполниться первее, правое поддерево - позднее
+|FUNC_DEF|Определение функции|Левым и правым потомком должны быть FUNC_DEF_HELPER
+|FUNC_DEF_HELPER|Часть определения функции, назначение зависит от положения (левый или правый потомок FUNC_DEF)|Если левый потомок: слева STR_IDENT с именем функции, справа FUNC_INFO; если правый потомок: слева список аргументов (см. LIST_CONNECTOR), справа тело функции
+|LIST_CONNECTOR|Соединитель списков|Левый потомок - элемент списка, правый потомок - LIST_CONNECTOR, если данный элемент списка не последний, иначе отсутствует
+|MAIN_PROG|Определение функции main|Левый потомок - количество локальных переменных, правый потомок - тело main.
+|ASSIGN|Присваивание|
+|CMP_MORE||
+|CMP_LESS||
+|CMP_MORE_EQ||
+|CMP_LESS_EQ||
+|CMP_EQUAL||
+|CMP_NOT_EQ||
+|ADD||
+|SUB||
+|MUL||
+|DIV||
+|IF||
+|WHILE||
+|ELSE||
+|SQRT||
+|MINUS||
+|CALL_FUNC_RECIPE||
+|CALL_FUNC_ACTION||
+|RETURN||
+|INPUT||
+|PRINT_NUM||
+|PRINT_STR||
